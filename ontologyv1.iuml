@@ -1,0 +1,561 @@
+@startuml ontology
+
+' do not show the circled character in classes
+hide circle
+' do not show emply members for classes and object 
+hide empty members
+
+skinparam roundCorner 10
+
+' global variable for prefixes 
+' (expects json with key = prefix, value = namespace)
+!$prefixes = { "owl" : "http://www.w3.org/2002/07/owl#",
+               "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+               "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"}
+
+' global variable for setting custom color for namespaces
+' (expects json with key = prefix (should be present in $prefixes), value = color)
+!$nsColor = { "rdf" : "White" }
+
+' !unquoted procedure setColor($prefix, $color)
+'     !if %json_key_exists($prefixes, $prefix)        
+'         class $nsColor[$prefix]
+'     !else
+'         !assert "prefix cannot be found in the $prefixes list"
+'     !endif    
+' !endprocedure
+
+!$adif = 0
+!unquoted function incrementADif($v)
+    %set_variable_value("$adif", %intval($adif) + %intval($v))
+    !return $adif
+!endfunction
+
+!$adis = 0
+!unquoted function incrementADis($v)
+    %set_variable_value("$adis", %intval($adis) + %intval($v))
+    !return $adis
+!endfunction
+
+!$un = 0
+!unquoted function incrementUn($v)
+    %set_variable_value("$un", %intval($un) + %intval($v))
+    !return $un
+!endfunction
+
+!$in = 0
+!unquoted function incrementIn($v)
+    %set_variable_value("$in", %intval($in) + %intval($v))
+    !return $in
+!endfunction
+
+'-------------------------------------------------------'
+' Class declaration
+'-------------------------------------------------------'
+' create a class
+!unquoted procedure class($alias, $iri)
+    class "$iri" as $alias 
+!endprocedure
+
+'-------------------------------------------------------'
+' Individual declaration
+'-------------------------------------------------------'
+'create an instance
+!unquoted procedure individual($alias, $iri)
+    object "<u>$iri" as $alias 
+!endprocedure
+
+'-------------------------------------------------------'
+' Class membership
+'-------------------------------------------------------'
+' create membership of $individual1 to $class
+!unquoted procedure instanceOf($individual, $class)
+    ' !if %variable_exists("$individual")
+        $class <.d. $individual
+    ' !else
+        ' !log "Individual " + $individual + " is not declared." 
+    ' !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' Assert associations
+'-------------------------------------------------------'
+' create object property ($predicate) association from $subject individual to $object individual
+' proeprty direction is left of $subject by default
+!unquoted procedure assertOProperty($subject, $predicate, $object, $direction = left)
+    $subject -$direction-> $object : $predicate
+!endprocedure
+
+' create data property ($predicate) association from $subject individual to $value
+!unquoted procedure assertDProperty($subject, $predicate, $value)
+    object $subject {
+        $predicate  = $value
+    }
+!endprocedure
+
+'-------------------------------------------------------'
+' Mapping among individuals
+'-------------------------------------------------------'
+' create data property ($predicate) association from $subject individual to $value
+' link direction is left of $subject by default
+!unquoted procedure assertSameAs($individual1, $individual2, $direction = left)
+    $individual1 <-$direction-> $individual2 : <<owl:sameAs>>
+!endprocedure
+
+' create data property ($predicate) association from $subject individual to $value
+' link direction is left of $subject by default
+!unquoted procedure assertDifferentFrom($individual1, $individual2, $direction = left)
+    $individual1 <-$direction-> $individual2 : <<owl:differentFrom>>
+!endprocedure
+
+' make all given individuals in the list as different 
+' individual variables need to be passed as a json list
+!unquoted procedure assertAllDifferent($individuals)
+    !$var = "adif" + incrementADif(1)
+    () "<<owl:AllDifferent>>" as $var
+    !foreach $i in %str2json($individuals)
+        $var .up. $i
+    !endfor 
+!endprocedure
+
+'-------------------------------------------------------'
+' Mapping among classes
+'-------------------------------------------------------'
+' define the child class as a subclass of the parent class
+' class is placed above object by default
+!unquoted procedure defineSubClass($subclass, $superclass, $direction = down)
+    $superclass <|-$direction- $subclass
+!endprocedure
+
+' define $class1 as equivalent class of $class2
+' link direction is left of $subject by default
+!unquoted procedure defineEquivalent($class1, $class2, $direction = left)
+    $class1 <-$direction-> $class2 : <<owl:equivalentClass>>
+!endprocedure
+
+' define $class1 as equivalent class of $class2
+' link direction is left of $subject by default
+!unquoted procedure defineDisjoint($class1, $class2, $direction = left)
+    $class1 <-$direction-> $class2 : <<owl:disjointWith>>
+!endprocedure
+
+' make all given classes in the list as different 
+' individual variables need to be passed as a json list
+!unquoted procedure defineAllDisjoint($classes)
+    !$var = "adis" + incrementADis(1)
+    () "<<owl:AllDisjoint>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+!endprocedure
+
+'-------------------------------------------------------'
+' Class operations (union, intersection)
+'-------------------------------------------------------'
+' make all given classes in the list as an union class  
+' individual variables need to be passed as a json list
+!unquoted procedure defineUnion($classes)
+    !$var = "un" + incrementUn(1)
+    () "<<owl:unionOf>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+!endprocedure
+
+' make class as subClassOf the union of given %classes 
+' individual variables need to be passed as a json list
+!unquoted procedure defineSubClassUnion($class, $classes)
+    !$var = "un" + incrementUn(1)
+    () "<<owl:unionOf>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+    $class -u-|> $var
+!endprocedure
+
+' make the union of given %classes subClass of $class
+' individual variables need to be passed as a json list
+!unquoted procedure defineSuperClassUnion($class, $classes)
+    !$var = "un" + incrementUn(1)
+    () "<<owl:unionOf>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+    $var -u-|> $class
+!endprocedure
+
+'-------------------------------------------------------'
+
+' make all given classes in the list as an intersection class  
+' individual variables need to be passed as a json list
+!unquoted procedure defineIntersection($classes)
+    !$var = "in" + incrementIn(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+!endprocedure
+
+' make class as subClassOf the intersection of given %classes 
+' individual variables need to be passed as a json list
+!unquoted procedure defineSubClassIntersection($class, $classes)
+    !$var = "in" + incrementIn(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+    $class -u-|> $var
+!endprocedure
+
+' make the intersection of given %classes subClass of $class
+' individual variables need to be passed as a json list
+!unquoted procedure defineSuperClassIntersection($class, $classes)
+    !$var = "in" + incrementIn(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+    $var -u-|> $class
+!endprocedure
+
+'-------------------------------------------------------'
+' ' make the union all given $classes as equivalent to $class
+' ' individual variables need to be passed as a json list
+' !unquoted procedure defineEquivalentUnion($class, $classes)
+'     !$z = true
+'     !foreach $i in %str2json($classes)    
+'         !if $z == true
+'             $i -up-|> $class : "{equivalent, union}"
+'             %set_variable_value("$z", false)
+'         !else
+'             $i -up-|> $class
+'         !endif
+'     !endfor 
+' !endprocedure
+
+' ' make the union all given $classes as subclass to $class
+' ' individual variables need to be passed as a json list
+' !unquoted procedure defineSuperClassUnion($class, $classes)
+'     !$z = true    
+'     !$var = "una" + incrementUn1(1)
+'     class " " as $var
+'     !foreach $i in %str2json($classes)    
+'         !if $z == true
+'             $i .up.|> $var : "{subClass, union}"
+'             %set_variable_value("$z", false)
+'         !else
+'             $i .up.|> $var
+'         !endif
+'     !endfor 
+'     $var -u-|> $class
+' !endprocedure
+
+' ' make the union all given $classes as subclass to $class
+' ' individual variables need to be passed as a json list
+' !unquoted procedure defineSubClassUnion($class, $classes)
+'     !$z = true    
+'     !$var = "unb" + incrementUn2(1)
+'     class " " as $var
+'     !foreach $i in %str2json($classes)    
+'         !if $z == true
+'             $i ..up..> $var : "{subClass, union}"
+'             %set_variable_value("$z", false)
+'         !else
+'             $i ..up..> $var
+'         !endif
+'     !endfor 
+'     $class -u-|> $var
+' !endprocedure
+
+'-------------------------------------------------------'
+' One of constraint
+'-------------------------------------------------------'
+' make the intersection of given %classes subClass of $class
+' individual variables need to be passed as a json list
+!unquoted procedure defineSuperClassIntersection($class, $classes)
+    !$var = "in" + incrementIn(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $i in %str2json($classes)
+        $var .up. $i
+    !endfor 
+    $var -u-|> $class
+!endprocedure
+
+'-------------------------------------------------------'
+' Existential constraint on object property
+'-------------------------------------------------------'
+
+' define $class1 is equivalent to '$property some $class2'
+' link direction is left of $class1 by default
+!unquoted procedure equivalentSome($class1, $property, $class2, $direction = left)
+    $class1 -$direction-> $class2 : $property <<some>>
+!endprocedure
+
+' define $class1 is subClass of '$property some $class2' 
+' link direction is left of $class1 by default
+!unquoted procedure subClassSome($class1, $property, $class2, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentSome(c, $property, $class2, $direction)
+!endprocedure
+
+' define '$property some $class2' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superClassSome($class1, $property, $class2, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentSome(c, $property, $class2, $direction)
+!endprocedure
+
+'-------------------------------------------------------'
+' Existential constraint on Data property
+'-------------------------------------------------------'
+
+' define $class1 is equivalent to '$property some $datatype'
+' link direction is left of $class1 by default
+!unquoted procedure equivalentDataSome($class1, $property, $datatype, $direction = left)
+    class "$datatype" #white ##[dotted]white
+    $class1 -$direction-> "$datatype" : $property <<some>>
+!endprocedure
+
+' define $class1 is subClass of '$property some $datatype' 
+' link direction is left of $class1 by default
+!unquoted procedure subClassDataSome($class1, $property, $datatype, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentDataSome(c, $property, $datatype, $direction)
+!endprocedure
+
+' define '$property some $datatype' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superClassDataSome($class1, $property, $datatype, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentDataSome(c, $property, $datatype, $direction)
+!endprocedure
+
+'-------------------------------------------------------'
+' Universal constraint on object property
+'-------------------------------------------------------'
+
+' define $class1 is equivalent to '$property only $class2' 
+' link direction is left of $class1 by default
+!unquoted procedure equivalentOnly($class1, $property, $class2, $direction = left)
+    $class1 -$direction-> $class2 : $property <<only>>
+!endprocedure
+
+' define $class1 is subClass of '$property some $class2' 
+' link direction is left of $class1 by default
+!unquoted procedure subClassOnly($class1, $property, $class2, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentOnly(c, $property, $class2, $direction)
+!endprocedure
+
+' define '$property only $class2' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superClassOnly($class1, $property, $class2, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentOnly(c, $property, $class2, $direction)
+!endprocedure
+
+'-------------------------------------------------------'
+' Universal constraint on Data property
+'-------------------------------------------------------'
+
+' define $class1 is equivalent to '$property only $datatype' 
+' link direction is left of $class1 by default
+!unquoted procedure equivalentDataOnly($class1, $property, $datatype, $direction = left)
+    class "$datatype" #white ##[dotted]white
+    $class1 -$direction-> "$datatype" : $property <<only>>
+!endprocedure
+
+' define $class1 is subClass of '$property some $datatype' 
+' link direction is left of $class1 by default
+!unquoted procedure subClassDataOnly($class1, $property, $datatype, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentDataOnly(c, $property, $datatype, $direction)
+!endprocedure
+
+' define '$property only $datatype' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superClassDataOnly($class1, $property, $datatype, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentDataOnly(c, $property, $datatype, $direction)
+!endprocedure
+
+
+'-------------------------------------------------------'
+' Cardinality restriction on object property
+'-------------------------------------------------------'
+
+' define $class1 is equivalent to '$property max $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equivalentMax($class1, $property, $class2, $cardinality, $direction = left)
+    $class1 -$direction-> $class2 : $property [0..$cardinality]
+!endprocedure
+
+' define $class1 is subClass of '$property max $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure subClassMax($class1, $property, $class2, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentMax(c, $property, $class2, $cardinality, $direction)
+!endprocedure
+
+' define '$property max $cardinality $class2' is subClass of $class1
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure superClassMax($class1, $property, $class2, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentMax(c, $property, $class2, $cardinality, $direction)
+!endprocedure
+
+' define $class1 is equivalent to '$property min $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equivalentMin($class1, $property, $class2, $cardinality, $direction = left)
+    $class1 -$direction-> $class2 : $property [$cardinality..*]
+!endprocedure
+
+' define $class1 is subClass of '$property min $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure subClassMin($class1, $property, $class2, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentmin(c, $property, $class2, $cardinality, $direction)
+!endprocedure
+
+' define '$property min $cardinality $class2' is subClass of $class1
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure superClassMin($class1, $property, $class2, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentmin(c, $property, $class2, $cardinality, $direction)
+!endprocedure
+
+' define $class1 is equivalent to '$property exactly $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equivalentExactly($class1, $property, $class2, $cardinality, $direction = left)
+    $class1 -$direction-> $class2 : $property [$cardinality]
+!endprocedure
+
+' define $class1 is subClass of '$property exactly $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure subClassExactly($class1, $property, $class2, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentexactly(c, $property, $class2, $cardinality, $direction)
+!endprocedure
+
+' define '$property exactly $cardinality $class2' is subClass of $class1
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure superClassExactly($class1, $property, $class2, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentexactly(c, $property, $class2, $cardinality, $direction)
+!endprocedure
+
+'-------------------------------------------------------'
+' Cardinality restriction on data property
+'-------------------------------------------------------'
+
+' define $class1 is equivalent to '$property max $cardinality $datatype'
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equivalentDataMax($class1, $property, $datatype, $cardinality, $direction = left)
+    class "$datatype" #white ##[dotted]white
+    $class1 -$direction-> "$datatype" : $property [0..$cardinality]
+!endprocedure
+
+' define $class1 is subClass of '$property max $cardinality $datatype' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure subClassDataMax($class1, $property, $datatype, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentDataMax(c, $property, $datatype, $cardinality, $direction)
+!endprocedure
+
+' define '$property max $cardinality $datatype' is subClass of $class1
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure superClassDataMax($class1, $property, $datatype, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentDataMax(c, $property, $datatype, $cardinality, $direction)
+!endprocedure
+
+' define $class1 is equivalent to '$property min $cardinality $datatype' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equivalentDataMin($class1, $property, $datatype, $cardinality, $direction = left)
+    class "$datatype" #white ##[dotted]white
+    $class1 -$direction-> "$datatype" : $property [$cardinality..*]
+!endprocedure
+
+' define $class1 is subClass of '$property min $cardinality $datatype' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure subClassDataMin($class1, $property, $datatype, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentDataMin(c, $property, $datatype, $cardinality, $direction)
+!endprocedure
+
+' define '$property min $cardinality $datatype' is subClass of $class1
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure superClassDataMin($class1, $property, $datatype, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentDataMin(c, $property, $datatype, $cardinality, $direction)
+!endprocedure
+
+' define $class1 is equivalent to '$property exactly $cardinality $datatype' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equivalentDataExactly($class1, $property, $datatype, $cardinality, $direction = left)
+    class "$datatype" #white ##[dotted]white
+    $class1 -$direction-> "$datatype" : $property [$cardinality]
+!endprocedure
+
+' define $class1 is subClass of '$property exactly $cardinality $datatype' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure subClassDataExactly($class1, $property, $datatype, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass($class1, c)
+    equivalentDataExactly(c, $property, $datatype, $cardinality, $direction)
+!endprocedure
+
+' define '$property exactly $cardinality $datatype' is subClass of $class1
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure superClassDataExactly($class1, $property, $datatype, $cardinality, $direction = left)
+    class " " as c
+    defineSubClass(c, $class1)
+    equivalentDataExactly(c, $property, $datatype, $cardinality, $direction)
+!endprocedure
+
+'-------------------------------------------------------'
+' Property definitions
+'-------------------------------------------------------'
+
+' individual(o1, object1)
+' individual(o2, object2)
+' individual(o3, object3)
+' ' assertsameAs(o1, o2)
+' assertAllDifferent('["o1", "o2", "o3"]')
+@enduml

@@ -1,0 +1,12 @@
+@startuml iof
+skinparam class{
+ BackgroundColor DFA702
+ FontColor White
+ FontStyle bold
+}
+skinparam object{
+    BackgroundColor 76608A
+    fontColor White
+    BorderColor White    
+}
+@enduml
