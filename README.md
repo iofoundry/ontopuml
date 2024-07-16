@@ -7,6 +7,8 @@ The visual notation used in this standard library is below.
 ## Table of contents
 - [Installation](#installation)
 - [Create class](#create-class)
+- [Create individual](#create-individual)
+- [Create type of an indivual](#create-membership-of-an-individual)
 
 ## Installation
 
@@ -38,7 +40,7 @@ Procedure `class` takes two parameters.
 class(c1, "bfo:Quality")   
 @enduml
 ```
-## Create class 
+## Create individual 
 Procedure `individual` takes two parameters.
 
 1. class variable that identifies the individual throughout the screipt. 

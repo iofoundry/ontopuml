@@ -1,7 +1,6 @@
 @startuml ontology
 
 ' do not show the circled character in classes
-hide circle
 ' do not show emply members for classes and object 
 hide empty members
 
@@ -49,12 +48,18 @@ skinparam roundCorner 10
     !return $in
 !endfunction
 
+' returns the color based on the namespace
+!unquoted function getColor($iri)
+    !$list = %splitstr($iri, ":")
+    !return $nsColor[$list[0]]
+!endfunction
+
 '-------------------------------------------------------'
 ' Class declaration
 '-------------------------------------------------------'
 ' create a class
 !unquoted procedure class($alias, $iri)
-    class "$iri" as $alias 
+    class "$iri" as $alias #getColor($iri)
 !endprocedure
 
 '-------------------------------------------------------'
@@ -62,7 +67,7 @@ skinparam roundCorner 10
 '-------------------------------------------------------'
 'create an instance
 !unquoted procedure individual($alias, $iri)
-    object "<u>$iri" as $alias 
+    object "<u>$iri" as $alias #getColor($iri)
 !endprocedure
 
 '-------------------------------------------------------'

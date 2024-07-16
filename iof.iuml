@@ -1,5 +1,6 @@
 @startuml iof
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv1.iuml
+hide circle
 skinparam class{
  BackgroundColor DFA702
  FontColor White
@@ -10,4 +11,5 @@ skinparam object{
     fontColor White
     BorderColor White    
 }
+!$nsColor = { "bfo" : "DFA702", "iof":"DodgerBlue", "ns":"Green"}
 @enduml
