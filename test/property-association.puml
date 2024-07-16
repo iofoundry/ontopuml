@@ -1,0 +1,10 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(c2, "bfo:Material Entity")   
+class(c3, "iof:Mass")
+individual(o1, "ns1:mass1")
+individual(o2, "ns1:lump-of-coal")
+instanceOf(o1, c3)
+instanceOf(o2, c2)
+assertOProperty(o2, bfo:bears, o1)
+@enduml
