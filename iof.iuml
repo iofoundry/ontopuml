@@ -1,4 +1,5 @@
 @startuml iof
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv1.iuml
 skinparam class{
  BackgroundColor DFA702
  FontColor White
