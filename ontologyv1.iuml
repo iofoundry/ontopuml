@@ -49,9 +49,19 @@ skinparam roundCorner 10
 !endfunction
 
 ' returns the color based on the namespace
+' if no color is specified for the given namespace 
+'  or no namespace is specified then default is returned
 !unquoted function getColor($iri)
-    !$list = %splitstr($iri, ":")
-    !return $nsColor[$list[0]]
+    !if %strpos($iri, ":") != -1
+        !$list = %splitstr($iri, ":")
+        !if %json_key_exists($namespace_colors, $list[0])
+            !return $namespace_colors[$list[0]]
+        !else
+            !return $namespace_default_color
+        !endif
+    !else
+        !return $namespace_default_color
+    !endif 
 !endfunction
 
 '-------------------------------------------------------'
