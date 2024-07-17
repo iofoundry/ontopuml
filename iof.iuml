@@ -11,8 +11,8 @@ skinparam object{
     fontColor White
     BorderColor White    
 }
-!$nsColor = { "bfo" : "DFA702", 
-              "iof":"DodgerBlue", 
-              "ns":"Green", 
-              "ns1":"76608A"}
+!$namespace_colors = { "bfo" : "DFA702", 
+                        "iof":"DodgerBlue", 
+                        "ns":"Green", 
+                        "ns1":"76608A"}
 @enduml
