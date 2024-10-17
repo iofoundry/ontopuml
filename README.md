@@ -5,17 +5,20 @@ The visual notation used in this standard library is below.
 [Ontology visual notation]()
 
 ## Table of contents
-- [Installation](#installation)
-- [Create class](#create-class)
-- [Create individual](#create-individual)
-- [Create type of an indivual](#create-membership-of-an-individual)
+- [ontopuml](#ontopuml)
+  - [Table of contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Cheatsheet](#cheatsheet)
+  - [Create class](#create-class)
+  - [Create individual](#create-individual)
+  - [Create membership of an individual](#create-membership-of-an-individual)
 
 ## Installation
 
 For using the standard notation for ontology, include `ontologyv*.iuml` in your puml file
 ```
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv1.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv2.iuml
 ...
 @enduml
 ```
@@ -28,24 +31,27 @@ For IOF specific styling, include `iof.iuml`. Please see <> for creating custom 
 @enduml
 ```
 
+## Cheatsheet
+
 ## Create class 
 Procedure `class` takes two parameters.
 
 1. class variable that identifies the class throughout the screipt. 
 2. IRI of the class 
 
-```
+```plantuml
 @startuml
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
 class(c1, "bfo:Quality")   
 @enduml
 ```
+
 ## Create individual 
 Procedure `individual` takes two parameters.
 
 1. class variable that identifies the individual throughout the screipt. 
 2. IRI of the individual 
-```
+```plantuml
 @startuml
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml 
 individual(o1, "ns1:temperature1")
