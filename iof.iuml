@@ -1,5 +1,6 @@
 @startuml iof
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv1.iuml
+' !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv1.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv2.iuml
 hide circle
 skinparam class{
  BackgroundColor DFA702

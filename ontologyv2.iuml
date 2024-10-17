@@ -1,0 +1,937 @@
+@startuml ontology
+
+' do not show the circled character in classes
+' hide circle
+' do not show emply members for classes and object 
+hide empty members
+
+skinparam roundCorner 10
+
+' global variable for prefixes 
+' (expects json with key = prefix, value = namespace)
+!$prefixes = { "owl" : "http://www.w3.org/2002/07/owl#",
+               "rdf" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+               "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"}
+
+' global variable for setting custom color for namespaces
+' (expects json with key = prefix (should be present in $prefixes), value = color)
+!$namespace_colors = { "rdf" : "White" }
+!$namespace_default_color = "White"
+
+' !unquoted procedure setColor($prefix, $color)
+'     !if %json_key_exists($prefixes, $prefix)        
+'         class $namespace_colors[$prefix]
+'     !else
+'         !assert "prefix cannot be found in the $prefixes list"
+'     !endif    
+' !endprocedure
+
+' add new variable to the collection
+!$chain = ","
+!unquoted procedure addVariable($var, $iri)
+    !$chain = $chain + $var + "=" + $iri + "," 
+!endprocedure
+
+' check if variable exists for the given iri
+!unquoted function existsVariable($iri)
+    !foreach $i in %splitstr($chain, ",")
+        !$tok = %splitstr($i, "=")
+        !if $tok[1] == $iri
+            !return %true()
+        !endif
+    !endfor
+    !return %false()
+!endfunction
+
+' get the variable for the given IRI
+!unquoted function getVariable($iri)
+    !foreach $i in %splitstr($chain, ",")
+        !$tok = %splitstr($i, "=")
+        !if $tok[1] == $iri
+            !return $tok[0]
+        !endif
+    !endfor
+    !return ""
+!endfunction
+
+' keeps count of new variables (DO NOT CHANGE $count)
+!$count = 0
+!unquoted function increment($v)
+    %set_variable_value("$count", %intval($count) + %intval($v))
+    !return $count
+!endfunction
+
+' ' get new variable name
+!unquoted function newVar()
+    !return "v" + increment(1)
+!endfunction
+
+' returns the color based on the namespace
+' if no color is specified for the given namespace 
+'  or no namespace is specified then default is returned
+!unquoted function getColor($iri)
+    !if %strpos($iri, ":") != -1
+        !$list = %splitstr($iri, ":")
+        !if %json_key_exists($namespace_colors, $list[0])
+            !return $namespace_colors[$list[0]]
+        !else
+            !return $namespace_default_color
+        !endif
+    !else
+        !return $namespace_default_color
+    !endif 
+!endfunction
+
+'-------------------------------------------------------'
+' Class declaration
+'-------------------------------------------------------'
+' create a class
+' iri should use only prefix and not complete url
+!unquoted procedure class($alias, $iri)
+    class "$iri" as $alias #getColor($iri)
+!endprocedure
+
+!unquoted procedure oClass($iri)
+    !$var = newVar()
+    class "$iri" as $var #getColor($iri)
+    addVariable($var, $iri)
+!endprocedure
+
+'-------------------------------------------------------'
+' Individual declaration
+'-------------------------------------------------------'
+'create an instance
+' iri should use only prefix and not complete url
+!unquoted procedure individual($alias, $iri)
+    object "<u>$iri" as $alias #getColor($iri)
+!endprocedure
+
+!unquoted procedure oIndividual($iri)
+    !$var = newVar()
+    object "<u>$iri" as $var #getColor($iri)
+    addVariable($var, $iri)
+!endprocedure
+
+'-------------------------------------------------------'
+' Class membership
+'-------------------------------------------------------'
+' create membership of $individual1 to $class
+!unquoted procedure typeOf($individual, $class)   
+    !$m = getVariable($class)
+    !$n = getVariable($individual)
+    !if $m && $n
+        $m <.d. $n
+    !else
+        $class <.d. $individual
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' Assert associations
+'-------------------------------------------------------'
+' create object property ($predicate) association from $subject individual to $object individual
+' proeprty direction is left of $subject by default
+!unquoted procedure property($subject, $predicate, $object, $direction = left)
+    !$m = getVariable($subject)
+    !$n = getVariable($object)
+    !if $m && $n
+        $m -$direction-> $n : $predicate
+    !else
+        $subject -$direction-> $object : $predicate
+    !endif
+!endprocedure
+
+' create data property ($predicate) association from $subject individual to $value
+!unquoted procedure data($subject, $predicate, $value)
+    !$m = getVariable($subject)
+    !if $m
+        object $m {
+            $predicate  = $value
+        }
+    !else
+        object $subject {
+            $predicate  = $value
+        }
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' Mapping among individuals
+'-------------------------------------------------------'
+' create data property ($predicate) association from $subject individual to $value
+' link direction is left of $subject by default
+!unquoted procedure sameAs($individual1, $individual2, $direction = left)
+    !$m = getVariable($individual1)
+    !$n = getVariable($individual2)
+    !if $m && $n
+        $m <-$direction-> $n : <<owl:sameAs>>
+    !else
+        $individual1 <-$direction-> $individual2 : <<owl:sameAs>>
+    !endif    
+!endprocedure
+
+' create data property ($predicate) association from $subject individual to $value
+' link direction is left of $subject by default
+!unquoted procedure differentFrom($individual1, $individual2, $direction = left)
+    !$m = getVariable($individual1)
+    !$n = getVariable($individual2)
+    !if $m && $n
+        $m <-$direction-> $n : <<owl:differentFrom>>
+    !else
+        $individual1 <-$direction-> $individual2 : <<owl:differentFrom>>
+    !endif
+!endprocedure
+
+' make all given individuals in the list as different 
+' individual variables need to be passed as a json list
+!unquoted procedure allDifferent($individuals)
+    !$var = "adif" + increment(1)
+    () "<<owl:AllDifferent>>" as $var
+    !foreach $item in %str2json($individuals)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+!endprocedure
+
+'-------------------------------------------------------'
+' Mapping among classes
+'-------------------------------------------------------'
+' define the child class as a subclass of the parent class
+' class is placed above object by default
+!unquoted procedure subClass($child, $parent, $direction = down)
+    !$m = getVariable($child)
+    !$n = getVariable($parent)
+    !if $m && $n
+        $n <|-$direction- $m
+    !else
+        $parent <|-$direction- $child
+    !endif
+!endprocedure
+
+' define $class1 as equivalent class of $class2
+' link direction is left of $subject by default
+!unquoted procedure equivalent($class1, $class2, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m <-$direction-> $n : <<owl:equivalentClass>>
+    !else
+        $class1 <-$direction-> $class2 : <<owl:equivalentClass>>
+    !endif
+!endprocedure
+
+' define $class1 as equivalent class of $class2
+' link direction is left of $subject by default
+!unquoted procedure disjoint($class1, $class2, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m <-$direction-> $n : <<owl:disjointWith>>
+    !else
+        $class1 <-$direction-> $class2 : <<owl:disjointWith>>
+    !endif
+!endprocedure
+
+' make all given classes in the list as different 
+' individual variables need to be passed as a json list
+!unquoted procedure allDisjoint($classes)
+    !$var = "adis" + increment(1)
+    () "<<owl:AllDisjoint>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+!endprocedure
+
+'-------------------------------------------------------'
+' Class operations (union, intersection)
+'-------------------------------------------------------'
+' make all given classes in the list as an union class  
+' individual variables need to be passed as a json list
+!unquoted procedure union($classes)
+    !$var = "un" + increment(1)
+    () "<<owl:unionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+!endprocedure
+
+' make all given classes in the list as an union class  
+' individual variables need to be passed as a json list
+' alternative: assign to variable
+!unquoted procedure union($alias, $classes)
+    () "<<owl:unionOf>>" as $alias
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $alias .up. $m
+        !else
+            $alias .up. $item
+        !endif
+    !endfor 
+!endprocedure
+
+
+' make class as subClassOf the union of given %classes 
+' individual variables need to be passed as a json list
+!unquoted procedure subUnion($class, $classes)
+    !$var = "un" + increment(1)
+    () "<<owl:unionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+    !$n = getVariable($class)
+    !if $n
+       $n -u-|> $var
+    !else
+       $class -u-|> $var
+    !endif
+!endprocedure
+
+' make the union of given %classes subClass of $class
+' individual variables need to be passed as a json list
+!unquoted procedure superUnion($class, $classes)
+    !$var = "un" + increment(1)
+    () "<<owl:unionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+    !$n = getVariable($class)
+    !if $n
+        $var -u-|> $n
+    !else
+        $var -u-|> $class
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+
+' make all given classes in the list as an intersection class  
+' individual variables need to be passed as a json list
+!unquoted procedure intersection($classes)
+    !$var = "in" + increment(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+!endprocedure
+
+' make all given classes in the list as an union class  
+' individual variables need to be passed as a json list
+' alternative: assign to variable
+!unquoted procedure intersection($alias, $classes)
+    () "<<owl:intersectionOf>>" as $alias
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $alias .up. $m
+        !else
+            $alias .up. $item
+        !endif
+    !endfor 
+!endprocedure
+
+' make class as subClassOf the intersection of given %classes 
+' individual variables need to be passed as a json list
+!unquoted procedure subIntersection($class, $classes)
+    !$var = "in" + increment(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+    !$n = getVariable($class)
+    !if $n
+       $n -u-|> $var
+    !else
+       $class -u-|> $var
+    !endif
+!endprocedure
+
+' make the intersection of given %classes subClass of $class
+' individual variables need to be passed as a json list
+!unquoted procedure superIntersection($class, $classes)
+    !$var = "in" + increment(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+    !$n = getVariable($class)
+    !if $n
+        $var -u-|> $n
+    !else
+        $var -u-|> $class
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' One of constraint
+'-------------------------------------------------------'
+' make the intersection of given %classes subClass of $class
+' individual variables need to be passed as a json list
+!unquoted procedure oneOf($class, $individuals, $direction = left)
+    !$var = "one" + increment(1)
+    () "<<owl:oneOf>>" as $var
+    !foreach $item in %str2json($individuals)
+        !$m = getVariable($item)
+        !if $m
+            $var .$direction. $m
+        !else
+            $var .$direction. $item
+        !endif
+    !endfor 
+    !$n = getVariable($class)
+    !if $n
+        $var <.u. $n
+    !else
+        $var <.u. $class
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' Existential constraint on object property
+'-------------------------------------------------------'
+' define $class1 is equivalent to '$property some $class2'
+' link direction is left of $class1 by default
+' alternative: variable can be supplied
+!unquoted procedure some($alias, $property, $class2, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)
+    !if $n
+        $alias -$direction-> $n : $property <<some>>
+    !else
+        $alias -$direction-> $class2 : $property <<some>>
+    !endif
+!endprocedure
+
+' ' define $class1 is equivalent to '$property some $class2'
+' ' link direction is left of $class1 by default
+' !unquoted procedure some($property, $class2, $direction = right)
+'     !$m = newVar()
+'     class "    " as $m
+'     !$n = getVariable($class2)
+'     !if $n
+'         $m -$direction-> $n : $property <<some>>
+'     !else
+'         $m -$direction-> $class2 : $property <<some>>
+'     !endif
+' !endprocedure
+
+' define $class1 is equivalent to '$property some $class2'
+' link direction is left of $class1 by default
+!unquoted procedure equiSome($class1, $property, $class2, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property <<some>>
+    !else
+        $class1 -$direction-> $class2 : $property <<some>>
+    !endif
+!endprocedure
+
+' State '$class1 and $property some $class2' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for union
+!unquoted procedure andSome($alias, $class1, $property, $class2, $direction = left)
+    !$var = "andSome" + increment(1)
+    class "    " as $var
+    some($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        intersection($alias, '["$var", "$m"]')
+    !else
+        intersection($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' State '$class1 or $property some $class2' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for union
+!unquoted procedure orSome($alias, $class1, $property, $class2, $direction = left)
+    !$var = "orSome" + increment(1)
+    class "    " as $var
+    some($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        union($alias, '["$var", "$m"]')
+    !else
+        union($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' define $class1 is subClass of '$property some $class2' 
+' link direction is left of $class1 by default
+!unquoted procedure subSome($class1, $property, $class2, $direction = left)
+    !$var = "subSome" + increment(1)
+    class "    " as $var
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $var -$direction-> $n : $property <<some>>
+        $var <|-d- $m
+    !else
+        $var -$direction-> $class2 : $property <<some>>
+        $var <|-d- $class1
+    !endif
+!endprocedure
+
+' define '$property some $class2' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superSome($class1, $property, $class2, $direction = left)
+    !$var = "superSome" + increment(1)
+    class "    " as $var
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $var -$direction-> $n : $property <<some>>
+        $m <|-d- c
+    !else
+        $var -$direction-> $class2 : $property <<some>>
+        $class1 <|-d- c
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' Existential constraint on Data property
+'-------------------------------------------------------'
+' define $class1 is equivalent to '$property some $datatype'
+' link direction is left of $class1 by default
+' alternative can pass variable 
+!unquoted procedure someData($alias, $property, $datatype, $direction = right)
+    class "    " as $alias
+    class "$datatype" #white ##[dotted]white
+    !if $n
+        $alias -$direction-> "$datatype" : $property <<some>>
+    !else
+        $alias -$direction-> "$datatype" : $property <<some>>
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property some $datatype'
+' link direction is left of $class1 by default
+!unquoted procedure equiSomeData($class1, $property, $datatype, $direction = left)
+    class "$datatype" #white ##[dotted]white
+    !$m = getVariable($class1)
+    !if $m 
+        $m -$direction-> "$datatype" : $property <<some>>
+    !else
+        $class1 -$direction-> "$datatype" : $property <<some>>
+    !endif
+!endprocedure
+
+' State '$class1 and $property some $datatype' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for union
+!unquoted procedure andSomeData($alias, $class1, $property, $class2, $direction = left)
+    !$var = "andSomeData" + increment(1)
+    class "    " as $var
+    someData($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        intersection($alias, '["$var", "$m"]')
+    !else
+        intersection($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' State '$class1 or $property some $datatype' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for union
+!unquoted procedure orSomeData($alias, $class1, $property, $class2, $direction = left)
+    !$var = "orSomeData" + increment(1)
+    class "    " as $var
+    someData($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        union($alias, '["$var", "$m"]')
+    !else
+        union($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' define $class1 is subClass of '$property some $datatype' 
+' link direction is left of $class1 by default
+!unquoted procedure subSomeData($class1, $property, $datatype, $direction = left)
+    !$var = "subSomeData" + increment(1)
+    class "    " as $var
+    !$m = getVariable($class1)
+    !if $m
+        $var -$direction-> "$datatype" : $property <<some>>
+        $var <|-d- $m
+    !else
+        $var -$direction-> "$datatype" : $property <<some>>
+        $var <|-d- $class1
+    !endif
+!endprocedure
+
+' define '$property some $datatype' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superSomeData($class1, $property, $datatype, $direction = left)
+    !$var = "superSomeData" + increment(1)
+    class "    " as $var
+    !$m = getVariable($class1)
+    !if $m
+        $var -$direction-> "$datatype" : $property <<some>>
+        $m <|-d- $var
+    !else
+        $var -$direction-> "$datatype" : $property <<some>>
+        $var <|-d- $class1
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' Universal constraint on object property
+'-------------------------------------------------------'
+
+' define $class1 is equivalent to '$property only $class2' 
+' link direction is left of $class1 by default
+' alternative: variable can be supplied
+!unquoted procedure only($alias, $property, $class2, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)
+    !if $n
+        $alias -$direction-> $n : $property <<only>>
+    !else
+        $alias -$direction-> $class2 : $property <<only>>
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property only $class2' 
+' link direction is left of $class1 by default
+!unquoted procedure equiOnly($class1, $property, $class2, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property <<only>>
+    !else
+        $class1 -$direction-> $class2 : $property <<only>>
+    !endif
+!endprocedure
+
+' State '$class1 and $property only $class2' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for intersection
+!unquoted procedure andOnly($alias, $class1, $property, $class2, $direction = left)
+    !$var = "andOnly" + increment(1)
+    class "    " as $var
+    only($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        intersection($alias, '["$var", "$m"]')
+    !else
+        intersection($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' State '$class1 or $property only $class2' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for union
+!unquoted procedure orOnly($alias, $class1, $property, $class2, $direction = left)
+    !$var = "orOnly" + increment(1)
+    class "    " as $var
+    only($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        union($alias, '["$var", "$m"]')
+    !else
+        union($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' define $class1 is subClass of '$property only $class2' 
+' link direction is left of $class1 by default
+!unquoted procedure subOnly($class1, $property, $class2, $direction = left)
+    !$var = "subOnly" + increment(1)
+    class "    " as $var
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $var -$direction-> $n : $property <<only>>
+        $var <|-d- $m
+    !else
+        $var -$direction-> $class2 : $property <<only>>
+        $var <|-d- $class1
+    !endif
+!endprocedure
+
+' define '$property only $class2' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superOnly($class1, $property, $class2, $direction = left)
+    !$var = "superOnly" + increment(1)
+    class "    " as $var
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $var -$direction-> $n : $property <<only>>
+        $m <|-d- c
+    !else
+        $var -$direction-> $class2 : $property <<only>>
+        $class1 <|-d- c
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
+' Universal constraint on Data property
+'-------------------------------------------------------'
+!unquoted procedure onlyData($alias, $property, $datatype, $direction = right)
+    class "    " as $alias
+    class "$datatype" #white ##[dotted]white
+    !if $n
+        $alias -$direction-> "$datatype" : $property <<only>>
+    !else
+        $alias -$direction-> "$datatype" : $property <<only>>
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property only $datatype' 
+' link direction is left of $class1 by default
+!unquoted procedure equiDataOnly($class1, $property, $datatype, $direction = left)
+    class "$datatype" #white ##[dotted]white
+    $class1 -$direction-> "$datatype" : $property <<only>>
+!endprocedure
+
+' State '$class1 and $property only $datatype' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for union
+!unquoted procedure andOnlyData($alias, $class1, $property, $class2, $direction = left)
+    !$var = "andOnlyData" + increment(1)
+    class "    " as $var
+    onlyData($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        intersection($alias, '["$var", "$m"]')
+    !else
+        intersection($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' State '$class1 or $property only $datatype' 
+' link direction is left of $class1 by default
+' alternaitve: pass the variable for union
+!unquoted procedure orOnlyData($alias, $class1, $property, $class2, $direction = left)
+    !$var = "orOnlyData" + increment(1)
+    class "    " as $var
+    onlyData($var, $property, $class2)
+    !$m = getVariable($class1)
+    !if $m
+        union($alias, '["$var", "$m"]')
+    !else
+        union($alias, '["$var", "$class1"]')
+    !endif
+!endprocedure
+
+' define $class1 is subClass of '$property some $datatype' 
+' link direction is left of $class1 by default
+!unquoted procedure subClassDataOnly($class1, $property, $datatype, $direction = left)
+    class "    " as c
+    defineSubClass($class1, c)
+    equivalentDataOnly(c, $property, $datatype, $direction)
+!endprocedure
+
+' define '$property only $datatype' is subClass of $class1
+' link direction is left of $class1 by default
+!unquoted procedure superClassDataOnly($class1, $property, $datatype, $direction = left)
+    class "    " as c
+    defineSubClass(c, $class1)
+    equivalentDataOnly(c, $property, $datatype, $direction)
+!endprocedure
+
+'-------------------------------------------------------'
+' Cardinality restriction on object property
+'-------------------------------------------------------'
+' define $alias is equivalent to '$property max $cardinality $class2' 
+' link direction is left of $alias1 by default
+!unquoted procedure max($alias, $property, $class2, $cardinality, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)
+    !if $n
+        $alias -$direction-> $n : $property [0..$cardinality]
+    !else
+        $alias -$direction-> $class2 : $property [0..$cardinality]
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property max $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equiMax($class1, $property, $class2, $cardinality, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property [0..$cardinality]
+    !else
+        $class1 -$direction-> $class2 : $property [0..$cardinality]
+    !endif    
+!endprocedure
+
+' define $alias is equivalent to '$property min $cardinality $class2' 
+' link direction is left of $alias1 by default
+!unquoted procedure min($alias, $property, $class2, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)
+    !if $n
+        $alias -$direction-> $n : $property [$cardinality..*]
+    !else
+        $alias -$direction-> $class2 : $property [$cardinality..*]
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property min $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equiMin($class1, $property, $class2, $cardinality, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property [$cardinality..*]
+    !else
+        $class1 -$direction-> $class2 : $property [$cardinality..*]
+    !endif    
+!endprocedure
+
+' define $alias is equivalent to '$property exactly $cardinality $class2' 
+' link direction is left of $alias1 by default
+!unquoted procedure exact($alias, $property, $class2, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)
+    !if $n
+        $alias -$direction-> $n : $property [$cardinality]
+    !else
+        $alias -$direction-> $class2 : $property [$cardinality]
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property exactly $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equiExact($class1, $property, $class2, $cardinality, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property [$cardinality]
+    !else
+        $class1 -$direction-> $class2 : $property [$cardinality]
+    !endif    
+!endprocedure
+
+'-------------------------------------------------------'
+' Cardinality restriction on data property
+'-------------------------------------------------------'
+' define $alias is equivalent to '$property max $cardinality $datatype' 
+' link direction is left of $alias1 by default
+!unquoted procedure maxData($alias, $property, $datatype, $cardinality, $direction = right)
+    class "    " as $alias
+    class "$datatype" #white ##[dotted]white
+    $alias -$direction-> "$datatype" : $property [0..$cardinality]
+!endprocedure
+
+' define $class1 is equivalent to '$property max $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equiMaxData($class1, $property, $class2, $cardinality, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property [0..$cardinality]
+    !else
+        $class1 -$direction-> $class2 : $property [0..$cardinality]
+    !endif    
+!endprocedure
+
+' define $alias is equivalent to '$property min $cardinality $class2' 
+' link direction is left of $alias1 by default
+!unquoted procedure minData($alias, $property, $class2, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)
+    !if $n
+        $alias -$direction-> $n : $property [$cardinality..*]
+    !else
+        $alias -$direction-> $class2 : $property [$cardinality..*]
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property min $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equiMinData($class1, $property, $class2, $cardinality, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property [$cardinality..*]
+    !else
+        $class1 -$direction-> $class2 : $property [$cardinality..*]
+    !endif    
+!endprocedure
+
+' define $alias is equivalent to '$property exactly $cardinality $class2' 
+' link direction is left of $alias1 by default
+!unquoted procedure exactData($alias, $property, $class2, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)
+    !if $n
+        $alias -$direction-> $n : $property [$cardinality]
+    !else
+        $alias -$direction-> $class2 : $property [$cardinality]
+    !endif
+!endprocedure
+
+' define $class1 is equivalent to '$property exactly $cardinality $class2' 
+' link direction is left of $class1 by default
+' $cardinality expects integer
+!unquoted procedure equiExactData($class1, $property, $class2, $cardinality, $direction = left)
+    !$m = getVariable($class1)
+    !$n = getVariable($class2)
+    !if $m && $n
+        $m -$direction-> $n : $property [$cardinality]
+    !else
+        $class1 -$direction-> $class2 : $property [$cardinality]
+    !endif    
+!endprocedure
+
+'-------------------------------------------------------'
+' Property definitions
+'-------------------------------------------------------'
+
+' individual(o1, object1)
+' individual(o2, object2)
+' individual(o3, object3)
+' ' assertsameAs(o1, o2)
+' assertAllDifferent('["o1", "o2", "o3"]')
+@enduml
