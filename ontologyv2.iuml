@@ -16,7 +16,7 @@ skinparam roundCorner 10
 ' global variable for setting custom color for namespaces
 ' (expects json with key = prefix (should be present in $prefixes), value = color)
 !$namespace_colors = { "rdf" : "White" }
-!$namespace_default_color = "black"
+!$namespace_default_color = "Blue"
 
 ' !unquoted procedure setColor($prefix, $color)
 '     !if %json_key_exists($prefixes, $prefix)        

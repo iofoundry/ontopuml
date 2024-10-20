@@ -219,7 +219,7 @@ equivalent(qk:Temperature, qk:Temperature)
 ```plantuml
 @startuml
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-oClass(bfo:Temperature)
+oClass(qk:Temperature)
 oClass(iof:Temperature)
 @enduml
 ```
