@@ -211,15 +211,87 @@ subClass(iof:Temperature, bfo:Quality)
 ## Equivalent classes
 
 ```
-oClass(qk:Temperature)
 oClass(iof:Temperature)
-equivalent(qk:Temperature, qk:Temperature)
+oClass(qk:Temperature)
+equivalent(iof:Temperature, qk:Temperature)
 ```
 
 ```plantuml
 @startuml
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-oClass(qk:Temperature)
 oClass(iof:Temperature)
+oClass(qk:Temperature)
+equivalent(iof:Temperature, qk:Temperature)
 @enduml
 ```
+
+## Disjoint classes
+```
+oClass(bfo:Continuant)
+oClass(bfo:Occurrent)
+disjoint(bfo:Continuant, bfo:Occurrent)
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(bfo:Continuant)
+oClass(bfo:Occurrent)
+disjoint(bfo:Continuant, bfo:Occurrent)
+@enduml
+```
+
+## All disjoint classes
+```
+oClass(bfo:FiatPoint)
+oClass(bfo:FiatLine)
+oClass(bfo:FiatSurface)
+allDisjoint('["bfo:FiatPoint", "bfo:FiatLine", "bfo:FiatSurface"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(bfo:FiatPoint)
+oClass(bfo:FiatLine)
+oClass(bfo:FiatSurface)
+allDisjoint('["bfo:FiatPoint", "bfo:FiatLine", "bfo:FiatSurface"]')
+@enduml
+```
+
+## Union of classes
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+union('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+union('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+union(m1, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+union(m1, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+

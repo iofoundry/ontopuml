@@ -284,6 +284,26 @@ skinparam roundCorner 10
     !endfor 
 !endprocedure
 
+' make class as equivalent to the union of given %classes 
+' individual variables need to be passed as a json list
+!unquoted procedure equiUnion($class, $classes, $direction = left)
+    !$var = "un" + increment(1)
+    () "<<owl:unionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+    !$n = getVariable($class)
+    !if $n
+       $n <-$direction-> $var : <<owl:equivalentClass>>
+    !else
+       $class <-$direction-> $var : <<owl:equivalentClass>>
+    !endif
+!endprocedure
 
 ' make class as subClassOf the union of given %classes 
 ' individual variables need to be passed as a json list
@@ -357,6 +377,27 @@ skinparam roundCorner 10
             $alias .up. $item
         !endif
     !endfor 
+!endprocedure
+
+' make class as equivalent to the intersection of given %classes 
+' individual variables need to be passed as a json list
+!unquoted procedure equiIntersection($class, $classes, $direction = left)
+    !$var = "in" + increment(1)
+    () "<<owl:intersectionOf>>" as $var
+    !foreach $item in %str2json($classes)
+        !$m = getVariable($item)
+        !if $m
+            $var .up. $m
+        !else
+            $var .up. $item
+        !endif
+    !endfor 
+    !$n = getVariable($class)
+    !if $n
+       $n <-$direction-> $var : <<owl:equivalentClass>>
+    !else
+       $class <-$direction-> $var : <<owl:equivalentClass>>
+    !endif
 !endprocedure
 
 ' make class as subClassOf the intersection of given %classes 

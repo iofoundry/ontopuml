@@ -3454,7 +3454,6 @@ oIndividual(ns1:apple-as-company)
 differentFrom(ns1:apple-as-fruit, ns1:apple-as-company)
 </code></pre>
 <img src="https://www.plantuml.com/plantuml/svg/TO-n3i8m34JtVaNPg4GRiNRgXCHdc2QXbX8dSkoY_ZqfI4nbEkjEzwoRYW2Bnj1Cl-k4D0Urhbr4SXcDONWDJvH57reSpud4aGnpYWQJJqgMDrFDb6lRH43Q_G5tLhgJnHMjGZXJkOwGSt0zbDwpedJ_yqhFG5lNMFJUSNruunGF69Vsk3SvifzTNtq3" alt="uml diagram">
-<hr>
 <h2 id="all-different-individuals">All different individuals</h2>
 <pre><code>oIndividual(ns1:apple-as-fruit)
 oIndividual(ns1:apple-as-company)
@@ -3462,13 +3461,31 @@ oIndividual(ns1:apple-as-logo)
 allDifferent('[&quot;ns1:apple-as-fruit&quot;, &quot;ns1:apple-as-company&quot;, &quot;ns1:apple-as-logo&quot;]')
 </code></pre>
 <img src="https://www.plantuml.com/plantuml/svg/VP313e8m343lV0Nk0YJ2ujKJ1oz-W_5GsGPDHhTidOQ_TsZY1VNKvhLzRTf7Xi1fjaN_oNP8WqrAbnEpZqSf0pow4NbAjnHr61on9ku6DqjqnYLIOP4PEf-dvGn8A-zmTRapARoZIc1hYeSZU6zr2x4r8I4tl-lPxe6MFntMZQufmDeJ6gD3FgckBcAxHEnByKszuQjGNAkcw3MfrqlUyGa0" alt="uml diagram">
-<hr>
 <h2 id="subclass">Subclass</h2>
 <pre><code>oClass(bfo:Quality)
 oClass(iof:Temperature)
 subClass(iof:Temperature, bfo:Quality)
 </code></pre>
 <img src="https://www.plantuml.com/plantuml/svg/ROvB2iCm30NtEKMwQw34UwyCFK6X5_17QGosPIo9aDlNQMcXq9N4l3T2XjWsbfm6yzrEiVWa0SQLkP9MgjbjVaHUnGb1yrWO2iyUiugue9JGTjKXrcwhR6Cv-1oFMtXDbkZi5jGtiIdoFdrOx-Wxv0hDiZIO1XBtDxcCFxg14buFl-SJ" alt="uml diagram">
+<h2 id="equivalent-classes">Equivalent classes</h2>
+<pre><code>oClass(iof:Temperature)
+oClass(qk:Temperature)
+equivalent(iof:Temperature, qk:Temperature)
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/NOx12W8n34JlViLwKv3slgU2l-0Fr3QwnJRffedYtzjL5DnJ9e-POLmJpw8bRznFRHE6h166IQIsqLhs3tDDCkbP6t0W540nWOfDT275o4_R8TMUjiKdNBX9InSTiszjr__n1AK2Ur66_PVFjtyCiwQxpxr-7JaCQwy3ZE_Xd_i2" alt="uml diagram">
+<h2 id="disjoint-classes">Disjoint classes</h2>
+<pre><code>oClass(bfo:Continuant)
+oClass(bfo:Occurrent)
+disjoint(bfo:Continuant, bfo:Occurrent)
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/NOv12i8m44NtdgBk52JPTnNe0Jn3cgHs99afancAjpTH4EbgFe_tF-EgU1Oj-UH-wGmOiiOqh29R7Qrblvi7oAgpriI1K1AA2LGiq4AAaL-sGTfQsnOFsBc1laLJzhLUveN6gIc0wb6k__WUWZAdJYFK9m7AGRyD1yybZ9-Nl_SD" alt="uml diagram">
+<h2 id="all-disjoint-classes">All disjoint classes</h2>
+<pre><code>oClass(bfo:FiatPoint)
+oClass(bfo:FiatLine)
+oClass(bfo:FiatSurface)
+allDisjoint('[&quot;bfo:FiatPoint&quot;, &quot;(bfo:FiatLine&quot;, &quot;bfo:FiatSurface&quot;]')
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/POyn2y8m48Nt_egQfIr8itSgA4uEWgCuNDFKdgHt9RaW_djR5QawtNiVl0-k3W9Uuk2I-fDMICR5rgQzo1WghJtSoWjA7viOh3TCOabAmuD6xZXIw-zwWZnEQpq0qinBd5sySH12tdHSxH3am4XI_D8zals3n-WxC1C7vxOOhlCopqxgIwNMgLfQblqjKEUiI6fBxVF9rtq0" alt="uml diagram">
 </div>
         </div>
             
