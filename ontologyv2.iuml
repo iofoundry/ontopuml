@@ -218,7 +218,7 @@ skinparam roundCorner 10
     !$m = getVariable($class1)
     !$n = getVariable($class2)
     !if $m && $n
-        $m <-$direction-> $n : <<owl:equivalentClass>>
+        $m <-$direction-> $n : <<owl:equivalentClass>> 
     !else
         $class1 <-$direction-> $class2 : <<owl:equivalentClass>>
     !endif
@@ -256,45 +256,45 @@ skinparam roundCorner 10
 '-------------------------------------------------------'
 ' make all given classes in the list as an union class  
 ' individual variables need to be passed as a json list
-!unquoted procedure union($classes)
-    !$var = "un" + increment(1)
-    () "<<owl:unionOf>>" as $var
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .up. $m
-        !else
-            $var .up. $item
-        !endif
-    !endfor 
-!endprocedure
+' !unquoted procedure union($classes, $direction = left)
+'     !$var = "un" + increment(1)
+'     () "<<owl:unionOf>>" as $var
+'     !foreach $item in %str2json($classes)
+'         !$m = getVariable($item)
+'         !if $m
+'             $var .$direction. $m
+'         !else
+'             $var .$direction. $item
+'         !endif
+'     !endfor 
+' !endprocedure
 
 ' make all given classes in the list as an union class  
 ' individual variables need to be passed as a json list
 ' alternative: assign to variable
-!unquoted procedure union($alias, $classes)
+!unquoted procedure union($alias, $classes, $direction = down)
     () "<<owl:unionOf>>" as $alias
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $alias .up. $m
+            $alias .$direction. $m
         !else
-            $alias .up. $item
+            $alias .$direction. $item
         !endif
     !endfor 
 !endprocedure
 
 ' make class as equivalent to the union of given %classes 
 ' individual variables need to be passed as a json list
-!unquoted procedure equiUnion($class, $classes, $direction = left)
+!unquoted procedure equiUnion($class, $classes, $directionUnion = down, $direction = down)
     !$var = "un" + increment(1)
     () "<<owl:unionOf>>" as $var
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $var .up. $m
+            $var .$directionUnion. $m
         !else
-            $var .up. $item
+            $var .$directionUnion. $item
         !endif
     !endfor 
     !$n = getVariable($class)
@@ -307,15 +307,15 @@ skinparam roundCorner 10
 
 ' make class as subClassOf the union of given %classes 
 ' individual variables need to be passed as a json list
-!unquoted procedure subUnion($class, $classes)
+!unquoted procedure subUnion($class, $classes, $directionUnion = down, $direction = down)
     !$var = "un" + increment(1)
     () "<<owl:unionOf>>" as $var
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $var .up. $m
+            $var .$directionUnion. $m
         !else
-            $var .up. $item
+            $var .$directionUnion. $item
         !endif
     !endfor 
     !$n = getVariable($class)
@@ -328,15 +328,15 @@ skinparam roundCorner 10
 
 ' make the union of given %classes subClass of $class
 ' individual variables need to be passed as a json list
-!unquoted procedure superUnion($class, $classes)
+!unquoted procedure superUnion($class, $classes, $directionUnion = down, $direction = down)
     !$var = "un" + increment(1)
     () "<<owl:unionOf>>" as $var
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $var .up. $m
+            $var .$directionUnion. $m
         !else
-            $var .up. $item
+            $var .$directionUnion. $item
         !endif
     !endfor 
     !$n = getVariable($class)
@@ -351,45 +351,45 @@ skinparam roundCorner 10
 
 ' make all given classes in the list as an intersection class  
 ' individual variables need to be passed as a json list
-!unquoted procedure intersection($classes)
-    !$var = "in" + increment(1)
-    () "<<owl:intersectionOf>>" as $var
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .up. $m
-        !else
-            $var .up. $item
-        !endif
-    !endfor 
-!endprocedure
+' !unquoted procedure intersection($classes)
+'     !$var = "in" + increment(1)
+'     () "<<owl:intersectionOf>>" as $var
+'     !foreach $item in %str2json($classes)
+'         !$m = getVariable($item)
+'         !if $m
+'             $var .up. $m
+'         !else
+'             $var .up. $item
+'         !endif
+'     !endfor 
+' !endprocedure
 
 ' make all given classes in the list as an union class  
 ' individual variables need to be passed as a json list
 ' alternative: assign to variable
-!unquoted procedure intersection($alias, $classes)
+!unquoted procedure intersection($alias, $classes, $direction = down)
     () "<<owl:intersectionOf>>" as $alias
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $alias .up. $m
+            $alias .$direction. $m
         !else
-            $alias .up. $item
+            $alias .$direction. $item
         !endif
     !endfor 
 !endprocedure
 
 ' make class as equivalent to the intersection of given %classes 
 ' individual variables need to be passed as a json list
-!unquoted procedure equiIntersection($class, $classes, $direction = left)
+!unquoted procedure equiIntersection($class, $classes, $directionIntersection = down, $direction = down)
     !$var = "in" + increment(1)
     () "<<owl:intersectionOf>>" as $var
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $var .up. $m
+            $var .$directionIntersection. $m
         !else
-            $var .up. $item
+            $var .$directionIntersection. $item
         !endif
     !endfor 
     !$n = getVariable($class)
@@ -402,43 +402,43 @@ skinparam roundCorner 10
 
 ' make class as subClassOf the intersection of given %classes 
 ' individual variables need to be passed as a json list
-!unquoted procedure subIntersection($class, $classes)
+!unquoted procedure subIntersection($class, $classes, $directionIntersection = down, $direction = down)
     !$var = "in" + increment(1)
     () "<<owl:intersectionOf>>" as $var
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $var .up. $m
+            $var .$directionIntersection. $m
         !else
-            $var .up. $item
+            $var .$directionIntersection. $item
         !endif
     !endfor 
     !$n = getVariable($class)
     !if $n
-       $n -u-|> $var
+       $n -$direction-|> $var
     !else
-       $class -u-|> $var
+       $class -$direction-|> $var
     !endif
 !endprocedure
 
 ' make the intersection of given %classes subClass of $class
 ' individual variables need to be passed as a json list
-!unquoted procedure superIntersection($class, $classes)
+!unquoted procedure superIntersection($class, $classes, $directionIntersection = down, $direction = down)
     !$var = "in" + increment(1)
     () "<<owl:intersectionOf>>" as $var
     !foreach $item in %str2json($classes)
         !$m = getVariable($item)
         !if $m
-            $var .up. $m
+            $var .$directionIntersection. $m
         !else
-            $var .up. $item
+            $var .$directionIntersection. $item
         !endif
     !endfor 
     !$n = getVariable($class)
     !if $n
-        $var -u-|> $n
+        $var -$direction-|> $n
     !else
-        $var -u-|> $class
+        $var -$direction-|> $class
     !endif
 !endprocedure
 
@@ -447,22 +447,22 @@ skinparam roundCorner 10
 '-------------------------------------------------------'
 ' make the intersection of given %classes subClass of $class
 ' individual variables need to be passed as a json list
-!unquoted procedure oneOf($class, $individuals, $direction = left)
+!unquoted procedure oneOf($class, $individuals, $directionOneOf = down, $direction = down)
     !$var = "one" + increment(1)
     () "<<owl:oneOf>>" as $var
     !foreach $item in %str2json($individuals)
         !$m = getVariable($item)
         !if $m
-            $var .$direction. $m
+            $var .$directionOneOf. $m
         !else
-            $var .$direction. $item
+            $var .$directionOneOf. $item
         !endif
     !endfor 
     !$n = getVariable($class)
     !if $n
-        $var <.u. $n
+        $var <.$direction. $n
     !else
-        $var <.u. $class
+        $var <.$direction. $class
     !endif
 !endprocedure
 

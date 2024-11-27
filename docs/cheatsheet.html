@@ -3483,9 +3483,46 @@ disjoint(bfo:Continuant, bfo:Occurrent)
 <pre><code>oClass(bfo:FiatPoint)
 oClass(bfo:FiatLine)
 oClass(bfo:FiatSurface)
-allDisjoint('[&quot;bfo:FiatPoint&quot;, &quot;(bfo:FiatLine&quot;, &quot;bfo:FiatSurface&quot;]')
+allDisjoint('[&quot;bfo:FiatPoint&quot;, &quot;bfo:FiatLine&quot;, &quot;bfo:FiatSurface&quot;]')
 </code></pre>
 <img src="https://www.plantuml.com/plantuml/svg/POyn2y8m48Nt_egQfIr8itSgA4uEWgCuNDFKdgHt9RaW_djR5QawtNiVl0-k3W9Uuk2I-fDMICR5rgQzo1WghJtSoWjA7viOh3TCOabAmuD6xZXIw-zwWZnEQpq0qinBd5sySH12tdHSxH3am4XI_D8zals3n-WxC1C7vxOOhlCopqxgIwNMgLfQblqjKEUiI6fBxVF9rtq0" alt="uml diagram">
+<h2 id="union-of-classes">Union of classes</h2>
+<pre><code>oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+union('[&quot;iof:PieceOfEquipment&quot;, &quot;iof:Assembly&quot;, &quot;iof:System&quot;]')
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/RO_12i8m38RlUuhPopQGzRxJH3mhU1GFNPTfeKrdao9xUpk7Ci5Jyd_X_o0jiGeSdStQxxOng6ti8RypZzH86TIplXc-nouI1EsH0RdMtadZ1n-n3vDCq8-fBPqoEFFQp2w_jugeJBav6T1m70wFQ4QN1DNwk2C2rzdf1vudOd1L5j5uB8kB-ASHsroi3P-ybCMrgB8Mi7-_kCmN" alt="uml diagram">
+<pre><code>oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+union(m1, '[&quot;iof:PieceOfEquipment&quot;, &quot;iof:Assembly&quot;, &quot;iof:System&quot;]')
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/RO_12i8m38RlUuhPopOOArvtceXd1O_YeUio3QpjR59aRs_dK2PuIlulv8E_8LQUWncIvhjjqEeXT93UcKUgfVJgMTsGxw4D15uxos2vqiv8TBqBjlEJZD2DyLiQXNRc5SukjnyKKHvpVKBGSEmFZu2ZYO9YVTmHWMc7wGUU9s8mHH8iEfkRRPbc5_5F9SfKh2sVl0Z4DIkI1cpthhdC5m00" alt="uml diagram">
+<h3 id="equivalent-to-the-union-of-classes">Equivalent to the Union of classes</h3>
+<pre><code>oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+equiUnion(ns1:Machine, '[&quot;iof:PieceOfEquipment&quot;, &quot;iof:Assembly&quot;, &quot;iof:System&quot;]')
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/RP112u9048Nl_WhpOeAuTFLaHCSeY4xHOLsd7DYTDMUNyD-t9eb1fvdt3VCUl8gTx9qtEghcROMaj6yWRfthk1IYbw_YWQxrjMVebIK7v0fbZK1xjvwQVX01sYvy2oEHHbxWw6LtMZAlWovF20gEz_tJOsU2GROyRfd1r7huWUU17PWP4M_AWrGj4cGH19iBeQKbpkFqclpBIl8uMSPyzPIGtD8ige2QJm_JV0C0" alt="uml diagram">
+<h3 id="subclass-of-the-union-of-classes">subClass of the Union of classes</h3>
+<pre><code>oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+subUnion(ns1:Machine, '[&quot;iof:PieceOfEquipment&quot;, &quot;iof:Assembly&quot;, &quot;iof:System&quot;]')
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/RP112u9048Nl_WhpOeAuTFLaHCSeY4xHOLsd7DYTjPrTmd-V9eb1fvdt3VCUl8gzT3uO7LNpja9IEZGGjzvtN0hXvAjue6z37HYSikI1VA6i4MZlDb3ZUZ50smtVmaYaaHSuUjcTbiphGPSd10N7-_uPi3E3GROyRfd1rBh_WUUUFPWP4M_AWrGj4cGHX_f2Q6b9ypYz9l-YaZnEbYbVFGKajpIBAg3cKyCqtm00" alt="uml diagram">
+<h3 id="union-of-classes-as-subclass">Union of classes as subClass</h3>
+<pre><code>oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+superUnion(ns1:Machine, '[&quot;iof:PieceOfEquipment&quot;, &quot;iof:Assembly&quot;, &quot;iof:System&quot;]')
+</code></pre>
+<img src="https://www.plantuml.com/plantuml/svg/RP112u9048Nl_WhpOeAuTFLaHCSeY4xHOLsd771dRMUNyD-t9eb1fvdt3VCUl8gTjCxhBghcROMaEjz0t3hNSoc4bQ_YWQxrjMUmof03SeKoMg2v6q-D7KI0fW_VGakaaHSuUfbT9vdNGPSd10N7-_xfiTV185iUjyoWwsxuWUU17UWP4M_AWrGj4cGH-nxiXT3GakTnUat-XILvd2npldgAI6vf5bL0pQU8QRu1" alt="uml diagram">
 </div>
         </div>
             

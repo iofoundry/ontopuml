@@ -259,6 +259,105 @@ allDisjoint('["bfo:FiatPoint", "bfo:FiatLine", "bfo:FiatSurface"]')
 @enduml
 ```
 
+## Intersection of classes
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+intersection('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+intersection('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+intersection(m1, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+intersection(m1, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+### Equivalent to the Intersection of classes
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+equiIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+equiIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+### subClass of the Intersection of classes
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+subIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+subIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+### Intersection of classes as subClass
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+superIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+superIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
 ## Union of classes
 
 ```
@@ -295,3 +394,121 @@ union(m1, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 @enduml
 ```
 
+### Equivalent to the Union of classes
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+#### Alternative: reference by variable
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+class(m1, ns1:Machine)
+union(m2, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+equivalent(m1, m2)
+@enduml
+```
+
+### subClass of the Union of classes
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+subUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+subUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+### Union of classes as subClass
+
+```
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+superUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+superUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+@enduml
+```
+
+## OneOf restriction on class
+
+```
+oClass(ns:ProductionManager)
+oIndividual(ns1:John)
+oIndividual(ns1:Mary)
+oIndividual(ns1:Avery)
+oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(ns:ProductionManager)
+oIndividual(ns1:John)
+oIndividual(ns1:Mary)
+oIndividual(ns1:Avery)
+oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]')
+@enduml
+```
+
+## OneOf restriction on class
+
+```
+oClass(ns:ProductionManager)
+oIndividual(ns1:John)
+oIndividual(ns1:Mary)
+oIndividual(ns1:Avery)
+oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]')
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(ns:ProductionManager)
+oIndividual(ns1:John)
+oIndividual(ns1:Mary)
+oIndividual(ns1:Avery)
+oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]')
+@enduml
+```

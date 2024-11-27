@@ -1,0 +1,10 @@
+@startuml
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+' union(m2, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+' equivalent(m1, m2, down)
+equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]', left, down)
+@enduml

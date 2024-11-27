@@ -4,7 +4,5 @@ class(c1, "bfo:Quality")
 class(c2, "iof:PhysicalQuality")
 class(c3, "ns:Temperature")
 individual(o1, "ns1:temperature1")
-defineSubClass(c3, c2)
-defineSubClass(c2, c1)
-instanceOf(o1, c3)
+typeOf(o1, c1)
 @enduml
