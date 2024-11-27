@@ -320,9 +320,9 @@ skinparam roundCorner 10
     !endfor 
     !$n = getVariable($class)
     !if $n
-       $n -u-|> $var
+       $n -$direction-|> $var
     !else
-       $class -u-|> $var
+       $class -$direction-|> $var
     !endif
 !endprocedure
 
@@ -341,9 +341,9 @@ skinparam roundCorner 10
     !endfor 
     !$n = getVariable($class)
     !if $n
-        $var -u-|> $n
+        $var -$direction-|> $n
     !else
-        $var -u-|> $class
+        $var -$direction-|> $class
     !endif
 !endprocedure
 

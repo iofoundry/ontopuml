@@ -417,6 +417,16 @@ equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 
 #### Alternative: reference by variable
 
+```
+@startuml
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+class(m1, ns1:Machine)
+union(m2, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+equivalent(m1, m2)
+```
+
 ```plantuml
 @startuml
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
@@ -446,7 +456,7 @@ oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
 oClass(ns1:Machine)
-subUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+subUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]', left, left)
 @enduml
 ```
 
