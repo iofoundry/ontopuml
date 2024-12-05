@@ -764,12 +764,12 @@ skinparam roundCorner 10
 ' define $class1 is equivalent to '$property only $datatype' 
 ' link direction is left of $class1 by default
 !unquoted procedure equiDataOnly($class1, $property, $datatype, $direction = left)
-    class "$datatype" #white ##[dotted]white
+    class "$datatype" #white;line:black;line.dotted;text:black
     !$m = getVariable($class1)
     !if $m 
-        $m -$direction-> "$datatype" : $property <<only>>
+        $m -$direction-> "$datatype" : $property
     !else
-        $class1 -$direction-> "$datatype" : $property <<only>>
+        $class1 -$direction-> "$datatype" : $property
     !endif
 !endprocedure
 
