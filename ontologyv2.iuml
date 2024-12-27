@@ -510,15 +510,15 @@ skinparam roundCorner 10
 ' State '$class1 and $property some $class2' 
 ' link direction is left of $class1 by default
 ' alternaitve: pass the variable for union
-!unquoted procedure andSome($alias, $class1, $property, $class2, $direction = left)
+!unquoted procedure andSome($alias, $class1, $property, $class2, $directionIntersection = down, $direction = left)
     !$var = "andSome" + increment(1)
     class "    " as $var
     some($var, $property, $class2)
     !$m = getVariable($class1)
     !if $m
-        intersection($alias, '["$var", "$m"]')
+        intersection($alias, '["$var", "$m"]', $directionIntersection)
     !else
-        intersection($alias, '["$var", "$class1"]')
+        intersection($alias, '["$var", "$class1"]', $directionIntersection)
     !endif
 !endprocedure
 
@@ -562,10 +562,10 @@ skinparam roundCorner 10
     !$n = getVariable($class2)
     !if $m && $n
         $var -$direction-> $n : $property <<some>>
-        $m <|-d- c
+        $m <|-d- $var
     !else
         $var -$direction-> $class2 : $property <<some>>
-        $class1 <|-d- c
+        $class1 <|-d- $var
     !endif
 !endprocedure
 
