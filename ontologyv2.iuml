@@ -108,7 +108,7 @@ skinparam roundCorner 10
 
 !unquoted procedure oIndividual($iri)
     !$var = newVar()
-    object "<u>$iri" as $var #getColor($iri)
+    object "<u>$iri" as $var 
     addVariable($var, $iri)
 !endprocedure
 
@@ -469,7 +469,7 @@ skinparam roundCorner 10
 '-------------------------------------------------------'
 ' Existential constraint on object property
 '-------------------------------------------------------'
-' define $class1 is equivalent to '$property some $class2'
+' define '$property some $class2'
 ' link direction is left of $class1 by default
 ' alternative: variable can be supplied
 !unquoted procedure some($alias, $property, $class2, $direction = right)
@@ -479,6 +479,35 @@ skinparam roundCorner 10
         $alias -$direction-> $n : $property <<some>>
     !else
         $alias -$direction-> $class2 : $property <<some>>
+    !endif
+!endprocedure
+
+' define '$property max/min/exactly cadinality $class2'
+' link direction is left of $class1 by default
+' alternative: variable can be supplied
+!unquoted procedure someCard($alias, $property, $class2, $scope, $cardinality, $direction = right)
+    class "    " as $alias
+    !$n = getVariable($class2)    
+    !if $n
+        !if $scope == "max"
+            $alias -$direction-> $n : $property [1..$cardinality]
+        !endif
+        !if $scope == "min"
+            $alias -$direction-> $n : $property [$cardinality..*]
+        !endif
+        !if $scope == "exactly"
+            $alias -$direction-> $n : $property [$cardinality]
+        !endif
+    !else
+        !if $scope == "max"
+            $alias -$direction-> $class2 : $property [1..$cardinality]
+        !endif
+        !if $scope == "min"
+            $alias -$direction-> $class2 : $property [$cardinality..*]
+        !endif
+        !if $scope == "exactly"
+            $alias -$direction-> $class2 : $property [$cardinality]
+        !endif
     !endif
 !endprocedure
 
@@ -497,13 +526,22 @@ skinparam roundCorner 10
 
 ' define $class1 is equivalent to '$property some $class2'
 ' link direction is left of $class1 by default
-!unquoted procedure equiSome($class1, $property, $class2, $direction = left)
+!unquoted procedure xSome($class1, $property, $class2, $tag = "", $direction = left)
     !$m = getVariable($class1)
     !$n = getVariable($class2)
-    !if $m && $n
-        $m -$direction-> $n : $property <<some>>
+    !if $tag
     !else
-        $class1 -$direction-> $class2 : $property <<some>>
+        !$tag = "<<some>>"
+    !endif
+
+    !if $m && %not($n)
+        $m -$direction-> $class2 : $property $tag   
+    !elseif %not($m) && $n
+        $class1 -$direction-> $m : $property $tag      
+    !elseif $m && $n
+        $m -$direction-> $n : $property $tag     
+    !else
+        $class1 -$direction-> $class2 : $property $tag
     !endif
 !endprocedure
 
@@ -577,23 +615,44 @@ skinparam roundCorner 10
 ' alternative can pass variable 
 !unquoted procedure someData($alias, $property, $datatype, $direction = right)
     class "    " as $alias
-    class "$datatype" #white ##[dotted]white
-    !if $n
-        $alias -$direction-> "$datatype" : $property <<some>>
-    !else
-        $alias -$direction-> "$datatype" : $property <<some>>
+    class "$datatype" #white;text:black ##[dotted]black
+    $alias -$direction-> "$datatype" : $property <<some>>
+!endprocedure
+
+' define '$property max/min/exactly cadinality $datatype'
+' link direction is left of $class1 by default
+' alternative: variable can be supplied
+!unquoted procedure someDataCard($alias, $property, $datatype, $scope, $cardinality, $direction = right)
+    class "    " as $alias
+    class "$datatype" #white;text:black ##[dotted]black   
+    !if $scope == "max"
+        $alias -$direction-> "$datatype" : $property [1..$cardinality]
+    !endif
+    !if $scope == "min"
+        $alias -$direction-> "$datatype" : $property [$cardinality..*]
+    !endif
+    !if $scope == "exactly"
+        $alias -$direction-> "$datatype" : $property [$cardinality]
     !endif
 !endprocedure
 
 ' define $class1 is equivalent to '$property some $datatype'
 ' link direction is left of $class1 by default
-!unquoted procedure equiSomeData($class1, $property, $datatype, $direction = left)
-    class "$datatype" #white ##[dotted]white
+!unquoted procedure xSomeData($class1, $property, $datatype, $tag = "", $direction = left)
+    class "$datatype" #white;text:black ##[dotted]black
     !$m = getVariable($class1)
     !if $m 
-        $m -$direction-> "$datatype" : $property <<some>>
+        !if $tag 
+            $m -$direction-> "$datatype" : $property $tag
+        !else
+            $m -$direction-> "$datatype" : $property <<some>>
+        !endif
     !else
-        $class1 -$direction-> "$datatype" : $property <<some>>
+        !if $tag 
+             $class1 -$direction-> "$datatype" : $property $tag
+        !else
+             $class1 -$direction-> "$datatype" : $property <<some>>
+        !endif
     !endif
 !endprocedure
 
@@ -676,13 +735,21 @@ skinparam roundCorner 10
 
 ' define $class1 is equivalent to '$property only $class2' 
 ' link direction is left of $class1 by default
-!unquoted procedure equiOnly($class1, $property, $class2, $direction = left)
+!unquoted procedure xOnly($class1, $property, $class2, $tag = "", $direction = left)
     !$m = getVariable($class1)
     !$n = getVariable($class2)
     !if $m && $n
-        $m -$direction-> $n : $property <<only>>
+        !if $tag
+            $m -$direction-> $n : $property $tag
+        !else
+            $m -$direction-> $n : $property <<only>>
+        !endif        
     !else
-        $class1 -$direction-> $class2 : $property <<only>>
+        !if $tag
+            $class1 -$direction-> $class2 : $property $tag
+        !else
+            $class1 -$direction-> $class2 : $property <<only>>
+        !endif 
     !endif
 !endprocedure
 
@@ -741,10 +808,10 @@ skinparam roundCorner 10
     !$n = getVariable($class2)
     !if $m && $n
         $var -$direction-> $n : $property <<only>>
-        $m <|-d- c
+        $m <|-d- $var
     !else
         $var -$direction-> $class2 : $property <<only>>
-        $class1 <|-d- c
+        $class1 <|-d- $var
     !endif
 !endprocedure
 
@@ -753,7 +820,7 @@ skinparam roundCorner 10
 '-------------------------------------------------------'
 !unquoted procedure onlyData($alias, $property, $datatype, $direction = right)
     class "    " as $alias
-    class "$datatype" #white ##[dotted]white
+    class "$datatype" #white;text:black ##[dotted]black
     !if $n
         $alias -$direction-> "$datatype" : $property <<only>>
     !else
@@ -763,13 +830,21 @@ skinparam roundCorner 10
 
 ' define $class1 is equivalent to '$property only $datatype' 
 ' link direction is left of $class1 by default
-!unquoted procedure equiDataOnly($class1, $property, $datatype, $direction = left)
+!unquoted procedure xOnlyData($class1, $property, $datatype, $tag = "", $direction = left)
     class "$datatype" #white;line:black;line.dotted;text:black
     !$m = getVariable($class1)
-    !if $m 
-        $m -$direction-> "$datatype" : $property
+    !if $m && $n
+        !if $tag
+            $m -$direction-> "$datatype" : $property $tag
+        !else
+            $m -$direction-> "$datatype" : $property
+        !endif        
     !else
-        $class1 -$direction-> "$datatype" : $property
+        !if $tag
+            $class1 -$direction-> "$datatype" : $property $tag
+        !else
+            $class1 -$direction-> "$datatype" : $property
+        !endif 
     !endif
 !endprocedure
 
@@ -805,170 +880,32 @@ skinparam roundCorner 10
 
 ' define $class1 is subClass of '$property some $datatype' 
 ' link direction is left of $class1 by default
-!unquoted procedure subClassDataOnly($class1, $property, $datatype, $direction = left)
-    class "    " as c
-    defineSubClass($class1, c)
-    equivalentDataOnly(c, $property, $datatype, $direction)
-!endprocedure
-
-' define '$property only $datatype' is subClass of $class1
-' link direction is left of $class1 by default
-!unquoted procedure superClassDataOnly($class1, $property, $datatype, $direction = left)
-    class "    " as c
-    defineSubClass(c, $class1)
-    equivalentDataOnly(c, $property, $datatype, $direction)
-!endprocedure
-
-'-------------------------------------------------------'
-' Cardinality restriction on object property
-'-------------------------------------------------------'
-' define $alias is equivalent to '$property max $cardinality $class2' 
-' link direction is left of $alias1 by default
-!unquoted procedure max($alias, $property, $class2, $cardinality, $direction = right)
-    class "    " as $alias
-    !$n = getVariable($class2)
-    !if $n
-        $alias -$direction-> $n : $property [0..$cardinality]
+!unquoted procedure subOnlyData($class1, $property, $datatype, $direction = left)
+    !$var = "subSomeData" + increment(1)
+    class "    " as $var
+    !$m = getVariable($class1)
+    !if $m
+        $var -$direction-> "$datatype" : $property <<only>>
+        $var <|-d- $m
     !else
-        $alias -$direction-> $class2 : $property [0..$cardinality]
+        $var -$direction-> "$datatype" : $property <<only>>
+        $var <|-d- $class1
     !endif
 !endprocedure
 
-' define $class1 is equivalent to '$property max $cardinality $class2' 
+' define '$property some $datatype' is subClass of $class1
 ' link direction is left of $class1 by default
-' $cardinality expects integer
-!unquoted procedure equiMax($class1, $property, $class2, $cardinality, $direction = left)
+!unquoted procedure superOnlyData($class1, $property, $datatype, $direction = left)
+    !$var = "superSomeData" + increment(1)
+    class "    " as $var
     !$m = getVariable($class1)
-    !$n = getVariable($class2)
-    !if $m && $n
-        $m -$direction-> $n : $property [0..$cardinality]
+    !if $m
+        $var -$direction-> "$datatype" : $property <<only>>
+        $m <|-d- $var
     !else
-        $class1 -$direction-> $class2 : $property [0..$cardinality]
-    !endif    
-!endprocedure
-
-' define $alias is equivalent to '$property min $cardinality $class2' 
-' link direction is left of $alias1 by default
-!unquoted procedure min($alias, $property, $class2, $direction = right)
-    class "    " as $alias
-    !$n = getVariable($class2)
-    !if $n
-        $alias -$direction-> $n : $property [$cardinality..*]
-    !else
-        $alias -$direction-> $class2 : $property [$cardinality..*]
+        $var -$direction-> "$datatype" : $property <<only>>
+        $var <|-d- $class1
     !endif
-!endprocedure
-
-' define $class1 is equivalent to '$property min $cardinality $class2' 
-' link direction is left of $class1 by default
-' $cardinality expects integer
-!unquoted procedure equiMin($class1, $property, $class2, $cardinality, $direction = left)
-    !$m = getVariable($class1)
-    !$n = getVariable($class2)
-    !if $m && $n
-        $m -$direction-> $n : $property [$cardinality..*]
-    !else
-        $class1 -$direction-> $class2 : $property [$cardinality..*]
-    !endif    
-!endprocedure
-
-' define $alias is equivalent to '$property exactly $cardinality $class2' 
-' link direction is left of $alias1 by default
-!unquoted procedure exact($alias, $property, $class2, $direction = right)
-    class "    " as $alias
-    !$n = getVariable($class2)
-    !if $n
-        $alias -$direction-> $n : $property [$cardinality]
-    !else
-        $alias -$direction-> $class2 : $property [$cardinality]
-    !endif
-!endprocedure
-
-' define $class1 is equivalent to '$property exactly $cardinality $class2' 
-' link direction is left of $class1 by default
-' $cardinality expects integer
-!unquoted procedure equiExact($class1, $property, $class2, $cardinality, $direction = left)
-    !$m = getVariable($class1)
-    !$n = getVariable($class2)
-    !if $m && $n
-        $m -$direction-> $n : $property [$cardinality]
-    !else
-        $class1 -$direction-> $class2 : $property [$cardinality]
-    !endif    
-!endprocedure
-
-'-------------------------------------------------------'
-' Cardinality restriction on data property
-'-------------------------------------------------------'
-' define $alias is equivalent to '$property max $cardinality $datatype' 
-' link direction is left of $alias1 by default
-!unquoted procedure maxData($alias, $property, $datatype, $cardinality, $direction = right)
-    class "    " as $alias
-    class "$datatype" #white ##[dotted]white
-    $alias -$direction-> "$datatype" : $property [0..$cardinality]
-!endprocedure
-
-' define $class1 is equivalent to '$property max $cardinality $class2' 
-' link direction is left of $class1 by default
-' $cardinality expects integer
-!unquoted procedure equiMaxData($class1, $property, $class2, $cardinality, $direction = left)
-    !$m = getVariable($class1)
-    !$n = getVariable($class2)
-    !if $m && $n
-        $m -$direction-> $n : $property [0..$cardinality]
-    !else
-        $class1 -$direction-> $class2 : $property [0..$cardinality]
-    !endif    
-!endprocedure
-
-' define $alias is equivalent to '$property min $cardinality $class2' 
-' link direction is left of $alias1 by default
-!unquoted procedure minData($alias, $property, $class2, $direction = right)
-    class "    " as $alias
-    !$n = getVariable($class2)
-    !if $n
-        $alias -$direction-> $n : $property [$cardinality..*]
-    !else
-        $alias -$direction-> $class2 : $property [$cardinality..*]
-    !endif
-!endprocedure
-
-' define $class1 is equivalent to '$property min $cardinality $class2' 
-' link direction is left of $class1 by default
-' $cardinality expects integer
-!unquoted procedure equiMinData($class1, $property, $class2, $cardinality, $direction = left)
-    !$m = getVariable($class1)
-    !$n = getVariable($class2)
-    !if $m && $n
-        $m -$direction-> $n : $property [$cardinality..*]
-    !else
-        $class1 -$direction-> $class2 : $property [$cardinality..*]
-    !endif    
-!endprocedure
-
-' define $alias is equivalent to '$property exactly $cardinality $class2' 
-' link direction is left of $alias1 by default
-!unquoted procedure exactData($alias, $property, $class2, $direction = right)
-    class "    " as $alias
-    !$n = getVariable($class2)
-    !if $n
-        $alias -$direction-> $n : $property [$cardinality]
-    !else
-        $alias -$direction-> $class2 : $property [$cardinality]
-    !endif
-!endprocedure
-
-' define $class1 is equivalent to '$property exactly $cardinality $class2' 
-' link direction is left of $class1 by default
-' $cardinality expects integer
-!unquoted procedure equiExactData($class1, $property, $class2, $cardinality, $direction = left)
-    !$m = getVariable($class1)
-    !$n = getVariable($class2)
-    !if $m && $n
-        $m -$direction-> $n : $property [$cardinality]
-    !else
-        $class1 -$direction-> $class2 : $property [$cardinality]
-    !endif    
 !endprocedure
 
 '-------------------------------------------------------'
