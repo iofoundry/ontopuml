@@ -1,6 +1,10 @@
-## How to draw Class-relation and Object diagrams 
+# How to draw Class-relation and Object diagrams 
 
-**Class-relation diagram**: (adopted from Object-oriented systems) A class relation diagram is a visual representation of how different classes in an ontology are interconnected based on their class restrictions as well as the domain and range restrictions of object properties and data properties. It highlights the logical relationships and constraints between entities, enabling a clear understanding of the structure and semantics of the ontology.
+<br>
+<br>
+
+## Class-relation diagram: 
+(adopted from Object-oriented systems) A class relation diagram is a visual representation of how different classes in an ontology are interconnected based on their class restrictions as well as the domain and range restrictions of object properties and data properties. It highlights the logical relationships and constraints between entities, enabling a clear understanding of the structure and semantics of the ontology.
 
 Class-relation diagrams normally has only class blocks which are connected by quantified object property and data property. 
 
@@ -22,7 +26,7 @@ equiSome(class1-name, object-property-name, class2-name, <optional>direction=[le
 ```
 or
 ```
-equiOnly(class1-name, object-property-name, class2-name, <optional>direction=[left, right, up, down])  
+xOnly(class1-name, object-property-name, class2-name, <optional>direction=[left, right, up, down])  
 ```
 
 ```plantuml
@@ -30,20 +34,20 @@ equiOnly(class1-name, object-property-name, class2-name, <optional>direction=[le
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, bfo:Quality)
 class(c2, bfo:Object)
-equiSome(c2, bfo:bears, c1, right)   
+xSome(c2, bfo:bears, c1)   
 @enduml
 ```
 
 ### Link datatype by data property
 ```
-equiDataOnly(class1-name, object-property-name, XSD datatype, <optional>direction=[left, right, up, down])  
+xDataOnly(class1-name, object-property-name, XSD datatype, <optional>direction=[left, right, up, down])  
 ```
 
 ```plantuml
 @startuml
 !include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c2, iof:ValueExpression)
-equiDataOnly(c2, iof:hasSimpleExpressionValue, "xsd:double", right)   
+xOnlyData(c2, iof:hasSimpleExpressionValue, "xsd:double", "", right)   
 @enduml
 ```
 
@@ -81,15 +85,19 @@ class(c6, bfo:TemporalInterval)
 class(c7, bfo:TemporalInstant)
 subClass(c6, c4)
 subClass(c7, c4)
-equiSome(c1, bfo:locatedInAtSomeTime, c2, down)
-equiSome(c2, bfo:occupiesSpatialRegionAtAllTimes, c3, down)
-equiSome(c5, bfo:spatiallyProjectsOntoAtAllTimes, c3, right)
-equiSome(c5, bfo:temporallyProjectsOntoAt, c4, right)
-equiSome(c1, bfo:existsAt, c4)
+xSome(c1, bfo:locatedInAtSomeTime, c2, "", down)
+xSome(c2, bfo:occupiesSpatialRegionAtAllTimes, c3, "", down)
+xSome(c5, bfo:spatiallyProjectsOntoAtAllTimes, c3, "", right)
+xSome(c5, bfo:temporallyProjectsOntoAt, c4, "", right)
+xSome(c1, bfo:existsAt, c4)
 @enduml
 ```
 
-**Object Diagram**: (adopted from Object-oriented systems) An object diagram in ontology is a visual representation of specific instances (individuals) of classes and their relationships as defined by the ontology. It showcases how the concepts in the ontology are instantiated in a particular context, illustrating the connections and property values between individuals within the framework of the ontology's structure.
+<br>
+<br>
+
+## Object Diagram: 
+(adopted from Object-oriented systems) An object diagram in ontology is a visual representation of specific instances (individuals) of classes and their relationships as defined by the ontology. It showcases how the concepts in the ontology are instantiated in a particular context, illustrating the connections and property values between individuals within the framework of the ontology's structure.
 
 Object diagrams do not admit linking classes or class and datatype by object or data properties. Along with the class declarations, object diagrams need individual declaration, and assertions of their type, property and data.
 

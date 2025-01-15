@@ -354,7 +354,7 @@ oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
 oClass(ns1:Machine)
-superIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+superIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]', down, up)
 @enduml
 ```
 
@@ -364,7 +364,7 @@ superIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:Sy
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
-union('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+union(u, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 ```
 
 ```plantuml
@@ -373,7 +373,7 @@ union('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
-union('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+union(u, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 @enduml
 ```
 
@@ -411,7 +411,7 @@ oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
 oClass(ns1:Machine)
-equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]', left, left)
 @enduml
 ```
 
@@ -477,7 +477,7 @@ oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
 oClass(ns1:Machine)
-superUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+superUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]', down, up)
 @enduml
 ```
 
@@ -519,6 +519,217 @@ oClass(ns:ProductionManager)
 oIndividual(ns1:John)
 oIndividual(ns1:Mary)
 oIndividual(ns1:Avery)
-oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]')
+oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]', up)
+@enduml
+```
+
+## Value restriction by class (quantified class)
+
+```
+class(eo, ns:ElectricVehicle)
+class(bat, ns:Battery)
+only(pb, ns:poweredBy, bat) # for universal quantifier
+-/-
+some(pb, ns:poweredBy, bat) # for existential quantifier
+equivalent(eo, pb, right)
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(eo, ns:ElectricVehicle)
+class(bat, ns:Battery)
+only(pb, ns:poweredBy, bat)
+equivalent(eo, pb, right)
+@enduml
+```
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(eo, ns:ElectricVehicle)
+class(bat, ns:Battery)
+some(pb, ns:poweredBy, bat)
+equivalent(eo, pb, right)
+@enduml
+```
+
+### Equivalent to a class and a quantified Class
+```
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+andSome(pb, v, ns:poweredBy, bat) 
+-/-
+andOnly(pb, v, ns:poweredBy, bat)
+equivalent(ev, pb)
+```
+
+```plantuml
+@startuml
+' !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+andOnly(pb, v, ns:poweredBy, bat)
+equivalent(ev, pb)
+@enduml
+```
+
+```plantuml
+@startuml
+' !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+andSome(pb, v, ns:poweredBy, bat)
+equivalent(ev, pb)
+@enduml
+```
+
+### Equivalent to a class or an quantified Class
+
+```
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+orSome(pb, v, ns:poweredBy, bat)
+-/-
+orOnly(pb, v, ns:poweredBy, bat)
+equivalent(ev, pb)
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+orOnly(pb, v, ns:poweredBy, bat)
+equivalent(ev, pb)
+@enduml
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+orSome(pb, v, ns:poweredBy, bat)
+equivalent(ev, pb)
+@enduml
+```
+
+### Equivalent to a cardinally constrained Class
+
+```
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+someCard(pb, ns:poweredBy, bat, min/max/exactly, 2)
+equivalent(ev, pb)
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+someCard(pb, ns:poweredBy, bat, min, 1)
+equivalent(ev, pb, right)
+@enduml
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+someCard(pb, ns:poweredBy, bat, max, 4)
+equivalent(ev, pb, right)
+@enduml
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+someCard(pb, ns:poweredBy, bat, exactly, 2)
+equivalent(ev, pb, right)
+@enduml
+```
+
+### Shorter version
+#### equivalent to a quantified Class
+
+```
+oClass(ns:ElectricVehicle)
+oClass(ns:Battery)
+xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+-/-
+xOnly(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(ns:ElectricVehicle)
+oClass(ns:Battery)
+xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+@enduml
+```
+
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(ns:ElectricVehicle)
+oClass(ns:Battery)
+xOnly(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+@enduml
+```
+
+#### equivalent to a class and a quantified Class
+```
+oClass(ns:ElectricVehicle)
+oClass(ns:Battery)
+oClass(ns:Vehicle)
+subClass(ns:ElectricVehicle, ns:Vehicle)
+xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(ns:ElectricVehicle)
+oClass(ns:Battery)
+oClass(ns:Vehicle)
+subClass(ns:ElectricVehicle, ns:Vehicle)
+xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+@enduml
+```
+
+#### equivalent to a class and multiple class expressions as clauses
+```
+oClass(ns:ElectricVehicle)
+oClass(ns:Battery)
+oClass(ns:Vehicle)
+subClass(ns:ElectricVehicle, ns:Vehicle)
+xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(ns:ElectricVehicle)
+oClass(ns:Battery)
+oClass(ns:Vehicle)
+oClass(ns:AutomaticDriver)
+subClass(ns:ElectricVehicle, ns:Vehicle)
+xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
+xSome(ns:ElectricVehicle, ns:drivenBy, ns:AutomaticDriver)
 @enduml
 ```

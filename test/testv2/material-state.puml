@@ -7,4 +7,8 @@ oClass(ns1:Machine)
 ' union(m2, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 ' equivalent(m1, m2, down)
 subUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]', left, left)
+
+class(c1, bfo:Quality)
+class(c2, bfo:Object)
+equiDataOnly(c2, bfo:bears, xsd:double)  
 @enduml
