@@ -274,7 +274,7 @@ intersection('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
-intersection('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+intersection(i, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 @enduml
 ```
 
@@ -566,8 +566,7 @@ equivalent(ev, pb)
 
 ```plantuml
 @startuml
-' !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
 class(v, ns:Vehicle)
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
@@ -578,8 +577,7 @@ equivalent(ev, pb)
 
 ```plantuml
 @startuml
-' !include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
 class(v, ns:Vehicle)
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
