@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+' oClass(iof:MaterialArtifact)
+' oClass(bfo:Function)
+' oClass(bfo:Object)
+' oClass(bfo:Quality)
+' ' MaterialArtifact equivalentTo: bearerOf some Function 
+' xSome(iof:MaterialArtifact, bfo:bearerOf, union(u, '["bfo:Function", "bfo:Quality"]')) !wrong
+' ' MaterialArtifact equivalentTo: (Object and (bearerOf some (Function or Quality)))
+' subClass(iof:MaterialArtifact, bfo:Object)
+
+class(a, iof:MaterialArtifact)
+class(f, bfo:Function)
+class(o, bfo:Object)
+class(q, bfo:Quality)
+' MaterialArtifact equivalentTo: (Object and (bearerOf some (Function or Quality)))
+union(u, '["f", "q"]')
+some(x, bfo:bearerOf, u)
+intersection(y, '["o", "x"]')
+equivalent(a, y)
+@enduml
