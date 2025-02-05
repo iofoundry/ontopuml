@@ -1,4 +1,4 @@
-# How to draw Class-relation and Object diagrams 
+# How to draw class-relations and object diagrams quickly? 
 
 <br>
 <br>

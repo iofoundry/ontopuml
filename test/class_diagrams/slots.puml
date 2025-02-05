@@ -1,0 +1,9 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(bfo:GenericallyDependentContinuant)
+oClass(iof:InformationContentEntity)
+oClass(iof:InformationSlot)
+subClass(iof:InformationSlot, bfo:GenericallyDependentContinuant)
+xSome(iof:InformationSlot, slotOf, iof:InformationContentEntity)
+xOnly(iof:InformationContentEntity, fills, iof:InformationSlot)
+@enduml

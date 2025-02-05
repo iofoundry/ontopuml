@@ -1,0 +1,15 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:MaterialArtifact)
+oIndividual(ns1:artifact1)
+typeOf(ns1:artifact1, iof:MaterialArtifact)
+oClass(bfo:Function)
+oIndividual(ns1:function1)
+typeOf(ns1:function1, bfo:Function)
+property(ns1:artifact1, bfo:bearerOf, ns1:function1, down)
+oClass(bfo:Process)
+oIndividual(ns1:process1)
+typeOf(ns1:process1, bfo:Process)
+property(ns1:artifact1, bfo:participatesIn, ns1:process1, down)
+property(ns1:process1, bfo:realizes, ns1:function1, right)
+@enduml

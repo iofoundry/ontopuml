@@ -1,0 +1,11 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(c3, "iof:Mass")
+class(c4, "iof:MeasuredValueExpression")
+individual(o1, "ns1:mass1")
+individual(o3, "ns1:mass-value")
+typeOf(o1, c3)
+typeOf(o3, c4)
+property(o3, iof:isMeasuredValueOfAtSomeTime, o1)
+data(o3, iof:hasSimpleExpressionValue, 100^xsd:integer)
+@enduml

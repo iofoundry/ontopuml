@@ -1,0 +1,15 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+
+oClass(iof:DesignSpecification)
+oIndividual(ns1:car1-design)
+typeOf(ns1:car1-design, iof:DesignSpecification)
+oIndividual(ns1:wheel1-design)
+oIndividual(ns1:wheel2-design)
+typeOf(ns1:wheel1-design, iof:DesignSpecification)
+typeOf(ns1:wheel2-design, iof:DesignSpecification)
+property(ns1:wheel1-design, c.partOf, ns1:car1-design, up)
+property(ns1:wheel2-design, c.partOf, ns1:car1-design, down)
+
+
+@enduml

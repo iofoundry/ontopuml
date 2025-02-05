@@ -1,7 +1,0 @@
-@startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-class(c1, "ns:Class 1")    
-class(c2, "ns:Class 2")
-individual(o1, "ns:Object 1")
-individual(o2, "ns:Object 2")
-@enduml
