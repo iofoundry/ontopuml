@@ -6,6 +6,7 @@ skinparam class{
  BackgroundColor F0A30A
  FontColor White
  FontStyle bold
+ FontName Helvetica
 }
 skinparam object{
     BackgroundColor 76608A
@@ -13,7 +14,7 @@ skinparam object{
     BorderColor White    
 }
 !$namespace_colors = { "bfo" : "DFA702", 
-                        "iof":"DodgerBlue", 
+                        "iof":"1E90FF", 
                         "ns":"Green", 
                         "ns1":"76608A"}
 @enduml
