@@ -443,6 +443,19 @@ skinparam roundCorner 10
 !endprocedure
 
 '-------------------------------------------------------'
+' value constraint
+'-------------------------------------------------------'
+!unquoted procedure value($class, $property, $individual, $direction = left)
+    !$m = getVariable($class)
+    !$n = getVariable($individual)
+    !if $m && $n
+        $m -$direction-> $n : $property <<value>>
+    !else
+        $class -$direction-> $individual : $property <<value>>
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
 ' One of constraint
 '-------------------------------------------------------'
 ' make the intersection of given %classes subClass of $class
