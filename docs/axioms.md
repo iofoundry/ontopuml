@@ -168,69 +168,14 @@ equivalent(c1, ce4, right)
 @enduml
 ```
 
-__________________________________________________________________________________
-
-
-### Object property restriction
-
-Class expressions in OWL 2 can be formed by placing universal or existential restrictions on object property expressions. e.g., 
-
-<br>
-
-> iof:Identifier **SubClassOf:** iof:designates **some** bfo:Entity 
-
-<br>
+## Quick drawing method
+ontopuml provides a set of alternative commands which produces class diagram with abridged visual notations using less numeber of nodes. Also this alternative set of commands  The abridged notation avoid drawing the anonymous classes (empty squares) representing the class expression. However, this notation has certain limitations in expressing complex axioms. 
+ 
 
 ```
-class(i, iof:Identifier)
-class(e, bfo:Entity)
-some(cp1, iof:designates, e)
-subClass(i, cp1)
+Class: ProcuringBusinessProcess
+    EquivalentTo: 
+        BusinessProcess
+        and ('has occurrent part' some BuyingBusinessProcess)
+        and ('has occurrent part' some (SellingBusinessProcess or SupplyingBusinessProcess))
 ```
-*Here `cp1` is an alias for the class expression `iof:designates some bfo:Entity`*
-
-```plantuml
-@startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-class(i, iof:Identifier)
-class(e, bfo:Entity)
-some(cp1, iof:designates, e)
-subClass(i, cp1)
-@enduml
-```
-
-Similar to the command `some`, class expressions using universal quantification can be drawn using command `only`.
-
-<br>
-
-> iof:ProductIdentifier **SubClassOf:** iof:designates **only** iof:MaterialProduct 
-
-<br>
-
-```
-class(i, iof:Identifier)
-class(e, bfo:Entity)
-some(cp1, iof:designates, e)
-subClass(i, cp1)
-```
-*Here `cp1` is an alias for the class expression `iof:designates some bfo:Entity`*
-
-```plantuml
-@startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-class(i, ns:ProductIdentifier)
-class(e, iof:MaterialProduct)
-only(cp1, iof:designates, e)
-subClass(i, cp1)
-@enduml
-```
-
-### Object property cardinatlity restriction
-Similar to quantifications shown above, a class expression may also contain cardinality restriction, e.g., 
-
-> 
-
-
-
-
-

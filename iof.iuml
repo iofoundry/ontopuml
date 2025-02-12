@@ -11,7 +11,8 @@ skinparam class{
 skinparam object{
     BackgroundColor 76608A
     fontColor White
-    BorderColor White    
+    BorderColor White 
+    FontName Helvetica   
 }
 !$namespace_colors = { "bfo" : "DFA702", 
                         "iof":"1E90FF", 
