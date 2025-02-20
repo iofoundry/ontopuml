@@ -60,7 +60,7 @@ class(c2, iof:BusinessProcess)
 class(c3, iof:BuyingBusinessProcess)
 class(c4, iof:SellingBusinessProcess)
 class(c5, iof:SupplyingBusinessProcess)
-union(ce1, '["c4", "c5"]')
+intersection(ce1, '["c4", "c5"]')
 some(ce3, bfo:hasOccurrentPart, c3)
 ```
 
@@ -72,7 +72,7 @@ class(c2, iof:BusinessProcess)
 class(c3, iof:BuyingBusinessProcess)
 class(c4, iof:SellingBusinessProcess)
 class(c5, iof:SupplyingBusinessProcess)
-union(ce1, '["c4", "c5"]')
+intersection(ce1, '["c4", "c5"]')
 some(ce3, bfo:hasOccurrentPart, c3)
 @enduml
 ```
@@ -82,13 +82,15 @@ some(ce3, bfo:hasOccurrentPart, c3)
 ```
 class(c1, iof:ProcuringBusinessProcess)
 class(c2, iof:BusinessProcess)
+class(c1, iof:ProcuringBusinessProcess)
+class(c2, iof:BusinessProcess)
 class(c3, iof:BuyingBusinessProcess)
 class(c4, iof:SellingBusinessProcess)
 class(c5, iof:SupplyingBusinessProcess)
 union(ce1, '["c4", "c5"]')
 some(ce3, bfo:hasOccurrentPart, c3)
 some(ce2, bfo:hasOccurrentPart, ce1)
-union(ce4, '["c2", "ce2", "ce3"]')
+intersection(ce4, '["c2", "ce2", "ce3"]')
 ```
 
 ```plantuml
@@ -102,7 +104,7 @@ class(c5, iof:SupplyingBusinessProcess)
 union(ce1, '["c4", "c5"]')
 some(ce3, bfo:hasOccurrentPart, c3)
 some(ce2, bfo:hasOccurrentPart, ce1)
-union(ce4, '["c2", "ce2", "ce3"]')
+intersection(ce4, '["c2", "ce2", "ce3"]')
 @enduml
 ```
 
@@ -117,7 +119,7 @@ class(c5, iof:SupplyingBusinessProcess)
 union(ce1, '["c4", "c5"]')
 some(ce3, bfo:hasOccurrentPart, c3)
 some(ce2, bfo:hasOccurrentPart, ce1)
-union(ce4, '["c2", "ce2", "ce3"]')
+intersection(ce4, '["c2", "ce2", "ce3"]')
 equivalent(c1, ce4)
 ```
 
@@ -132,7 +134,7 @@ class(c5, iof:SupplyingBusinessProcess)
 union(ce1, '["c4", "c5"]')
 some(ce3, bfo:hasOccurrentPart, c3)
 some(ce2, bfo:hasOccurrentPart, ce1)
-union(ce4, '["c2", "ce2", "ce3"]')
+intersection(ce4, '["c2", "ce2", "ce3"]')
 equivalent(c1, ce4)
 @enduml
 ```
