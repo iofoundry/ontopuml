@@ -1,0 +1,11 @@
+@startuml
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+' class(c1, iof:DesignSpecification)
+' class(c2, iof:PlanSpecification)
+' complement(c3, c2)
+' equivalent(c1, c3)
+class(c1, "iof:SpatialRegion")   
+complement(cx, c1)
+class(c2, "iof:MaterialArtifact")
+equivalent(c2, cx)
+@enduml

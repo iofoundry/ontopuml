@@ -127,6 +127,19 @@ skinparam roundCorner 10
 !endprocedure
 
 '-------------------------------------------------------'
+' Class complement (not)
+'-------------------------------------------------------'
+!unquoted procedure complement($alias, $class)   
+    () "<<owl:complementOf>>" as $alias
+    !$m = getVariable($class)
+    !if $m
+        $alias .d. $m
+    !else
+        $alias .d. $class
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
 ' Assert associations
 '-------------------------------------------------------'
 ' create object property ($predicate) association from $subject individual to $object individual

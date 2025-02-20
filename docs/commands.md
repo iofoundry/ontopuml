@@ -47,6 +47,25 @@ oIndividual(ns1:temperature1)
 @enduml
 ```
 
+## Complement of a class
+```
+class(c1, "iof:SpatialRegion")   
+complement(cx, c1)
+class(c2, "iof:MaterialArtifact")
+equivalent(c2, cx)
+
+```
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(c1, "iof:SpatialRegion")   
+complement(cx, c1)
+class(c2, "iof:MaterialArtifact")
+equivalent(c2, cx)
+@enduml
+```
+
 ## Type of an individual
 ```
 class(c1, "bfo:Quality")   
