@@ -1,0 +1,14 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(c1, iof:ProcuringBusinessProcess)
+class(c2, iof:BusinessProcess)
+class(c3, iof:BuyingBusinessProcess)
+some(ce4, bfo:hasOccurrentPart, c3)
+class(c5, iof:SellingBusinessProcess)
+class(c6, iof:SupplyingBusinessProcess)
+union(ce7, '["c5", "c6"]')
+some(ce8, bfo:hasOccurrentPart, ce7)
+union(ce9, '["c2", "ce4", "ce8"]')
+equivalent(c1, ce9)
+@enduml
+
