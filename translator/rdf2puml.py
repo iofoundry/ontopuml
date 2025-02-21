@@ -4,7 +4,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import get_ontology, get_namespace
-from utils import to_pascal_case, to_camel_case
+from .utils import to_pascal_case, to_camel_case
 
 
 class RdfToPumlConverter:
