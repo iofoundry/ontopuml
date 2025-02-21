@@ -1,1 +1,2 @@
 owlready2==0.47
+click==8.1.8
