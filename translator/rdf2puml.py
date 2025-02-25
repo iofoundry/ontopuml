@@ -15,11 +15,11 @@ class RdfToPumlConverter:
         self.individuals = {}
         self.properties = []
 
-    def get_namespace_for_type(self, name):
-        for key, ns in self.namespaces.items():
-            if name.startswith(key.upper()):
-                return ns
-        return None
+    # def get_namespace_for_type(self, name):
+    #     for key, ns in self.namespaces.items():
+    #         if name.startswith(key.upper()):
+    #             return ns
+    #     return None
 
     def load_data(self, input_rdf):
         data = get_ontology(input_rdf).load()
@@ -30,20 +30,19 @@ class RdfToPumlConverter:
             if ind.is_a:
                 for ind_type in ind.is_a:
                     try:
-                        ns = self.get_namespace_for_type(ind_type.name)
-                        if ns:
-                            class_label = to_pascal_case(ns[ind_type.name].label[0])
-                            self.classes[class_label] = ind_type
-                            self.properties.append((ind, "typeOf", class_label))
+                        class_label = to_pascal_case(ind_type.label[0])
+                        self.classes[class_label] = ind_type
+                        self.properties.append((ind, "typeOf", class_label))
                     except:
                         continue
 
             for prop in ind.get_properties():
                 for value in prop[ind]:
-                    ns = self.get_namespace_for_type(prop.name)
-                    if ns:
-                        self.properties.append((ind, to_camel_case(ns[prop.name].label[0]), value))
-
+                    if (value, to_camel_case(prop.inverse.label[0]), ind) in self.properties:
+                        continue
+                    else:    
+                        self.properties.append((ind, to_camel_case(prop.label[0]), value))
+    
     def generate_puml(self, output_puml):
         with open(output_puml, "w") as f:
             f.write("@startuml\n")
