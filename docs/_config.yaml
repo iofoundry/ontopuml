@@ -13,7 +13,8 @@ description: >
 # Build settings
 
 # If you clone the Minima repo and build locally, use this setting.
-theme: minima
+# theme: minima
+remote_theme: aksakalli/jekyll-doc-theme@gh-pages
 
 # As of November 2023, GitHub Pages still uses Minima 2.5.1 (https://pages.github.com/versions/). 
 # If you want to use the latest Minima version on GitHub Pages, use the following setting and 
@@ -35,7 +36,7 @@ header_pages:
 #show_excerpts: false
 
 # Minima specific settings, which are only available from Minima 3.0 onward.
-minima:
+# minima:
   # Minima skin selection.
   # Available skins are:
   # classic	           Default, light color scheme.
@@ -44,7 +45,7 @@ minima:
   # solarized-light	   Light variant of solarized color scheme.
   # solarized-dark	   Dark variant of solarized color scheme.
   # solarized	         Adaptive skin for solarized color scheme skins.
-  skin: classic
+  # skin: classic
   
   # Minima date format.
   # The default value is "%b %d, %Y" (e.g. Nov 14, 2023) 
