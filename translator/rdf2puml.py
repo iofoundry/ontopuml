@@ -4,7 +4,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import get_ontology, get_namespace
-from .utils import to_pascal_case, to_camel_case
+from .utils import to_pascal_case, to_camel_case, get_label_from_iri
 
 
 class RdfToPumlConverter:
@@ -23,7 +23,6 @@ class RdfToPumlConverter:
 
     def load_data(self, input_rdf):
         data = get_ontology(input_rdf).load()
-
         for ind in data.individuals():
             self.individuals[ind.name] = ind
 
@@ -38,6 +37,21 @@ class RdfToPumlConverter:
 
             for prop in ind.get_properties():
                 for value in prop[ind]:
+                    if hasattr(prop.inverse, 'label') and prop.inverse.label:
+                        inverse_label = to_camel_case(prop.inverse.label[0])
+                    else:
+                        inverse_label = get_label_from_iri(prop.inverse.iri) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
+
+                    if hasattr(prop, 'label') and prop.label:
+                        label = to_camel_case(prop.label[0])
+                    else:
+                        label = get_label_from_iri(prop.iri) if hasattr(prop, 'iri') else "undefined"
+
+                    if (value, inverse_label, ind) in self.properties:
+                        continue
+                    if (ind, label, value) not in self.properties:
+                        self.properties.append((ind, label, value))
+
                     if (value, to_camel_case(prop.inverse.label[0]), ind) in self.properties:
                         continue
                     else:    
