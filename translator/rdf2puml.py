@@ -52,10 +52,10 @@ class RdfToPumlConverter:
                     if (ind, label, value) not in self.properties:
                         self.properties.append((ind, label, value))
 
-                    if (value, to_camel_case(prop.inverse.label[0]), ind) in self.properties:
-                        continue
-                    else:    
-                        self.properties.append((ind, to_camel_case(prop.label[0]), value))
+                    # if (value, to_camel_case(prop.inverse.label[0]), ind) in self.properties:
+                    #     continue
+                    # else:    
+                    #     self.properties.append((ind, to_camel_case(prop.label[0]), value))
     
     def generate_puml(self, output_puml):
         with open(output_puml, "w") as f:
