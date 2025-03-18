@@ -2,3 +2,4 @@ __pycache__
 .idea
 translator/test1-old.ipynb
 *.puml
+translator/.DS_Store
