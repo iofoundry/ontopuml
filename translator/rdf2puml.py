@@ -1,8 +1,8 @@
-import ssl
-import networkx as nx
-import matplotlib.pyplot as plt
-import numpy as np
 import math
+import ssl
+
+import matplotlib.pyplot as plt
+import networkx as nx
 
 # Disable SSL certificate verification to avoid SSL errors when loading ontologies
 ssl._create_default_https_context = ssl._create_unverified_context
