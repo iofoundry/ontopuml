@@ -4,7 +4,7 @@ from .rdf2puml import RdfToPumlConverter
 
 def rdf_to_puml(
     input_rdf,
-    imported_ontologies = [],
+    imported_ontologies=[],
     save_puml=False,
     output_puml=None,
     layout_type="spring",
@@ -16,14 +16,14 @@ def rdf_to_puml(
 
     converter = RdfToPumlConverter(
         input_rdf=input_rdf,
-        imported_ontologies= imported_ontologies,
+        imported_ontologies=imported_ontologies,
         save_puml=save_puml,
         output_puml=output_puml,
         layout_type=layout_type,
         layout_params=layout_params,
         visualize=visualize,
         save_viz=save_viz,
-        figsize=figsize,
+        figsize=figsize
     )
     return converter.convert()
 
@@ -38,7 +38,12 @@ def axiom_to_puml(
     visualize=False,
 ):
     axiom_result = AxiomToPumlConverter(
-        class_entity, ontology, type, layout_type, layout_params, visualize
+        class_entity, 
+        ontology, 
+        type, 
+        layout_type, 
+        layout_params, 
+        visualize
     ).convert()
 
     if save_puml:

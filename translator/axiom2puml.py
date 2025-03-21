@@ -7,7 +7,7 @@ import math
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import *
-from .utils import to_camel_case, to_pascal_case, get_prefix, get_label_from_iri
+from .utils import to_camel_case, to_pascal_case, get_prefix, get_label
 
 def get_axiom(class_entity, ontology, type):
     if not ontology[class_entity]:
@@ -56,7 +56,7 @@ def determine_direction(angle_degrees):
 class AxiomToPumlConverter:
     def __init__(self, class_entity, ontology, type, layout_type='spring', layout_params=None, visualize=False):
         self.class_entity = class_entity
-        self.ontology = ontology
+        self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
         self.type = type
         self.puml_output = []
         self.puml_output.append("@startuml\n!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
@@ -82,8 +82,8 @@ class AxiomToPumlConverter:
                 self.class_map[class_name] = f"c{self.counter}"
                 node_id = self.class_map[class_name]
                 
-                # Add node to the graph
-                label = to_camel_case(entity.label[0]) if class_name.startswith("BFO") else class_name
+                label = get_label(entity)
+                print(label)
                 self.graph.add_node(node_id, type='class')
                 self.node_labels[node_id] = f"{prefix}{label}"
                 self.node_types[node_id] = 'class'

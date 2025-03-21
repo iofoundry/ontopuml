@@ -8,7 +8,7 @@ import math
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import get_ontology
-from .utils import to_pascal_case, to_camel_case, get_label_from_iri, get_prefix
+from .utils import to_pascal_case, to_camel_case, get_label, get_prefix
 
 
 def determine_direction(angle_degrees):
@@ -67,7 +67,7 @@ class RdfToPumlConverter:
                         if ind_type and hasattr(ind_type, "label") and ind_type.label:
                             class_label = to_pascal_case(ind_type.label[0])
                         else:
-                            class_label = get_label_from_iri(ind_type.iri)
+                            class_label = get_label(ind_type.iri)
                         self.classes[class_label] = ind_type
                         self.properties.append((ind, "typeOf", class_label))
                     except:
@@ -75,29 +75,13 @@ class RdfToPumlConverter:
                         continue
 
             for prop in ind.get_properties():
-                # for value in prop[ind]:
-                #     if hasattr(prop.inverse, 'label') and prop.inverse.label:
-                #         inverse_label = to_camel_case(prop.inverse.label[0])
-                #     else:
-                #         inverse_label = get_label_from_iri(prop.inverse.iri) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
-
-                #     if hasattr(prop, 'label') and prop.label:
-                #         label = to_camel_case(prop.label[0])
-                #     else:
-                #         label = get_label_from_iri(prop.iri) if hasattr(prop, 'iri') else "undefined"
-
-                #     if (value, inverse_label, ind) in self.properties:
-                #         continue
-                #     if (ind, label, value) not in self.properties:
-                #         self.properties.append((ind, label, value))
-
                 for value in prop[ind]:
                     # Safely retrieve inverse property label
                     if hasattr(prop, 'inverse') and prop.inverse:
                         if hasattr(prop.inverse, 'label') and prop.inverse.label:
                             inverse_label = to_camel_case(prop.inverse.label[0])
                         else:
-                            inverse_label = get_label_from_iri(prop.inverse.iri) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
+                            inverse_label = get_label(prop.inverse) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
                     else:
                         inverse_label = "inverseUndefined"
 
@@ -105,7 +89,7 @@ class RdfToPumlConverter:
                     if hasattr(prop, 'label') and prop.label:
                         label = to_camel_case(prop.label[0])
                     else:
-                        label = get_label_from_iri(prop.iri) if hasattr(prop, 'iri') else "undefined"
+                        label = get_label(prop) if hasattr(prop, 'iri') else "undefined"
 
                     # Avoid duplicate property entries
                     if (value, inverse_label, ind) in self.properties:
