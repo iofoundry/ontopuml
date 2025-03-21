@@ -8,3 +8,5 @@ sample/object-graph-wheel.rdf
 /out
 .DS_Store
 /out
+sample/catalog-v001.xml
+/sample
