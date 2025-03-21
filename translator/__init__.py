@@ -2,7 +2,7 @@ import os
 
 import click
 
-from translator.main import rdf_to_puml, axiom_to_puml
+from .main import rdf_to_puml, axiom_to_puml
 
 
 class IRIParamType(click.ParamType):
@@ -55,7 +55,8 @@ def find_ontology_file():
               help="(optional) Enables quick layout mode for class diagrams.")
 @click.option("--help", is_flag=True,
               help="Show this help message and exit.")
-def main(input, output, class_diagram,
+
+def main(input,output, class_diagram,
          class_included, relation_excluded, condition_included,
          layouts, quick_layout, help):
     if help:
@@ -74,7 +75,8 @@ def main(input, output, class_diagram,
         output = f"{input}.puml"
 
     if class_diagram:
-        axiom_to_puml(input, output, class_included, condition_included)
+        axiom_to_puml(class_entity=class_included, ontology=input, type=condition_included )
+        # axiom_to_puml(input, output, class_included, condition_included)
     else:
         rdf_to_puml(input, output, relation_excluded)
 

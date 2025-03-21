@@ -5,3 +5,6 @@ translator/test1-old.ipynb
 translator/.DS_Store
 sample/object-graph-wheel.rdf
 /paper
+/out
+.DS_Store
+/out

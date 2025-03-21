@@ -1,14 +1,14 @@
-import math
 import ssl
-
-import matplotlib.pyplot as plt
 import networkx as nx
+import matplotlib.pyplot as plt
+import numpy as np
+import math
 
 # Disable SSL certificate verification to avoid SSL errors when loading ontologies
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import get_ontology
-from .utils import to_pascal_case, to_camel_case, get_label_from_iri
+from .utils import to_pascal_case, to_camel_case, get_label_from_iri, get_prefix
 
 
 def determine_direction(angle_degrees):
@@ -30,7 +30,7 @@ def determine_direction(angle_degrees):
 
 
 class RdfToPumlConverter:
-    def __init__(self, input_rdf, save_puml = False, output_puml=None, layout_type='spring', layout_params=None, 
+    def __init__(self, input_rdf, imported_ontologies,save_puml = False, output_puml=None, layout_type='spring', layout_params=None, 
                  visualize=False, save_viz=None, figsize=(10, 8)):
         self.classes = {}
         self.individuals = {}
@@ -46,6 +46,9 @@ class RdfToPumlConverter:
         self.G = None
         self.pos = None
         self.edge_directions = {}
+                #import ontologies
+        for on in imported_ontologies:   
+            get_ontology(on).load()
 
     def load_data(self):
         """Load RDF data and extract classes, individuals, and properties"""
@@ -53,35 +56,66 @@ class RdfToPumlConverter:
             data = get_ontology(self.input_rdf).load()
         else:
             data = self.input_rdf  # input_rdf is already ontology python object
-        
+
+
+
         for ind in data.individuals():
             self.individuals[ind.name] = ind
-
             if ind.is_a:
                 for ind_type in ind.is_a:
                     try:
-                        class_label = to_pascal_case(ind_type.label[0])
+                        if ind_type and hasattr(ind_type, "label") and ind_type.label:
+                            class_label = to_pascal_case(ind_type.label[0])
+                        else:
+                            class_label = get_label_from_iri(ind_type.iri)
                         self.classes[class_label] = ind_type
                         self.properties.append((ind, "typeOf", class_label))
                     except:
+                        #print(f"Error processing {ind}: {e}")  # Log the exception for debugging
                         continue
 
             for prop in ind.get_properties():
-                for value in prop[ind]:
-                    if hasattr(prop.inverse, 'label') and prop.inverse.label:
-                        inverse_label = to_camel_case(prop.inverse.label[0])
-                    else:
-                        inverse_label = get_label_from_iri(prop.inverse.iri) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
+                # for value in prop[ind]:
+                #     if hasattr(prop.inverse, 'label') and prop.inverse.label:
+                #         inverse_label = to_camel_case(prop.inverse.label[0])
+                #     else:
+                #         inverse_label = get_label_from_iri(prop.inverse.iri) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
 
+                #     if hasattr(prop, 'label') and prop.label:
+                #         label = to_camel_case(prop.label[0])
+                #     else:
+                #         label = get_label_from_iri(prop.iri) if hasattr(prop, 'iri') else "undefined"
+
+                #     if (value, inverse_label, ind) in self.properties:
+                #         continue
+                #     if (ind, label, value) not in self.properties:
+                #         self.properties.append((ind, label, value))
+
+                for value in prop[ind]:
+                    # Safely retrieve inverse property label
+                    if hasattr(prop, 'inverse') and prop.inverse:
+                        if hasattr(prop.inverse, 'label') and prop.inverse.label:
+                            inverse_label = to_camel_case(prop.inverse.label[0])
+                        else:
+                            inverse_label = get_label_from_iri(prop.inverse.iri) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
+                    else:
+                        inverse_label = "inverseUndefined"
+
+                    # Safely retrieve property label
                     if hasattr(prop, 'label') and prop.label:
                         label = to_camel_case(prop.label[0])
                     else:
                         label = get_label_from_iri(prop.iri) if hasattr(prop, 'iri') else "undefined"
 
+                    # Avoid duplicate property entries
                     if (value, inverse_label, ind) in self.properties:
                         continue
                     if (ind, label, value) not in self.properties:
                         self.properties.append((ind, label, value))
+
+
+
+
     
     def create_graph(self):
         """Create a NetworkX graph from the RDF data"""
@@ -241,14 +275,16 @@ class RdfToPumlConverter:
         # Add header
         puml_lines.append("@startuml")
         puml_lines.append("!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
-        
+        if self.layout_type in ["bipartite", "multipartite"]:
+            puml_lines.append("left to right direction")
+
         # Create mappings
         class_map = {cls_label: f"c{idx}" for idx, cls_label in enumerate(self.classes, start=1)}
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
         
         # Add class definitions
         for cls_label, cls in self.classes.items():
-            ns_prefix = "bfo:" if cls.name.startswith("BFO") else "iof:"
+            ns_prefix = get_prefix(cls.name)
             puml_lines.append(f"class({class_map[cls_label]}, {ns_prefix}{cls_label})")
         
         # Add individual definitions
@@ -262,9 +298,12 @@ class RdfToPumlConverter:
         
         # Add property relationships with directions
         for s, p, o in self.properties:
-            if p != "typeOf" and hasattr(o, 'name') and o.name in individual_map:
+            if p != "typeOf" and isinstance(o, object) and hasattr(o, "name") and o.name in individual_map:
                 direction = self.edge_directions.get((s.name, o.name), "right")  # Default to right if not found
                 puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]}, {direction})")
+            elif p != "typeOf" and o in individual_map:
+                direction = self.edge_directions.get((s.name, o), "right")
+                puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]})\n")
         
         # Add footer
         puml_lines.append("@enduml")
