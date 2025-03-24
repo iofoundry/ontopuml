@@ -4,7 +4,7 @@ from .rdf2puml import RdfToPumlConverter
 
 def rdf_to_puml(
     input_rdf,
-    imported_ontologies=[],
+    imported_ontologies:list = [],
     save_puml=True,
     layout_type=None,
     layout_params=None,
@@ -20,8 +20,8 @@ def rdf_to_puml(
     -----------
     input_rdf : str or ontology object
         Path to RDF file or loaded ontology object
-    imported_ontologies : list, optional
-        List of ontology URLs to import, defaults to empty list
+    imported_ontologies : list or str
+        List of ontology URLs to import or a single ontology URL, defaults to empty list
     save_puml : bool, optional
         Whether to save the PUML code to a file, defaults to False
     output_puml : str, optional
