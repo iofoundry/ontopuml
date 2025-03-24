@@ -54,18 +54,7 @@ def determine_direction(angle_degrees):
         return "down"
 
 class AxiomToPumlConverter:
-    def __init__(self, class_entities, ontology, types, layout_type=None, layout_params=None, visualize=False):
-        """
-        Initialize the converter with support for multiple class entities and types.
-        
-        Args:
-            class_entities (list or str): A single class entity name or a list of class entity names
-            ontology (str or ontology): Ontology path or loaded ontology object
-            types (int or list): A single axiom type (applies to all class entities) or a list of types
-            layout_type (str, optional): Layout algorithm for visualization. If None, no layout is applied.
-            layout_params (dict): Parameters for the layout algorithm
-            visualize (bool): Whether to visualize the graph
-        """
+    def __init__(self, class_entities, ontology, types=None, layout_type=None, layout_params=None, visualize=False, save_puml = True):
         # Convert single class entity to list for consistent handling
         if isinstance(class_entities, dict):
             self.class_entities = list(class_entities.keys())
@@ -105,6 +94,7 @@ class AxiomToPumlConverter:
         self.node_types = {}  # To track node types for visualization
         self.node_labels = {}  # To store human-readable labels for nodes
         self.relationships = []  # To store relationships for edge creation
+        self.save_puml = save_puml
         
         if self.layout_type in ["bipartite", "multipartite"]:
             self.puml_output.append("left to right direction")
@@ -425,10 +415,9 @@ class AxiomToPumlConverter:
         
         else:
             print(f"Layout '{self.layout_type}' not recognized. Using spring layout instead.")
-            return nx.spring_layout(self.graph, **self.layout_params)
+            return nx.spring_layout(self.graph)
     
     def _calculate_directions(self, pos):
-        """Calculate optimal directions for edges based on node positions"""
         edge_directions = {}
         
         for s, o, data in self.graph.edges(data=True):
@@ -591,6 +580,7 @@ class AxiomToPumlConverter:
         
         # Apply NetworkX layout
         if self.layout_type and self.graph.number_of_nodes() > 0:
+            
             # Calculate layout
             pos = self._calculate_layout()
             
@@ -603,5 +593,10 @@ class AxiomToPumlConverter:
             
             # Apply directions to PUML
             self.puml_output = self._apply_directions_to_puml(edge_directions)
+        
+        if self.save_puml:
+            with open(f"{str(self.class_entities)}_axiom.puml", "w") as f:
+                f.write("\n".join(self.puml_output))
+                print(f"PUML file saved as {str(self.class_entities)}_axiom.puml")
         
         return "\n".join(self.puml_output)
