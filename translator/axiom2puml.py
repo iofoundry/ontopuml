@@ -14,13 +14,13 @@ def get_axiom(class_entity, ontology, type):
         print(f"Error: Class '{class_entity}' not found in ontology")
         return None
     #equivalent to
-    if type == 1:
+    if type == "ns":
         if len(ontology[class_entity].equivalent_to) == 0:
             return
         else:
             return ontology[class_entity].equivalent_to[0]
     # general_class_axiom
-    elif type == 2:
+    elif type == "s":
         gcas = list(ontology.general_class_axioms())
         for gca in gcas:
             if gca.is_a[0] == getattr(ontology, class_entity):
@@ -28,11 +28,11 @@ def get_axiom(class_entity, ontology, type):
             else:
                 pass
     # sub_class            
-    elif type == 3:
+    elif type == "n":
         return ontology[class_entity].is_a
     # disjoints
-    elif type == 4:
-        return ontology[class_entity].disjoints()
+    # elif type == 4:
+    #     return ontology[class_entity].disjoints()
     else:
         print(f"Error: Unknown axiom type")
 
@@ -71,7 +71,7 @@ class AxiomToPumlConverter:
             # Convert single type to list for consistent handling
             if types is None:
                 raise ValueError("Types must be provided when class_entities is not a dictionary")
-            elif isinstance(types, int):
+            elif isinstance(types, str):
                 self.types = [types] * len(self.class_entities)
             else:
                 if len(types) != len(self.class_entities) and len(types) == 1:
@@ -563,14 +563,14 @@ class AxiomToPumlConverter:
             # print(f"Processing class entity {i+1}/{len(self.class_entities)}: {class_entity} (type {axiom_type})")
             
             # Process the axiom based on its type
-            if axiom_type == 1:  # equivalent_to
+            if axiom_type == "ns":  # equivalent_to
                 self._convert_equivalent_to(class_entity, axiom_type)
-            elif axiom_type == 2:  # general_class_axiom
+            elif axiom_type == "s":  # general_class_axiom
                 self._convert_gca(class_entity, axiom_type)
-            elif axiom_type == 3:  # subclass
+            elif axiom_type == "n":  # subclass
                 self._convert_subclass(class_entity, axiom_type)
-            elif axiom_type == 4:  # disjoint
-                self._convert_disjoint(class_entity, axiom_type)
+            # elif axiom_type == 4:  # disjoint
+            #     self._convert_disjoint(class_entity, axiom_type)
             else:
                 print(f"Unsupported axiom type: {axiom_type} for class {class_entity}")
         

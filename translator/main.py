@@ -5,8 +5,7 @@ from .rdf2puml import RdfToPumlConverter
 def rdf_to_puml(
     input_rdf,
     imported_ontologies=[],
-    save_puml=False,
-    output_puml=None,
+    save_puml=True,
     layout_type=None,
     layout_params=None,
     visualize=False,
@@ -53,7 +52,6 @@ def rdf_to_puml(
         input_rdf=input_rdf,
         imported_ontologies=imported_ontologies,
         save_puml=save_puml,
-        output_puml=output_puml,
         layout_type=layout_type,
         layout_params=layout_params,
         visualize=visualize,
@@ -85,7 +83,7 @@ def axiom_to_puml(
         - A single class IRI as a string
     ontology : str or ontology object
         Path to ontology file or loaded ontology object
-    types : str, optional
+    types : str or list
         Type of axioms to include in the diagram, defaults to None
         Options: 'n' (necessary), 's' (sufficient), 'ns' (necessary & sufficient)
     layout_type : str, optional

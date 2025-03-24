@@ -7,7 +7,8 @@ if __name__ == "__main__":
     converter1 = axiom_to_puml(
         "ProcuringBusinessProcess",
         "https://spec.industrialontologies.org/ontology/core/Core",
-        types=3,
+        types="n",
+        save_puml=False,
     )
     print(converter1)
 
@@ -23,8 +24,9 @@ if __name__ == "__main__":
             "MaterialProduct",
         ],
         "https://spec.industrialontologies.org/ontology/core/Core",
-        types=1,
+        types="ns",
         layout_type="bipartite",
+        save_puml=False,
     )
     print(converter2)
 
@@ -40,24 +42,25 @@ if __name__ == "__main__":
             "MaterialProduct",
         ],
         "https://spec.industrialontologies.org/ontology/core/Core",
-        types=[1, 1, 1, 3, 3, 3, 1],
+        types=["ns", "ns", "ns", "n", "n", "n", "ns"],
         layout_type="bipartite",
+        save_puml=False,
     )
     print(converter3)
 
     # Example 4: Multiple class entities with corresponding types (dictionary input)
     converter4 = axiom_to_puml(
         class_entities={
-            "BusinessOrganization": 1,
-            # "Manufacturer": 1,
-            # "ProductProductionProcess": 1,
-            # "ManufacturerRole": 3,
-            # "BusinessFunction": 3,
-            # "SellingBusinessProcess": 3,
-            # "MaterialProduct": 1,
+            "BusinessOrganization": "ns",
+            "Manufacturer": "ns",
+            "ProductProductionProcess": "ns",
+            "ManufacturerRole": "n",
+            "BusinessFunction": "n",
+            "SellingBusinessProcess": "n",
+            "MaterialProduct": "ns",
         },
         ontology="https://spec.industrialontologies.org/ontology/core/Core",
-        layout_type="spring",
+        layout_type="bipartite",
         save_puml=False,
     )
     print(converter4)
