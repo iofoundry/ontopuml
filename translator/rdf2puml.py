@@ -30,14 +30,13 @@ def determine_direction(angle_degrees):
 
 
 class RdfToPumlConverter:
-    def __init__(self, input_rdf, imported_ontologies,save_puml = False, output_puml=None, layout_type='spring', layout_params=None, 
-                 visualize=False, save_viz=None, figsize=(10, 8)):
+    def __init__(self, input_rdf, imported_ontologies=[], save_puml=True, layout_type=None, layout_params=None, 
+                 visualize=False, save_viz=None, figsize=(10, 8), excluded_relations=None):
         self.classes = {}
         self.individuals = {}
         self.properties = []
         self.input_rdf = input_rdf
         self.save_puml = save_puml
-        self.output_puml = output_puml or f"{str(input_rdf)}.puml"
         self.layout_type = layout_type
         self.layout_params = layout_params or {}
         self.visualize = visualize
@@ -46,7 +45,10 @@ class RdfToPumlConverter:
         self.G = None
         self.pos = None
         self.edge_directions = {}
-                #import ontologies
+        # New parameter for excluding specific relations
+        self.excluded_relations = excluded_relations or []
+        
+        # Import ontologies
         for on in imported_ontologies:   
             get_ontology(on).load()
 
@@ -56,8 +58,6 @@ class RdfToPumlConverter:
             data = get_ontology(self.input_rdf).load()
         else:
             data = self.input_rdf  # input_rdf is already ontology python object
-
-
 
         for ind in data.individuals():
             self.individuals[ind.name] = ind
@@ -69,12 +69,25 @@ class RdfToPumlConverter:
                         else:
                             class_label = get_label(ind_type.iri)
                         self.classes[class_label] = ind_type
-                        self.properties.append((ind, "typeOf", class_label))
+                        # Only add typeOf relation if it's not excluded
+                        if "typeOf" not in self.excluded_relations:
+                            self.properties.append((ind, "typeOf", class_label))
                     except:
                         #print(f"Error processing {ind}: {e}")  # Log the exception for debugging
                         continue
 
             for prop in ind.get_properties():
+                # Skip if the property is in the excluded relations list
+                prop_name = None
+                if hasattr(prop, 'label') and prop.label:
+                    prop_name = to_camel_case(prop.label[0])
+                else:
+                    prop_name = get_label(prop) if hasattr(prop, 'iri') else "undefined"
+                
+                # Skip this property if it's in the excluded relations
+                if prop_name in self.excluded_relations:
+                    continue
+                
                 for value in prop[ind]:
                     # Safely retrieve inverse property label
                     if hasattr(prop, 'inverse') and prop.inverse:
@@ -85,25 +98,22 @@ class RdfToPumlConverter:
                     else:
                         inverse_label = "inverseUndefined"
 
-                    # Safely retrieve property label
-                    if hasattr(prop, 'label') and prop.label:
-                        label = to_camel_case(prop.label[0])
-                    else:
-                        label = get_label(prop) if hasattr(prop, 'iri') else "undefined"
+                    # Skip if the inverse property is in the excluded relations
+                    if inverse_label in self.excluded_relations:
+                        continue
 
                     # Avoid duplicate property entries
                     if (value, inverse_label, ind) in self.properties:
                         continue
-                    if (ind, label, value) not in self.properties:
-                        self.properties.append((ind, label, value))
+                    if (ind, prop_name, value) not in self.properties:
+                        self.properties.append((ind, prop_name, value))
 
-
-
-
-    
     def create_graph(self):
         """Create a NetworkX graph from the RDF data"""
         self.G = nx.DiGraph()
+        
+        # Track which nodes are connected by some relation
+        connected_nodes = set()
         
         # Add nodes (individuals and classes)
         for ind_name in self.individuals:
@@ -112,12 +122,32 @@ class RdfToPumlConverter:
         for cls_label in self.classes:
             self.G.add_node(cls_label, type='class')
         
-        # Add edges
+        # Add edges and track connected nodes
         for s, p, o in self.properties:
             if p == "typeOf":
                 self.G.add_edge(s.name, o, relation=p)
+                connected_nodes.add(s.name)
+                connected_nodes.add(o)
             elif hasattr(o, 'name'):  # Make sure o has a name attribute
                 self.G.add_edge(s.name, o.name, relation=p)
+                connected_nodes.add(s.name)
+                connected_nodes.add(o.name)
+        
+        # Remove isolated nodes (no relationships after filtering)
+        isolated_nodes = []
+        for node in self.G.nodes():
+            if node not in connected_nodes:
+                isolated_nodes.append(node)
+        
+        for node in isolated_nodes:
+            self.G.remove_node(node)
+            
+        # Update individuals and classes to match the graph
+        self.individuals = {name: ind for name, ind in self.individuals.items() 
+                           if name in self.G.nodes()}
+        
+        self.classes = {label: cls for label, cls in self.classes.items() 
+                       if label in self.G.nodes()}
     
     def calculate_layout(self):
         """Apply the layout algorithm to position the nodes"""
@@ -229,7 +259,7 @@ class RdfToPumlConverter:
 
         # Save or show figure
         if self.save_viz:
-            plt.savefig()
+            plt.savefig(self.save_viz)
 
         if self.visualize:
             plt.show()
@@ -256,13 +286,23 @@ class RdfToPumlConverter:
         """Generate the PlantUML content based on the RDF data and edge directions"""
         puml_lines = []
         
+        # If there are no nodes left after filtering, return empty PUML
+        if not self.classes and not self.individuals:
+            puml_lines.append("@startuml")
+            puml_lines.append("!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
+            puml_lines.append("note \"No elements to display after applying exclusion filters\" as N1")
+            puml_lines.append("@enduml")
+            return "\n".join(puml_lines)
+        
         # Add header
         puml_lines.append("@startuml")
         puml_lines.append("!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
-        if self.layout_type in ["bipartite", "multipartite"]:
+        
+        # Only add direction if layout_type is specified
+        if self.layout_type is not None and self.layout_type in ["bipartite", "multipartite"]:
             puml_lines.append("left to right direction")
 
-        # Create mappings
+        # Create mappings for remaining classes and individuals
         class_map = {cls_label: f"c{idx}" for idx, cls_label in enumerate(self.classes, start=1)}
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
         
@@ -275,19 +315,27 @@ class RdfToPumlConverter:
         for ind_name in self.individuals:
             puml_lines.append(f"individual({individual_map[ind_name]}, ns1:{ind_name})")
         
-        # Add typeOf relationships
+        # Add typeOf relationships - only for elements that are still in the graph
         for s, p, o in self.properties:
-            if p == "typeOf" and o in class_map:
+            if p == "typeOf" and o in class_map and s.name in individual_map:
                 puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
         
-        # Add property relationships with directions
+        # Add property relationships with directions - only for elements that are still in the graph
         for s, p, o in self.properties:
-            if p != "typeOf" and isinstance(o, object) and hasattr(o, "name") and o.name in individual_map:
-                direction = self.edge_directions.get((s.name, o.name), "right")  # Default to right if not found
-                puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]}, {direction})")
-            elif p != "typeOf" and o in individual_map:
-                direction = self.edge_directions.get((s.name, o), "right")
-                puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]})\n")
+            if p != "typeOf" and isinstance(o, object) and hasattr(o, "name") and o.name in individual_map and s.name in individual_map:
+                # Only include direction if it was calculated and exists in edge_directions
+                if self.layout_type is not None and (s.name, o.name) in self.edge_directions:
+                    direction = self.edge_directions[(s.name, o.name)]
+                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]}, {direction})")
+                else:
+                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]})")
+            elif p != "typeOf" and o in individual_map and s.name in individual_map:
+                # Only include direction if it was calculated and exists in edge_directions
+                if self.layout_type is not None and (s.name, o) in self.edge_directions:
+                    direction = self.edge_directions[(s.name, o)]
+                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]}, {direction})")
+                else:
+                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]})")
         
         # Add footer
         puml_lines.append("@enduml")
@@ -317,8 +365,9 @@ class RdfToPumlConverter:
         """Run the full conversion process"""
         self.reset()
         self.load_data()
-        self.create_graph()
-        self.calculate_layout()
-        self.calculate_directions()
-        self.visualize_graph()
+        if self.layout_type is not None:
+            self.create_graph()
+            self.calculate_layout()
+            self.calculate_directions()
+            self.visualize_graph()
         return self.generate_puml()
