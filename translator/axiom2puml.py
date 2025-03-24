@@ -54,10 +54,37 @@ def determine_direction(angle_degrees):
         return "down"
 
 class AxiomToPumlConverter:
-    def __init__(self, class_entity, ontology, type, layout_type='spring', layout_params=None, visualize=False):
-        self.class_entity = class_entity
+    def __init__(self, class_entities, ontology, types, layout_type=None, layout_params=None, visualize=False):
+        """
+        Initialize the converter with support for multiple class entities and types.
+        
+        Args:
+            class_entities (list or str): A single class entity name or a list of class entity names
+            ontology (str or ontology): Ontology path or loaded ontology object
+            types (int or list): A single axiom type (applies to all class entities) or a list of types
+            layout_type (str, optional): Layout algorithm for visualization. If None, no layout is applied.
+            layout_params (dict): Parameters for the layout algorithm
+            visualize (bool): Whether to visualize the graph
+        """
+        # Convert single class entity to list for consistent handling
+        if isinstance(class_entities, str):
+            self.class_entities = [class_entities]
+        else:
+            self.class_entities = class_entities
+            
+        # Convert single type to list for consistent handling
+        if isinstance(types, int):
+            self.types = [types] * len(self.class_entities)
+        else:
+            if len(types) != len(self.class_entities) and len(types) == 1:
+                # If there's only one type provided, apply it to all entities
+                self.types = [types[0]] * len(self.class_entities)
+            elif len(types) != len(self.class_entities):
+                raise ValueError(f"Number of types ({len(types)}) must match number of class entities ({len(self.class_entities)})")
+            else:
+                self.types = types
+        
         self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
-        self.type = type
         self.puml_output = []
         self.puml_output.append("@startuml\n!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
         self.class_map = {}
@@ -83,7 +110,6 @@ class AxiomToPumlConverter:
                 node_id = self.class_map[class_name]
                 
                 label = get_label(entity)
-                print(label)
                 self.graph.add_node(node_id, type='class')
                 self.node_labels[node_id] = f"{prefix}{label}"
                 self.node_types[node_id] = 'class'
@@ -227,7 +253,20 @@ class AxiomToPumlConverter:
         else:
             return node
 
-    def _convert_equivalent_to(self, main_class_name, processed_parts):
+    def _convert_equivalent_to(self, class_entity, axiom_type):
+        axiom = get_axiom(class_entity, self.ontology, axiom_type)
+        main_class_name = self.get_class_name(self.ontology[class_entity])
+        
+        if not axiom:
+            print(f"No equivalent_to of {class_entity} in {self.ontology.base_iri}")
+            return
+            
+        try:
+            processed_parts = [self.get_class_name(part) for part in axiom.Classes]
+        except:
+            print(f"Error processing equivalent_to axiom for {class_entity}")
+            return
+            
         if len(processed_parts) > 1:
             final_union = f"ce{self.counter}"
             entity_list = ", ".join(f'"{e}"' for e in processed_parts)
@@ -249,33 +288,53 @@ class AxiomToPumlConverter:
             
             self.puml_output.append(f"intersection({final_union}, '[{entity_list}]')")
             self.puml_output.append(f"equivalent({main_class_name}, {final_union})")
+            self.counter += 1
         return
     
-    def _convert_gca(self, main_class_name, processed_parts):
-        final_union = f"ce{self.counter}"
-        entity_list = ", ".join(f'"{e}"' for e in processed_parts)
+    def _convert_gca(self, class_entity, axiom_type):
+        axiom = get_axiom(class_entity, self.ontology, axiom_type)
+        if not axiom:
+            print(f"No general class axiom for {class_entity} in {self.ontology.base_iri}")
+            return
+            
+        main_class_name = self.get_class_name(self.ontology[class_entity])
         
-        # Add node to the graph
-        self.graph.add_node(final_union, type='intersection')
-        self.node_labels[final_union] = "Intersection"
-        self.node_types[final_union] = 'operator'
-        
-        # Add edges from parts to intersection
-        for part in processed_parts:
-            self.graph.add_edge(part, final_union, relation='member_of')
-            self.relationships.append((part, 'member_of', final_union))
-        
-        # Add subclass relationship
-        self.graph.add_edge(main_class_name, final_union, relation='subclass')
-        self.relationships.append((main_class_name, 'subclass', final_union))
-        
-        self.puml_output.append(f"intersection({final_union}, '[{entity_list}]')")
-        self.puml_output.append(f"subClass({main_class_name}, {final_union})")
+        try:
+            processed_parts = [self.get_class_name(part) for part in axiom.Classes]
+        except:
+            print(f"Error processing general class axiom for {class_entity}")
+            return
+            
+        if processed_parts:
+            final_union = f"ce{self.counter}"
+            entity_list = ", ".join(f'"{e}"' for e in processed_parts)
+            
+            # Add node to the graph
+            self.graph.add_node(final_union, type='intersection')
+            self.node_labels[final_union] = "Intersection"
+            self.node_types[final_union] = 'operator'
+            
+            # Add edges from parts to intersection
+            for part in processed_parts:
+                self.graph.add_edge(part, final_union, relation='member_of')
+                self.relationships.append((part, 'member_of', final_union))
+            
+            # Add subclass relationship
+            self.graph.add_edge(main_class_name, final_union, relation='subclass')
+            self.relationships.append((main_class_name, 'subclass', final_union))
+            
+            self.puml_output.append(f"intersection({final_union}, '[{entity_list}]')")
+            self.puml_output.append(f"subClass({main_class_name}, {final_union})")
+            self.counter += 1
         return
 
-    def _convert_subclass(self):
-        axiom = get_axiom(self.class_entity, self.ontology, self.type)
-        main_class_name = self.get_class_name(self.ontology[self.class_entity])
+    def _convert_subclass(self, class_entity, axiom_type):
+        axiom = get_axiom(class_entity, self.ontology, axiom_type)
+        if not axiom:
+            print(f"No subclass axiom for {class_entity} in {self.ontology.base_iri}")
+            return
+            
+        main_class_name = self.get_class_name(self.ontology[class_entity])
         
         for cls in axiom:
             try:
@@ -283,19 +342,24 @@ class AxiomToPumlConverter:
             except:
                 processed_parts = []
 
-            entity_list = ", ".join(f'"{e}"' for e in processed_parts)
-            
-            # Add subclass relationship for each part
-            for part in processed_parts:
-                self.graph.add_edge(main_class_name, part, relation='subclass')
-                self.relationships.append((main_class_name, 'subclass', part))
-            
-            self.puml_output.append(f"subClass({main_class_name}, {entity_list})")
+            if processed_parts:
+                entity_list = ", ".join(f'"{e}"' for e in processed_parts)
+                
+                # Add subclass relationship for each part
+                for part in processed_parts:
+                    self.graph.add_edge(main_class_name, part, relation='subclass')
+                    self.relationships.append((main_class_name, 'subclass', part))
+                
+                self.puml_output.append(f"subClass({main_class_name}, {entity_list})")
         return
 
-    def _convert_disjoint(self):
-        axiom = get_axiom(self.class_entity, self.ontology, self.type)
-        main_class_name = self.get_class_name(self.ontology[self.class_entity])
+    def _convert_disjoint(self, class_entity, axiom_type):
+        axiom = get_axiom(class_entity, self.ontology, axiom_type)
+        if not axiom:
+            print(f"No disjoint axiom for {class_entity} in {self.ontology.base_iri}")
+            return
+            
+        main_class_name = self.get_class_name(self.ontology[class_entity])
         
         for disjoint in axiom:
             try:
@@ -495,40 +559,29 @@ class AxiomToPumlConverter:
         return updated_output
 
     def convert(self):
-        """Convert the axiom to PUML with optimized directions"""
-        axiom = get_axiom(self.class_entity, self.ontology, self.type)
-        main_class_name = self.get_class_name(self.ontology[self.class_entity])
-        
-        try:
-            if self.type in [1, 2]:  # equivalent_to or general_class_axiom
-                processed_parts = [self.get_class_name(part) for part in axiom.Classes]
+        """Convert multiple class entities and their axioms to PUML with optimized directions"""
+        # Process each class entity with its corresponding type
+        for i, (class_entity, axiom_type) in enumerate(zip(self.class_entities, self.types)):
+            # print(f"Processing class entity {i+1}/{len(self.class_entities)}: {class_entity} (type {axiom_type})")
+            
+            # Process the axiom based on its type
+            if axiom_type == 1:  # equivalent_to
+                self._convert_equivalent_to(class_entity, axiom_type)
+            elif axiom_type == 2:  # general_class_axiom
+                self._convert_gca(class_entity, axiom_type)
+            elif axiom_type == 3:  # subclass
+                self._convert_subclass(class_entity, axiom_type)
+            elif axiom_type == 4:  # disjoint
+                self._convert_disjoint(class_entity, axiom_type)
             else:
-                processed_parts = []
-        except:
-            processed_parts = []
-
-        # Process the axiom based on its type
-        if self.type == 1:
-            if axiom:
-                self._convert_equivalent_to(main_class_name, processed_parts)
-            else:
-                print(f"no equivalent_to of {self.class_entity} in {self.ontology.base_iri}")
-        elif self.type == 2:
-            if axiom:
-                self._convert_gca(main_class_name, processed_parts)
-            else:
-                print(f"no gra of {self.class_entity} in {self.ontology.base_iri}")
-        elif self.type == 3:
-            self._convert_subclass()
-        elif self.type == 4:
-            self._convert_disjoint()
+                print(f"Unsupported axiom type: {axiom_type} for class {class_entity}")
         
         # Finalize PUML if not already done
         if "@enduml" not in self.puml_output:
             self.puml_output.append("@enduml")
         
         # Apply NetworkX layout
-        if self.graph.number_of_nodes() > 0:
+        if self.layout_type and self.graph.number_of_nodes() > 0:
             # Calculate layout
             pos = self._calculate_layout()
             

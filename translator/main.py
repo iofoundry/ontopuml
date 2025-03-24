@@ -33,7 +33,7 @@ def axiom_to_puml(
     ontology,
     type: int,
     save_puml=False,
-    layout_type="spring",
+    layout_type=None,
     layout_params=None,
     visualize=False,
 ):
