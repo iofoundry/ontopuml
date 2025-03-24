@@ -22,6 +22,7 @@ if __name__ == "__main__":
     )
     print(converter3)
 
+    # Example 4: Multiple class entities with corresponding types (dictionary input)
     converter4 = axiom_to_puml(
         {"BusinessOrganization":1,
          "Manufacturer":1, 
