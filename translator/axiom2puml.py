@@ -67,22 +67,31 @@ class AxiomToPumlConverter:
             visualize (bool): Whether to visualize the graph
         """
         # Convert single class entity to list for consistent handling
-        if isinstance(class_entities, str):
-            self.class_entities = [class_entities]
+        if isinstance(class_entities, dict):
+            self.class_entities = list(class_entities.keys())
+            self.types = list(class_entities.values())
+            if types is not None:
+                print("Warning: 'types' parameter is ignored when class_entities is a dictionary")
         else:
-            self.class_entities = class_entities
-            
-        # Convert single type to list for consistent handling
-        if isinstance(types, int):
-            self.types = [types] * len(self.class_entities)
-        else:
-            if len(types) != len(self.class_entities) and len(types) == 1:
-                # If there's only one type provided, apply it to all entities
-                self.types = [types[0]] * len(self.class_entities)
-            elif len(types) != len(self.class_entities):
-                raise ValueError(f"Number of types ({len(types)}) must match number of class entities ({len(self.class_entities)})")
+            # Convert single class entity to list for consistent handling
+            if isinstance(class_entities, str):
+                self.class_entities = [class_entities]
             else:
-                self.types = types
+                self.class_entities = class_entities
+                
+            # Convert single type to list for consistent handling
+            if types is None:
+                raise ValueError("Types must be provided when class_entities is not a dictionary")
+            elif isinstance(types, int):
+                self.types = [types] * len(self.class_entities)
+            else:
+                if len(types) != len(self.class_entities) and len(types) == 1:
+                    # If there's only one type provided, apply it to all entities
+                    self.types = [types[0]] * len(self.class_entities)
+                elif len(types) != len(self.class_entities):
+                    raise ValueError(f"Number of types ({len(types)}) must match number of class entities ({len(self.class_entities)})")
+                else:
+                    self.types = types
         
         self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
         self.puml_output = []

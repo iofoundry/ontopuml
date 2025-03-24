@@ -1,12 +1,5 @@
 from owlready2 import get_ontology
 from translator import axiom_to_puml
-# Example Usage: [ProcuringBusinessProcess,MaterialArtifact,ValueExpression, PieceOfEquipment], [MeasurementInformationContentEntity]
-# input = "ProcuringBusinessProcess"
-# onto = get_ontology("https://spec.industrialontologies.org/ontology/core/Core").load()
-# axiom_result = axiom_to_puml(input, onto, save_puml = True, type = 1, visualize=0, layout_type='bipartite')
-# print(axiom_result)
-
-
 
 # Example usage
 if __name__ == "__main__":
@@ -18,13 +11,26 @@ if __name__ == "__main__":
     
     # Example 2: Multiple class entities with a single type (applied to all)
     # converter2 = axiom_to_puml(
-    #     ["BusinessOrganization","Manufacturer", "ProductProductionProcess", "ManufacturingProcess"], 
+    #     ["BusinessOrganization","Manufacturer", "ProductProductionProcess", "ManufacturerRole", "BusinessFunction", "SellingBusinessProcess", "MaterialProduct"], 
     #     "https://spec.industrialontologies.org/ontology/core/Core", type =1, layout_type='bipartite')
     # print(converter2)
     
     # Example 3: Multiple class entities with corresponding types
-    converter3 = axiom_to_puml(
-        ["BusinessOrganization", "Manufacturer", "ProductProductionProcess", "ManufacturerRole", "ManufacturingProcess", "PlannedProcess"], 
-        "https://spec.industrialontologies.org/ontology/core/Core", type = [1,1,1,3,3,1], layout_type='circular'
+    # converter3 = axiom_to_puml(
+    #     ["BusinessOrganization","Manufacturer", "ProductProductionProcess", "ManufacturerRole", "BusinessFunction", "SellingBusinessProcess", "MaterialProduct"], 
+    #     "https://spec.industrialontologies.org/ontology/core/Core", type = [1,1,1,3,3,3,1], layout_type='bipartite'
+    # )
+    # print(converter3)
+
+    converter4 = axiom_to_puml(
+        {"BusinessOrganization":1,
+         "Manufacturer":1, 
+         "ProductProductionProcess":1, 
+         "ManufacturerRole":3, 
+         "BusinessFunction":3, 
+         "SellingBusinessProcess":3, 
+         "MaterialProduct":1}, 
+        "https://spec.industrialontologies.org/ontology/core/Core", layout_type='bipartite'
     )
-    print(converter3)
+    print(converter4)
+    

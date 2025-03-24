@@ -29,25 +29,25 @@ def rdf_to_puml(
 
 
 def axiom_to_puml(
-    class_entity,
+    class_entities,
     ontology,
-    type: int,
+    types=[],
     save_puml=False,
     layout_type=None,
     layout_params=None,
     visualize=False,
 ):
     axiom_result = AxiomToPumlConverter(
-        class_entity, 
+        class_entities, 
         ontology, 
-        type, 
+        types, 
         layout_type, 
         layout_params, 
         visualize
     ).convert()
 
     if save_puml:
-        with open(f"{str(class_entity)}_axiom.puml", "w") as f:
+        with open(f"{str(class_entities)}_axiom.puml", "w") as f:
             f.write(axiom_result)
 
     return axiom_result
