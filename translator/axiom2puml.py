@@ -7,82 +7,76 @@ import math
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import *
+from owlready2 import SOME, ONLY, EXACTLY, MIN, MAX, VALUE
 from .utils import to_camel_case, to_pascal_case, get_prefix, get_label
 
 def get_axiom(class_entity, ontology, type):
-    if not ontology[class_entity]:
-        print(f"Error: Class '{class_entity}' not found in ontology")
-        return None
     #equivalent to
     if type == "ns":
-        if len(ontology[class_entity].equivalent_to) == 0:
+        if len(class_entity.equivalent_to) == 0:
             return
         else:
-            return ontology[class_entity].equivalent_to[0]
+            return class_entity.equivalent_to[0]
     # general_class_axiom
     elif type == "s":
         gcas = list(ontology.general_class_axioms())
         for gca in gcas:
-            if gca.is_a[0] == getattr(ontology, class_entity):
+            if gca.is_a[0] == class_entity:
                 return gca.left_side
             else:
                 pass
     # sub_class            
     elif type == "n":
-        return ontology[class_entity].is_a
+        return class_entity.is_a
     # disjoints
     # elif type == 4:
     #     return ontology[class_entity].disjoints()
     else:
         print(f"Error: Unknown axiom type")
 
-def determine_direction(angle_degrees):
-    """
-    Determine direction based on angle:
-    316-45 degrees: right
-    46-135 degrees: up
-    136-225 degrees: left
-    226-315 degrees: down
-    """
-    if (angle_degrees >= 316) or (angle_degrees < 45):
-        return "right"
-    elif 45 <= angle_degrees < 135:
-        return "up"
-    elif 135 <= angle_degrees < 225:
-        return "left"
-    else:  # 225 <= angle_degrees < 316
-        return "down"
-
 class AxiomToPumlConverter:
-    def __init__(self, class_entities, ontology, types=None, layout_type=None, layout_params=None, visualize=False, save_puml = True):
+    def _process_class_entities_types(self, class_entities, types, ontology):
+        def _get_class_object(class_entities, ontology):    
+            class_object = []
+            for i in class_entities:
+                if IRIS[i]:
+                    class_object.append(IRIS[i])
+                else:
+                    class_object.append(ontology[i])
+            return class_object
+
         # Convert single class entity to list for consistent handling
         if isinstance(class_entities, dict):
-            self.class_entities = list(class_entities.keys())
-            self.types = list(class_entities.values())
+            class_entities_list = _get_class_object(list(class_entities.keys()), ontology)
+            types_list = list(class_entities.values())
             if types is not None:
                 print("Warning: 'types' parameter is ignored when class_entities is a dictionary")
         else:
             # Convert single class entity to list for consistent handling
             if isinstance(class_entities, str):
-                self.class_entities = [class_entities]
+                class_entities_list = _get_class_object([class_entities], ontology)
             else:
-                self.class_entities = class_entities
+                class_entities_list = _get_class_object(class_entities, ontology)
                 
             # Convert single type to list for consistent handling
             if types is None:
                 raise ValueError("Types must be provided when class_entities is not a dictionary")
             elif isinstance(types, str):
-                self.types = [types] * len(self.class_entities)
+                types_list = [types] * len(class_entities_list)
             else:
-                if len(types) != len(self.class_entities) and len(types) == 1:
+                if len(types) != len(class_entities_list) and len(types) == 1:
                     # If there's only one type provided, apply it to all entities
-                    self.types = [types[0]] * len(self.class_entities)
-                elif len(types) != len(self.class_entities):
-                    raise ValueError(f"Number of types ({len(types)}) must match number of class entities ({len(self.class_entities)})")
+                    types_list = [types[0]] * len(class_entities_list)
+                elif len(types) != len(class_entities_list):
+                    raise ValueError(f"Number of types ({len(types)}) must match number of class entities ({len(class_entities_list)})")
                 else:
-                    self.types = types
-        
+                    types_list = types
+
+        return class_entities_list, types_list
+
+    def __init__(self, class_entities, ontology, types=None, layout_type=None, layout_params=None, visualize=False, save_puml = True):
         self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
+        self.class_entities, self.types = self._process_class_entities_types(class_entities, types, self.ontology)
         self.puml_output = []
         self.puml_output.append("@startuml\n!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
         self.class_map = {}
@@ -98,7 +92,7 @@ class AxiomToPumlConverter:
         
         if self.layout_type in ["bipartite", "multipartite"]:
             self.puml_output.append("left to right direction")
-
+        
     def get_class_name(self, entity):
         """Extracts and maps class names with proper prefixes."""
         if isinstance(entity, ThingClass):
@@ -114,7 +108,7 @@ class AxiomToPumlConverter:
                 self.node_types[node_id] = 'class'
                 
                 self.puml_output.append(
-                    f'class({node_id}, {prefix}{to_camel_case(entity.label[0]) if class_name.startswith("BFO") else class_name})')
+                    f'class({node_id}, {prefix}{get_label(entity)})')
                 self.counter += 1
             return self.class_map[class_name]
 
@@ -125,25 +119,14 @@ class AxiomToPumlConverter:
                 return self.process_restriction(entity, prop_name)
             else:
                 prefix = get_prefix(entity)
-                prop_name = prefix + to_camel_case(
-                    entity.property.label[0]) if entity.property.name.startswith("BFO") else to_camel_case(entity.property.label[0])
+                prop_name = prefix + get_label(entity.property)
                 return self.process_restriction(entity, prop_name)
 
-        elif isinstance(entity, And):  # Some restriction case
-            prefix = get_prefix(entity)
+        elif isinstance(entity, (And, Or, Not)):  # Handle logical restrictions
             prop_name = None
             return self.process_restriction(entity, prop_name)
 
-        elif isinstance(entity, Or):  # Some restriction case
-            prefix = get_prefix(entity)
-            prop_name = None
-            return self.process_restriction(entity, prop_name)
-
-        elif isinstance(entity, Not):
-            prop_name = None
-            return self.process_restriction(entity, prop_name)
-
-        elif isinstance(entity, Inverse):
+        elif isinstance(entity, Inverse):  # Handle inverse properties
             return
 
         else:
@@ -236,30 +219,48 @@ class AxiomToPumlConverter:
 
         if prop_name is not None:
             var_name = f"ce{self.counter}"
-            
-            # Add node to the graph
-            self.graph.add_node(var_name, type='some')
-            self.node_labels[var_name] = f"Some {prop_name}"
+            restriction_type = 'some'
+
+            if hasattr(restriction, 'type'):
+                try:
+                    if restriction.type == ONLY:
+                        restriction_type = 'only'
+                except ImportError:
+                    # If we can't import ONLY, try to detect it by other means
+                    # The value for ONLY in Owlready2 is owl_allvaluesfrom
+                    if str(restriction.type).endswith('#allValuesFrom'):
+                        restriction_type = 'only'
+        
+            # Add node to the graph with appropriate type
+            self.graph.add_node(var_name, type=restriction_type)
+            self.node_labels[var_name] = f"{restriction_type.capitalize()} {prop_name}"
             self.node_types[var_name] = 'restriction'
             
             # Add edge from restriction to target class
             self.graph.add_edge(var_name, node, relation=prop_name)
             self.relationships.append((var_name, prop_name, node))
             
-            self.puml_output.append(f"some({var_name}, {prop_name}, {node})")
+            # Add appropriate PUML code based on restriction type
+            if restriction_type == 'only':
+                self.puml_output.append(f"only({var_name}, {prop_name}, {node})")
+            else:
+                self.puml_output.append(f"some({var_name}, {prop_name}, {node})")
+                
             self.counter += 1
             return var_name
         else:
             return node
 
+
     def _convert_equivalent_to(self, class_entity, axiom_type):
         axiom = get_axiom(class_entity, self.ontology, axiom_type)
-        main_class_name = self.get_class_name(self.ontology[class_entity])
         
         if not axiom:
             print(f"No equivalent_to of {class_entity} in {self.ontology.base_iri}")
             return
-            
+        
+        main_class_name = self.get_class_name(class_entity)
+
         try:
             processed_parts = [self.get_class_name(part) for part in axiom.Classes]
         except:
@@ -296,7 +297,7 @@ class AxiomToPumlConverter:
             print(f"No general class axiom for {class_entity} in {self.ontology.base_iri}")
             return
             
-        main_class_name = self.get_class_name(self.ontology[class_entity])
+        main_class_name = self.get_class_name(class_entity)
         
         try:
             processed_parts = [self.get_class_name(part) for part in axiom.Classes]
@@ -333,7 +334,7 @@ class AxiomToPumlConverter:
             print(f"No subclass axiom for {class_entity} in {self.ontology.base_iri}")
             return
             
-        main_class_name = self.get_class_name(self.ontology[class_entity])
+        main_class_name = self.get_class_name(class_entity)
         
         for cls in axiom:
             try:
@@ -358,7 +359,7 @@ class AxiomToPumlConverter:
             print(f"No disjoint axiom for {class_entity} in {self.ontology.base_iri}")
             return
             
-        main_class_name = self.get_class_name(self.ontology[class_entity])
+        main_class_name = self.get_class_name(class_entity)
         
         for disjoint in axiom:
             try:
@@ -429,6 +430,22 @@ class AxiomToPumlConverter:
                 angle_deg = (angle_rad * 180 / math.pi) % 360
                 
                 # Determine direction
+                def determine_direction(angle_degrees):
+                    """
+                    Determine direction based on angle:
+                    316-45 degrees: right
+                    46-135 degrees: up
+                    136-225 degrees: left
+                    226-315 degrees: down
+                    """
+                    if (angle_degrees >= 316) or (angle_degrees < 45):
+                        return "right"
+                    elif 45 <= angle_degrees < 135:
+                        return "up"
+                    elif 135 <= angle_degrees < 225:
+                        return "left"
+                    else:  # 225 <= angle_degrees < 316
+                        return "down"
                 direction = determine_direction(angle_deg)
                 
                 # Store direction
