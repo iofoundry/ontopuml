@@ -7,7 +7,7 @@ import math
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import *
-from owlready2 import SOME, ONLY, EXACTLY, MIN, MAX, VALUE
+from owlready2 import SOME, ONLY
 from .utils import to_camel_case, to_pascal_case, get_prefix, get_label
 
 def get_axiom(class_entity, ontology, type):
@@ -51,6 +51,11 @@ class AxiomToPumlConverter:
             types_list = list(class_entities.values())
             if types is not None:
                 print("Warning: 'types' parameter is ignored when class_entities is a dictionary")
+
+        elif isinstance(class_entities, (list, tuple)):
+            class_entities_list = _get_class_object([i[0] for i in class_entities], ontology)
+            types_list = [i[1] for i in class_entities]
+            
         else:
             # Convert single class entity to list for consistent handling
             if isinstance(class_entities, str):
@@ -80,6 +85,7 @@ class AxiomToPumlConverter:
         self.puml_output = []
         self.puml_output.append("@startuml\n!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
         self.class_map = {}
+        self.restriction_map = {}  # New map to track restrictions and avoid duplicates
         self.counter = 1
         self.graph = nx.DiGraph()
         self.layout_type = layout_type
@@ -92,9 +98,56 @@ class AxiomToPumlConverter:
         
         if self.layout_type in ["bipartite", "multipartite"]:
             self.puml_output.append("left to right direction")
-        
+    
+    def get_restriction_key(self, restriction, prop_name=None):
+        """Generate a unique key for a restriction to avoid duplicates"""
+        if isinstance(restriction, Restriction):
+            # For property restrictions
+            if isinstance(restriction.property, Inverse):
+                prop_key = f"inverse_{restriction.property.property.name}"
+            else:
+                prop_key = restriction.property.name
+                
+            # Include restriction type (some, only, etc.)
+            restriction_type = "some"  # Default
+            if hasattr(restriction, 'type'):
+                try:
+                    if restriction.type == ONLY:
+                        restriction_type = "only"
+                except ImportError:
+                    if str(restriction.type).endswith('#allValuesFrom'):
+                        restriction_type = "only"
+            
+            # Include value class
+            value_key = ""
+            if hasattr(restriction, 'value'):
+                if isinstance(restriction.value, ThingClass):
+                    value_key = restriction.value.name
+                # Add more cases for different value types if needed
+            
+            return f"{restriction_type}_{prop_key}_{value_key}"
+            
+        elif isinstance(restriction, And):
+            # For And restrictions, sort class names to ensure consistent key
+            class_names = sorted([c.name if hasattr(c, 'name') else str(c) for c in restriction.Classes])
+            return f"and_{'_'.join(class_names)}"
+            
+        elif isinstance(restriction, Or):
+            # For Or restrictions, sort class names to ensure consistent key
+            class_names = sorted([c.name if hasattr(c, 'name') else str(c) for c in restriction.Classes])
+            return f"or_{'_'.join(class_names)}"
+            
+        elif isinstance(restriction, Not):
+            # For Not restrictions
+            class_name = restriction.Class.name if hasattr(restriction.Class, 'name') else str(restriction.Class)
+            return f"not_{class_name}"
+            
+        else:
+            # Fallback for other types
+            return str(restriction)
+    
     def get_class_name(self, entity):
-        """Extracts and maps class names with proper prefixes."""
+        """Extracts and maps class names with proper prefixes, avoiding duplicates."""
         if isinstance(entity, ThingClass):
             prefix = get_prefix(entity)
             class_name = entity.name
@@ -113,21 +166,42 @@ class AxiomToPumlConverter:
             return self.class_map[class_name]
 
         elif isinstance(entity, Restriction):  # Some restriction case
+            # Generate a unique key for this restriction
             if isinstance(entity.property, Inverse):
-                prefix = get_prefix(entity)
-                prop_name = entity.property.property.label[0]
-                return self.process_restriction(entity, prop_name)
+                prefix = get_prefix(entity.property.property)
+                prop_name = f"<<inverse>> {prefix}{get_label(entity.property.property)}"
+                restriction_key = self.get_restriction_key(entity)
             else:
-                prefix = get_prefix(entity)
+                prefix = get_prefix(entity.property)
                 prop_name = prefix + get_label(entity.property)
-                return self.process_restriction(entity, prop_name)
+                restriction_key = self.get_restriction_key(entity)
+            
+            # Check if we've already processed this restriction
+            if restriction_key in self.restriction_map:
+                return self.restriction_map[restriction_key]
+            
+            # If not, process it and store the result
+            result = self.process_restriction(entity, prop_name)
+            self.restriction_map[restriction_key] = result
+            return result
 
         elif isinstance(entity, (And, Or, Not)):  # Handle logical restrictions
-            prop_name = None
-            return self.process_restriction(entity, prop_name)
+            # Generate a unique key for this logical restriction
+            restriction_key = self.get_restriction_key(entity)
+            
+            # Check if we've already processed this restriction
+            if restriction_key in self.restriction_map:
+                return self.restriction_map[restriction_key]
+            
+            # If not, process it and store the result
+            result = self.process_restriction(entity, None)
+            self.restriction_map[restriction_key] = result
+            return result
 
-        elif isinstance(entity, Inverse):  # Handle inverse properties
-            return
+        elif isinstance(entity, Inverse):  # Handle standalone inverse properties
+            # This branch should typically not be reached, but just in case
+            prefix = get_prefix(entity.property)
+            return f"<<inverse>> {prefix}{get_label(entity.property)}"
 
         else:
             print('error', entity)
@@ -552,6 +626,11 @@ class AxiomToPumlConverter:
                     updated_output.append(updated_line)
                     updated = True
                     break
+                elif f"only({src}, {rel}, {tgt})" in line:
+                    updated_line = f"only({src}, {rel}, {tgt}, {direction})"
+                    updated_output.append(updated_line)
+                    updated = True
+                    break
                 elif f"subClass({src}, {tgt})" in line:
                     updated_line = f"subClass({src}, {tgt}, {direction})"
                     updated_output.append(updated_line)
@@ -564,6 +643,11 @@ class AxiomToPumlConverter:
                     break
                 elif f"union({src}, {tgt})" in line:
                     updated_line = f"union({src}, {tgt}, {direction})"
+                    updated_output.append(updated_line)
+                    updated = True
+                    break
+                elif f"intersection({src}, {tgt})" in line:
+                    updated_line = f"intersection({src}, {tgt}, {direction})"
                     updated_output.append(updated_line)
                     updated = True
                     break
