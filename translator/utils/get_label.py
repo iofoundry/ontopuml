@@ -3,14 +3,12 @@ from ..utils import to_camel_case, to_pascal_case
 
 def get_label(class_object):
     """Get the label of a class object, using its IRI if no label exists."""
-    print("get label",class_object, get_label_from_iri(class_object.iri))
     label = get_label_from_iri(class_object.iri) if hasattr(class_object, 'iri') else str(class_object)
     
     # If the class name starts with "BFO", return it as is
     if label.startswith("BFO"):
         label = to_camel_case(class_object.label[0])
         return label
-    print("label", label)
     return label
 
 def get_label_from_iri(url_string):

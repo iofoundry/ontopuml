@@ -66,7 +66,6 @@ class RdfToPumlConverter:
                         if ind_type and hasattr(ind_type, "label") and ind_type.label:
                             class_label = to_pascal_case(ind_type.label[0])
                         else:
-                            print("class", ind, ind_type)
                             class_label = get_label(ind_type)
                         self.classes[class_label] = ind_type
                         # Only add typeOf relation if it's not excluded
@@ -95,7 +94,6 @@ class RdfToPumlConverter:
                         if hasattr(prop.inverse, 'label') and prop.inverse.label:
                             inverse_label = to_camel_case(prop.inverse.label[0])
                         else:
-                            print("inv", prop)
                             inverse_label = get_label(prop.inverse) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
                     else:
                         inverse_label = "inverseUndefined"
