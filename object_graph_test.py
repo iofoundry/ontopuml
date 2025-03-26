@@ -8,7 +8,7 @@ result = rdf_to_puml(input_rdf,
                      imported_ontologies=ontologies ,
                      save_puml = False, 
                      layout_type="bipartite", 
-                     excluded_relations=["typeOf"],
+                     excluded_relations=[],
                      visualize=False)
 print(result)
 

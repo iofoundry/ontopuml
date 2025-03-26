@@ -45,9 +45,8 @@ class RdfToPumlConverter:
         self.G = None
         self.pos = None
         self.edge_directions = {}
-        # New parameter for excluding specific relations
         self.excluded_relations = excluded_relations or []
-        
+
         # Import ontologies
         for on in imported_ontologies:   
             get_ontology(on).load()
@@ -67,7 +66,8 @@ class RdfToPumlConverter:
                         if ind_type and hasattr(ind_type, "label") and ind_type.label:
                             class_label = to_pascal_case(ind_type.label[0])
                         else:
-                            class_label = get_label(ind_type.iri)
+                            print("class", ind, ind_type)
+                            class_label = get_label(ind_type)
                         self.classes[class_label] = ind_type
                         # Only add typeOf relation if it's not excluded
                         if "typeOf" not in self.excluded_relations:
@@ -82,6 +82,7 @@ class RdfToPumlConverter:
                 if hasattr(prop, 'label') and prop.label:
                     prop_name = to_camel_case(prop.label[0])
                 else:
+                    print("prop", prop)
                     prop_name = get_label(prop) if hasattr(prop, 'iri') else "undefined"
                 
                 # Skip this property if it's in the excluded relations
@@ -94,6 +95,7 @@ class RdfToPumlConverter:
                         if hasattr(prop.inverse, 'label') and prop.inverse.label:
                             inverse_label = to_camel_case(prop.inverse.label[0])
                         else:
+                            print("inv", prop)
                             inverse_label = get_label(prop.inverse) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
                     else:
                         inverse_label = "inverseUndefined"
@@ -308,7 +310,7 @@ class RdfToPumlConverter:
         
         # Add class definitions
         for cls_label, cls in self.classes.items():
-            ns_prefix = get_prefix(cls.name)
+            ns_prefix = get_prefix(cls)
             puml_lines.append(f"class({class_map[cls_label]}, {ns_prefix}{cls_label})")
         
         # Add individual definitions
