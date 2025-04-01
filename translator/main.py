@@ -49,7 +49,7 @@ def rdf_to_puml(
     """
 
     converter = RdfToPumlConverter(
-        input_rdf=input_rdf,
+        input=input_rdf,
         imported_ontologies=imported_ontologies,
         save_puml=save_puml,
         layout_type=layout_type,

@@ -30,12 +30,12 @@ def determine_direction(angle_degrees):
 
 
 class RdfToPumlConverter:
-    def __init__(self, input_rdf, imported_ontologies=[], save_puml=True, layout_type=None, layout_params=None, 
+    def __init__(self, input, imported_ontologies=[], save_puml=True, layout_type=None, layout_params=None, 
                  visualize=False, save_viz=None, figsize=(10, 8), excluded_relations=None):
         self.classes = {}
         self.individuals = {}
         self.properties = []
-        self.input_rdf = input_rdf
+        self.input = input
         self.save_puml = save_puml
         self.layout_type = layout_type
         self.layout_params = layout_params or {}
@@ -48,15 +48,18 @@ class RdfToPumlConverter:
         self.excluded_relations = excluded_relations or []
 
         # Import ontologies
-        for on in imported_ontologies:   
-            get_ontology(on).load()
+        if isinstance(imported_ontologies, list):
+            for on in imported_ontologies:   
+                get_ontology(on).load()
+        else:
+            get_ontology(imported_ontologies).load()       
 
     def load_data(self):
         """Load RDF data and extract classes, individuals, and properties"""
-        if isinstance(self.input_rdf, str):  # input_rdf is a file path
-            data = get_ontology(self.input_rdf).load()
+        if isinstance(self.input, str):  # input_rdf is a file path
+            data = get_ontology(self.input).load()
         else:
-            data = self.input_rdf  # input_rdf is already ontology python object
+            data = self.input  # input_rdf is already ontology python object
 
         for ind in data.individuals():
             self.individuals[ind.name] = ind
@@ -89,7 +92,6 @@ class RdfToPumlConverter:
                     continue
                 
                 for value in prop[ind]:
-                    # Safely retrieve inverse property label
                     if hasattr(prop, 'inverse') and prop.inverse:
                         if hasattr(prop.inverse, 'label') and prop.inverse.label:
                             inverse_label = to_camel_case(prop.inverse.label[0])
@@ -345,9 +347,9 @@ class RdfToPumlConverter:
         
         # Write the entire content to the file at once
         if self.save_puml:
-            with open(f"{self.input_rdf}.puml", "w") as f:
+            with open(f"{self.input}.puml", "w") as f:
                 f.write(puml_content)
-                print(f"PUML file saved as {self.input_rdf}.puml")
+                print(f"PUML file saved as {self.input}.puml")
         
         # Return the PUML content as a string
         return puml_content

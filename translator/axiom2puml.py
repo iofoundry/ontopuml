@@ -36,6 +36,7 @@ def get_axiom(class_entity, ontology, type):
 
 class AxiomToPumlConverter:
     def _process_class_entities_types(self, class_entities, types, ontology):
+        
         def _get_class_object(class_entities, ontology):    
             class_object = []
             for i in class_entities:
@@ -79,7 +80,7 @@ class AxiomToPumlConverter:
 
         return class_entities_list, types_list
 
-    def __init__(self, class_entities, ontology, types=None, layout_type=None, layout_params=None, visualize=False, save_puml = True):
+    def __init__(self, ontology, class_entities, types=None, layout_type=None, layout_params=None, visualize=False, save_puml = True):
         self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
         self.class_entities, self.types = self._process_class_entities_types(class_entities, types, self.ontology)
         self.puml_output = []
@@ -325,10 +326,8 @@ class AxiomToPumlConverter:
         else:
             return node
 
-
     def _convert_equivalent_to(self, class_entity, axiom_type):
         axiom = get_axiom(class_entity, self.ontology, axiom_type)
-        
         if not axiom:
             print(f"No equivalent_to of {class_entity} in {self.ontology.base_iri}")
             return
@@ -404,6 +403,7 @@ class AxiomToPumlConverter:
 
     def _convert_subclass(self, class_entity, axiom_type):
         axiom = get_axiom(class_entity, self.ontology, axiom_type)
+    
         if not axiom:
             print(f"No subclass axiom for {class_entity} in {self.ontology.base_iri}")
             return
