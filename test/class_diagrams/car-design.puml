@@ -11,5 +11,4 @@ typeOf(ns1:wheel2-design, iof:DesignSpecification)
 property(ns1:wheel1-design, c.partOf, ns1:car1-design, up)
 property(ns1:wheel2-design, c.partOf, ns1:car1-design, down)
 
-
 @enduml

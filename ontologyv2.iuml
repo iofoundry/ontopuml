@@ -1,11 +1,24 @@
 @startuml ontology
 
 ' do not show the circled character in classes
-' hide circle
+hide circle
 ' do not show emply members for classes and object 
 hide empty members
 
 skinparam roundCorner 10
+
+skinparam class{
+ BackgroundColor White
+ fontColor black
+ FontStyle bold
+ FontName Helvetica
+}
+skinparam object{
+    BackgroundColor White
+    fontColor Black
+    BorderColor Black 
+    FontName Helvetica   
+}
 
 ' global variable for prefixes 
 ' (expects json with key = prefix, value = namespace)
@@ -16,7 +29,7 @@ skinparam roundCorner 10
 ' global variable for setting custom color for namespaces
 ' (expects json with key = prefix (should be present in $prefixes), value = color)
 !$namespace_colors = { "rdf" : "White" }
-!$namespace_default_color = "Blue"
+!$namespace_default_color = "White"
 
 ' !unquoted procedure setColor($prefix, $color)
 '     !if %json_key_exists($prefixes, $prefix)        

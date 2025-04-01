@@ -1,12 +1,9 @@
 @startuml iof
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\ontologyv2.iuml
 ' !include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/ontologyv2.iuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/ontologyv2.iuml
-hide circle
+
 skinparam class{
- BackgroundColor F0A30A
- FontColor White
- FontStyle bold
- FontName Helvetica
+ fontColor white
 }
 skinparam object{
     BackgroundColor 76608A
@@ -18,4 +15,5 @@ skinparam object{
                         "iof":"1E90FF", 
                         "ns":"Green", 
                         "ns1":"76608A"}
+!$namespace_default_color = "DarkGrey"
 @enduml
