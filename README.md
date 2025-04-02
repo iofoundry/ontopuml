@@ -13,27 +13,47 @@ The visual notation used in this standard library is below.
   - [Create individual](#create-individual)
   - [Create membership of an individual](#create-membership-of-an-individual)
 
+## Fetures
+- Convert RDF data to object diagrams
+- Convert class axioms to class diagrams
+- Apply PlantUML layouts using NetworkX algorithms
+- Exclude specific relations for object  diagrams diagrams
+- Choose axiom types to include (necessary, sufficient, equivalent)
+
 ## Installation
 
-For using the standard notation for ontology, include `ontologyv*.iuml` in your puml file
+Clone the repository and install using pip:
+
 ```
-@startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv2.iuml
-...
-@enduml
+git clone https://github.com/iofoundry/ontopuml.git
+cd ontopuml
+pip install -e .
 ```
 
-For IOF specific styling, include `iof.iuml`. Please see <> for creating custom styling
-```
-@startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-...
-@enduml
-```
+## Requirements
+- Python 3.7+
+- Owlready2
+- NetworkX
+- Matplotlib
+- Click
 
-## Commands and configurations
+You can install all dependencies with:
+pip install -r requirements.txt
 
-All commands are listed [here](https://iofoundry.github.io/ontopuml/cheatsheet).
+## Usage
+
+ontopuml -i your_ontology.rdf
+
+Command Line Options
+
+-i, --input: Path to the input ontology file
+-c, --class-diagram: Generate a class diagram instead of an object diagram
+--class-included: Classes to include in the diagram (can be specified multiple times)
+--relation-excluded: Relations to exclude from object diagrams
+--condition-included: Type of axioms to include (n=necessary, s=sufficient, ns=equivalent)
+-l, --use-layout: Use a layout algorithm for the diagram
+--layout-type: Specify which layout algorithm to use (default: spring)
+
 
 
 

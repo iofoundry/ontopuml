@@ -116,8 +116,8 @@ def main(
             ontology=input, class_entities = class_included, types=condition_included, layout_type=layout
         ) 
     else:
-        rdf_to_puml(ontology=input, relation_excluded=relation_excluded, layout_type=layout)
+        rdf_to_puml(input_rdf=input, relation_excluded=relation_excluded, layout_type=layout)
  
 
 if __name__ == "__main__":
-    main(prog_name="ontoplant")
+    main(prog_name="ontopuml")

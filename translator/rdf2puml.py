@@ -31,7 +31,7 @@ def determine_direction(angle_degrees):
 
 class RdfToPumlConverter:
     def __init__(self, input, imported_ontologies=[], save_puml=True, layout_type=None, layout_params=None, 
-                 visualize=False, save_viz=None, figsize=(10, 8), excluded_relations=None):
+                 visualize=False, save_viz=None, figsize=(10, 8), relation_excluded=None):
         self.classes = {}
         self.individuals = {}
         self.properties = []
@@ -45,7 +45,7 @@ class RdfToPumlConverter:
         self.G = None
         self.pos = None
         self.edge_directions = {}
-        self.excluded_relations = excluded_relations or []
+        self.excluded_relations = relation_excluded or []
 
         # Import ontologies
         if isinstance(imported_ontologies, list):

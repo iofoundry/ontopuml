@@ -696,8 +696,9 @@ class AxiomToPumlConverter:
             self.puml_output = self._apply_directions_to_puml(edge_directions)
         
         if self.save_puml:
-            with open(f"{str(self.class_entities)}_axiom.puml", "w") as f:
+            file_name = f"{str(self.class_entities)}_{self.types}_axiom.puml"
+            with open(file_name, "w") as f:
                 f.write("\n".join(self.puml_output))
-                print(f"PUML file saved as {str(self.class_entities)}_axiom.puml")
+                print(f"PUML file saved as {file_name}")
         
         return "\n".join(self.puml_output)
