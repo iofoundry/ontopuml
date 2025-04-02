@@ -31,8 +31,12 @@ def get_axiom(class_entity, ontology, type):
     # disjoints
     # elif type == 4:
     #     return ontology[class_entity].disjoints()
+    elif type == "t":
+        return class_entity
     else:
         print(f"Error: Unknown axiom type")
+
+
 
 class AxiomToPumlConverter:
     def _process_class_entities_types(self, class_entities, types, ontology):
@@ -454,6 +458,46 @@ class AxiomToPumlConverter:
                 print(f"Error processing disjoint: {e}")
         return
     
+    def _get_taxonomy(self, class_entity, visited=None):
+        """
+        Generate taxonomy visualization for a class.
+        This function handles type "t" - Taxonomy visualization.
+        Recursively processes all subclasses down to the deepest layer.
+        """
+        if visited is None:
+            visited = set()
+            
+        if class_entity in visited:
+            return  # Avoid cycles
+            
+        visited.add(class_entity)
+        
+        if not hasattr(class_entity, 'subclasses'):
+            print(f"Error: {class_entity} is not a valid class for taxonomy visualization")
+            return
+        
+        # Get the class name for the current class
+        main_class_name = self.get_class_name(class_entity)
+        
+        # Process immediate subclasses
+        for subclass in class_entity.subclasses():
+            if subclass == class_entity:  # Skip self-reference
+                continue
+            
+            subclass_name = self.get_class_name(subclass)
+            
+            # Add subclass relationship to PUML and to graph
+            self.puml_output.append(f"subClass({subclass_name}, {main_class_name})")
+            
+            # Add edge to graph
+            self.graph.add_edge(subclass_name, main_class_name, relation='subclass')
+            self.relationships.append((subclass_name, 'subclass', main_class_name))
+            
+            # Recursively process this subclass to get its subclasses
+            self._get_taxonomy(subclass, visited)
+        
+        return
+
     def _calculate_layout(self):
         """Calculate node positions using the specified layout algorithm"""
         layouts = {
@@ -672,6 +716,8 @@ class AxiomToPumlConverter:
                 self._convert_subclass(class_entity, axiom_type)
             # elif axiom_type == 4:  # disjoint
             #     self._convert_disjoint(class_entity, axiom_type)
+            elif axiom_type == "t":  
+                self._get_taxonomy(class_entity)
             else:
                 print(f"Unsupported axiom type: {axiom_type} for class {class_entity}")
         

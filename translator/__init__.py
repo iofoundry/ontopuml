@@ -61,11 +61,12 @@ def find_ontology_file():
 )
 @click.option(
     "--condition-included",
-    type=click.Choice(["n", "s", "ns"]),
+    type=click.Choice(["n", "s", "ns", "t"]),
     help="(optional) Determines which axioms to include in the class diagram.\n"
     "'n' - Necessary conditions (subclass axioms).\n"
     "'s' - Sufficient conditions (general class axioms).\n"
-    "'ns' - Necessary & sufficient conditions (equivalent class axioms).",
+    "'ns' - Necessary & sufficient conditions (equivalent class axioms).\n"
+    "'t' - Taxonomy (subclass axioms).",
 )
 @click.option(
     "-l",
