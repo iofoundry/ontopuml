@@ -2,3 +2,14 @@ __pycache__
 .idea
 translator/test1-old.ipynb
 *.puml
+translator/.DS_Store
+sample/object-graph-wheel.rdf
+/paper
+/out
+.DS_Store
+/out
+sample/catalog-v001.xml
+/sample
+/sample
+/archived
+/ontopuml.egg-info
