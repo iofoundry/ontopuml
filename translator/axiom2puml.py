@@ -459,11 +459,6 @@ class AxiomToPumlConverter:
         return
     
     def _get_taxonomy(self, class_entity, visited=None):
-        """
-        Generate taxonomy visualization for a class.
-        This function handles type "t" - Taxonomy visualization.
-        Recursively processes all subclasses down to the deepest layer.
-        """
         if visited is None:
             visited = set()
             
@@ -658,7 +653,6 @@ class AxiomToPumlConverter:
             for src, rel, tgt in self.relationships:
                 if s == src and o == tgt:
                     direction_map[(src, rel, tgt)] = direction
-
         # Update PUML lines with directions where applicable
         updated_output = []
         for line in self.puml_output:
@@ -672,6 +666,11 @@ class AxiomToPumlConverter:
                     break
                 elif f"only({src}, {rel}, {tgt})" in line:
                     updated_line = f"only({src}, {rel}, {tgt}, {direction})"
+                    updated_output.append(updated_line)
+                    updated = True
+                    break
+                elif f"subClass({src}, \"{tgt}\")" in line:
+                    updated_line = f"subClass({src}, \"{tgt}\", {direction})"
                     updated_output.append(updated_line)
                     updated = True
                     break
@@ -726,7 +725,7 @@ class AxiomToPumlConverter:
             self.puml_output.append("@enduml")
         
         # Apply NetworkX layout
-        if self.layout_type and self.graph.number_of_nodes() > 0:
+        if self.layout_type is not None and self.graph.number_of_nodes() > 0:
             
             # Calculate layout
             pos = self._calculate_layout()

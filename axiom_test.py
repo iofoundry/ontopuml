@@ -74,15 +74,15 @@ if __name__ == "__main__":
     # print("c5",converter5)
 
 
-   # Example 6: Multiple class entities with corresponding types (tuple input)
+  #  Example 6: Multiple class entities with corresponding types (tuple input)
     # converter6 = axiom_to_puml(
     #     class_entities=[
-    #         ("ComputingProcess", "ns"),
-    #         ("https://spec.industrialontologies.org/ontology/core/Core/Organization", "n"),
-    #         ("ProductProductionProcess", "ns"),
-    #         ("http://purl.obolibrary.org/obo/BFO_0000023", "n"),
-    #         ("https://spec.industrialontologies.org/ontology/core/Core/Agent", "n"),
-    #         ("MaterialProduct", "ns"),
+    #         ("ComputingProcess", "n"),
+    #         # ("https://spec.industrialontologies.org/ontology/core/Core/Organization", "n"),
+    #         # ("ProductProductionProcess", "ns"),
+    #         # ("http://purl.obolibrary.org/obo/BFO_0000023", "n"),
+    #         # ("https://spec.industrialontologies.org/ontology/core/Core/Agent", "n"),
+    #         # ("MaterialProduct", "ns"),
     #     ],
     #     ontology="https://spec.industrialontologies.org/ontology/core/Core",
     #     layout_type="bipartite",
@@ -90,12 +90,12 @@ if __name__ == "__main__":
     # )
     # print("c6",converter6)
 
-    converter5 = axiom_to_puml(
+    converter7 = axiom_to_puml(
         class_entities={
         "http://www.w3.org/2002/07/owl#Thing": "t",
         },
         ontology="https://spec.industrialontologies.org/ontology/core/Core",
-        
+        # layout_type="circular",
         save_puml=0,
     )
-    print("c5",converter5)
+    print("c7",converter7)

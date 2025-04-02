@@ -84,7 +84,6 @@ class RdfToPumlConverter:
                 if hasattr(prop, 'label') and prop.label:
                     prop_name = to_camel_case(prop.label[0])
                 else:
-                    print("prop", prop)
                     prop_name = get_label(prop) if hasattr(prop, 'iri') else "undefined"
                 
                 # Skip this property if it's in the excluded relations
@@ -321,6 +320,11 @@ class RdfToPumlConverter:
         for s, p, o in self.properties:
             if p == "typeOf" and o in class_map and s.name in individual_map:
                 puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
+
+                # Add typeOf relationships - only for elements that are still in the graph
+        for s, p, o in self.properties:
+            if p == "subClass" and o in class_map and s.name in individual_map:
+                puml_lines.append(f"subClass({individual_map[s.name]}, {class_map[o]})")
         
         # Add property relationships with directions - only for elements that are still in the graph
         for s, p, o in self.properties:
