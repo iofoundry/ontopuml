@@ -70,7 +70,7 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
         result = server.processes_file(output_path)
         
         if result:
-            click.echo(f"Visualization successful. Image generated at: {result}")
+            click.echo(f"Visualization successful. Image generated at: {output_path}")
             return True
         else:
             click.echo("No image was generated. Check if the PlantUML server is accessible.")
