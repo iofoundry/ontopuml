@@ -85,7 +85,7 @@ def axiom_to_puml(
         Path to ontology file or loaded ontology object
     types : str or list
         Type of axioms to include in the diagram, defaults to None
-        Options: 'n' (necessary), 's' (sufficient), 'ns' (necessary & sufficient)
+        Options: 'n' (necessary), 's' (sufficient), 'ns' (necessary & sufficient), 't' (subclass taxonomy)
     layout_type : str, optional
         Type of layout algorithm to use ('spring', 'circular', etc.), defaults to None
         If None, no layout algorithm is applied
