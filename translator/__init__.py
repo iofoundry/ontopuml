@@ -22,13 +22,13 @@ def find_ontology_file():
             return file
     return None
 
-def visualize_puml(puml_file_path, server_url="http://localhost:8080/img/"):
+def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
     """
     Visualize a PlantUML file using a PlantUML server.
     
     Parameters:
     -----------
-    puml_file_path : str
+    output_path : str
         Path to the PUML file to visualize
     server_url : str, optional
         URL of the PlantUML server, defaults to http://localhost:8080/img/
@@ -42,19 +42,19 @@ def visualize_puml(puml_file_path, server_url="http://localhost:8080/img/"):
         from plantuml import PlantUML
         
         # Check if the file exists
-        if not os.path.exists(puml_file_path):
-            click.echo(f"Error: PUML file not found at {puml_file_path}")
+        if not os.path.exists(output_path):
+            click.echo(f"Error: PUML file not found at {output_path}")
             # Try looking in the current directory
-            if os.path.basename(puml_file_path) != puml_file_path and os.path.exists(os.path.basename(puml_file_path)):
-                puml_file_path = os.path.basename(puml_file_path)
-                click.echo(f"Found file in current directory: {puml_file_path}")
+            if os.path.basename(output_path) != output_path and os.path.exists(os.path.basename(output_path)):
+                output_path = os.path.basename(output_path)
+                click.echo(f"Found file in current directory: {output_path}")
             else:
                 # Look for any .puml files in the current directory
                 puml_files = [f for f in os.listdir('.') if f.endswith('.puml')]
                 if puml_files:
                     click.echo(f"Available PUML files: {', '.join(puml_files)}")
-                    puml_file_path = puml_files[0]
-                    click.echo(f"Using {puml_file_path} instead")
+                    output_path = puml_files[0]
+                    click.echo(f"Using {output_path} instead")
                 else:
                     click.echo("No PUML files found in the current directory.")
                     return False
@@ -63,11 +63,11 @@ def visualize_puml(puml_file_path, server_url="http://localhost:8080/img/"):
         server = PlantUML(url=server_url)
         
         # Generate the diagram
-        click.echo(f"Visualizing PUML file: {puml_file_path}")
+        click.echo(f"Visualizing PUML file: {output_path}")
         click.echo(f"Using PlantUML server at: {server_url}")
         
         # Process the file
-        result = server.processes_file(puml_file_path)
+        result = server.processes_file(output_path)
         
         if result:
             click.echo(f"Visualization successful. Image generated at: {result}")
@@ -203,7 +203,7 @@ def main(
             return
         click.echo(f"Using found ontology file: {input}")
 
-    puml_file_path = None
+    output_path = None
     puml_content = None
     
     if class_diagram:
@@ -233,7 +233,7 @@ def main(
                                  f"condition provided. Skipping this entity.")
             
             if class_entities_list:
-                puml_content = axiom_to_puml(
+                puml_content, output_path = axiom_to_puml(
                     ontology=input,
                     class_entities=list(zip(class_entities_list, types_list)),
                     layout_type=layout,
@@ -243,7 +243,7 @@ def main(
         elif class_included:
             # Legacy support for class_included option
             if condition_included:
-                puml_content = axiom_to_puml(
+                puml_content, output_path = axiom_to_puml(
                     ontology=input,
                     class_entities=class_included,
                     types=condition_included,
@@ -254,24 +254,24 @@ def main(
         else:
             click.echo("No class entities provided. Use --class-entity or --class-included options. Exiting.")
     else:
-        rdf_to_puml(
+        puml_content, output_path = rdf_to_puml(
             input_rdf=input,
             relation_excluded=relation_excluded,
             layout_type=layout,
         )
  
     if view and puml_content:
-        if not puml_file_path or not os.path.exists(puml_file_path):
+        if not output_path or not os.path.exists(output_path):
             # If we don't have a valid file path, look for recently created PUML files
             puml_files = [f for f in os.listdir('.') if f.endswith('.puml')]
             if puml_files:
                 # Sort by modification time, newest first
                 puml_files.sort(key=lambda f: os.path.getmtime(f), reverse=True)
-                puml_file_path = puml_files[0]
-                click.echo(f"Using most recently created PUML file: {puml_file_path}")
+                output_path = puml_files[0]
+                click.echo(f"Using most recently created PUML file: {output_path}")
         
-        if puml_file_path:
-            result = visualize_puml(puml_file_path, plantuml_server)
+        if output_path:
+            result = visualize_puml(output_path, plantuml_server)
             if not result:
                 click.echo("Note: If you're having issues with the PlantUML server, you can:")
                 click.echo("1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty")

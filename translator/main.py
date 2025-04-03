@@ -48,7 +48,7 @@ def rdf_to_puml(
         The generated PlantUML code
     """
 
-    converter = RdfToPumlConverter(
+    converter, output_path = RdfToPumlConverter(
         input=input_rdf,
         imported_ontologies=imported_ontologies,
         save_puml=save_puml,
@@ -58,8 +58,8 @@ def rdf_to_puml(
         save_viz=save_viz,
         figsize=figsize,
         relation_excluded=relation_excluded,
-    )
-    return converter.convert()
+    ).convert()
+    return converter, output_path
 
 
 def axiom_to_puml(
@@ -103,7 +103,7 @@ def axiom_to_puml(
         The generated PlantUML code
     """
         
-    axiom_result = AxiomToPumlConverter(
+    axiom_result, output_path = AxiomToPumlConverter(
         class_entities=class_entities,
         ontology=ontology,
         types=types,
@@ -112,4 +112,4 @@ def axiom_to_puml(
         visualize=visualize,
         save_puml=save_puml,
     ).convert()
-    return axiom_result
+    return axiom_result, output_path

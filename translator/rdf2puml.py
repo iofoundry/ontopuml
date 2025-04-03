@@ -351,12 +351,13 @@ class RdfToPumlConverter:
         
         # Write the entire content to the file at once
         if self.save_puml:
-            with open(f"{self.input}.puml", "w") as f:
+            file_name = f"{self.input}.puml"
+            with open(file_name, "w") as f:
                 f.write(puml_content)
                 print(f"PUML file saved as {self.input}.puml")
         
         # Return the PUML content as a string
-        return puml_content
+        return puml_content, file_name
 
     def reset(self):
         """Reset the converter state"""

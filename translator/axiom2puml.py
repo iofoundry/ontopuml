@@ -746,4 +746,4 @@ class AxiomToPumlConverter:
                 f.write("\n".join(self.puml_output))
                 print(f"PUML file saved as {file_name}")
         
-        return "\n".join(self.puml_output)
+        return "\n".join(self.puml_output), file_name
