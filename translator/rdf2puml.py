@@ -286,7 +286,7 @@ class RdfToPumlConverter:
     def generate_puml(self):
         """Generate the PlantUML content based on the RDF data and edge directions"""
         puml_lines = []
-        
+        file_name = None
         # If there are no nodes left after filtering, return empty PUML
         if not self.classes and not self.individuals:
             puml_lines.append("@startuml")
