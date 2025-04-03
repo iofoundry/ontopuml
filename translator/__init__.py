@@ -96,7 +96,7 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
     "-i",
     "--input",
     # type=click.Path(exists=True),
-    help="(optional) Input ontology file. Supported formats: .rdf, .owl, .ttl, .jsonld.\n"
+    help="(optional) Input ontology file. Supported formats: .rdf, .owl.\n"
     "If not provided, the tool will search for an ontology file in the current directory.",
 )
 @click.option(
@@ -276,6 +276,7 @@ def main(
                 click.echo("Note: If you're having issues with the PlantUML server, you can:")
                 click.echo("1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty")
                 click.echo("2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/")
+                click.echo("or svg format --plantuml-server http://www.plantuml.com/plantuml/svg/")
         else:
             click.echo("No PUML file found to visualize.")
     elif view:
