@@ -48,10 +48,12 @@ class RdfToPumlConverter:
         self.excluded_relations = relation_excluded or []
 
         # Import ontologies
-        if isinstance(imported_ontologies, list):
-            for on in imported_ontologies:   
+        print(imported_ontologies, type(imported_ontologies))
+        if isinstance(imported_ontologies, (list, tuple)):
+            for on in imported_ontologies:
+                print(f"Loading ontology: {on}")
                 get_ontology(on).load()
-        else:
+        elif isinstance(imported_ontologies, str):
             get_ontology(imported_ontologies).load()       
 
     def load_data(self):
@@ -60,8 +62,8 @@ class RdfToPumlConverter:
             data = get_ontology(self.input).load()
         else:
             data = self.input  # input_rdf is already ontology python object
-
         for ind in data.individuals():
+            
             self.individuals[ind.name] = ind
             if ind.is_a:
                 for ind_type in ind.is_a:
