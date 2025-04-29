@@ -10,7 +10,7 @@ if __name__ == "__main__":
     #     types="ns",
     #     save_puml=False,
     # )
-    # print("c1",converter1)
+    # print("c1",converter1[0])
 
     # # Example 2: Multiple class entities with a single type (applied to all)
     # converter2 = axiom_to_puml(
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     #     layout_type="bipartite",
     #     save_puml=False,
     # )
-    # print("c2", converter2)
+    # print("c2", converter2[0])
 
     # # Example 3: Same class entities with corresponding types
     # converter3 = axiom_to_puml(
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     #     layout_type="bipartite",
     #     save_puml=False,
     # )
-    # print("c3",converter3)
+    # print("c3",converter3[0])
 
     # Example 4: Multiple class entities with corresponding types (dictionary input)
     # converter4 = axiom_to_puml(
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     #     layout_type="bipartite",
     #     save_puml=False,
     # )
-    # print("c4",converter4)
+    # print("c4",converter4[0])
 
     # Example 5: Multiple class entities with corresponding types (IRI dictionary input)
     # converter5 = axiom_to_puml(
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     #     layout_type="bipartite",
     #     save_puml=0,
     # )
-    # print("c5",converter5)
+    # print("c5",converter5[0])
 
 
   #  Example 6: Multiple class entities with corresponding types (tuple input)
@@ -88,14 +88,14 @@ if __name__ == "__main__":
     #     layout_type="bipartite",
     #     save_puml=False,
     # )
-    # print("c6",converter6)
-
-    converter7 = axiom_to_puml(
+    # print("c6",converter6[0])
+    get_ontology("sample/MLLO.rdf").load()
+    converter7= axiom_to_puml(
         class_entities={
-        "http://www.w3.org/2002/07/owl#Thing": "t",
+        "http://www.semanticweb.org/mnd14/ml/LinearModel": "n",
         },
-        ontology="https://spec.industrialontologies.org/ontology/core/Core",
-        # layout_type="circular",
+        ontology="/Users/pnc12/Documents/Github/MLLOS-pete/Ontology/OIDE usecase/Example 3/example3_3.rdf",
+        layout_type="bipartite",
         save_puml=0,
     )
-    print("c7",converter7)
+    print("c7",converter7[0])

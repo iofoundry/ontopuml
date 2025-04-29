@@ -739,7 +739,7 @@ class AxiomToPumlConverter:
             
             # Apply directions to PUML
             self.puml_output = self._apply_directions_to_puml(edge_directions)
-        
+        file_name = None
         if self.save_puml:
             file_name = f"{str(self.class_entities)}_{self.types}_axiom.puml"
             with open(file_name, "w") as f:

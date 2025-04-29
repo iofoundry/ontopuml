@@ -99,6 +99,16 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
     help="(optional) Input ontology file. Supported formats: .rdf, .owl.\n"
     "If not provided, the tool will search for an ontology file in the current directory.",
 )
+
+@click.option(
+    "--import-ontology",
+    multiple=True,
+    type=str,
+    help="(optional) Additional ontologies to import. You can provide multiple ontologies.\n"
+    "Format: URL or file path to the ontology.\n"
+    "Example: --import-ontology http://example.org/ontology.owl --import-ontology ./local_ontology.owl"
+)
+
 @click.option(
     "-c",
     "--class-diagram",
@@ -173,12 +183,18 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
 @click.option(
     "--plantuml-server",
     default="http://localhost:8080/img/",
-    help="(optional) URL of the PlantUML server to use for visualization. Default: http://localhost:8080/img/",
+    help="(optional) URL of the PlantUML server to use for visualization. Default: http://localhost:8080/img/\n"
+    "Note: If you're having issues with the PlantUML server, you can: \n"
+    "1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty \n"
+    "2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/ \n"
+    "or svg format --plantuml-server http://www.plantuml.com/plantuml/png/ \n",
+    
 )
 
 @click.option("--help", is_flag=True, help="Show this help message and exit.")
 def main(
     input,
+    import_ontology,
     class_diagram,
     class_entity,
     class_included,
@@ -256,7 +272,8 @@ def main(
     else:
         puml_content, output_path = rdf_to_puml(
             input_rdf=input,
-            relation_excluded=relation_excluded,
+            import_ontologies=import_ontology,
+            relation_excluded=list(relation_excluded),
             layout_type=layout,
         )
  
@@ -276,7 +293,7 @@ def main(
                 click.echo("Note: If you're having issues with the PlantUML server, you can:")
                 click.echo("1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty")
                 click.echo("2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/")
-                click.echo("or svg format --plantuml-server http://www.plantuml.com/plantuml/svg/")
+                click.echo("or svg format --plantuml-server http://www.plantuml.com/plantuml/png/")
         else:
             click.echo("No PUML file found to visualize.")
     elif view:
