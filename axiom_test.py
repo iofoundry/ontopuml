@@ -89,13 +89,13 @@ if __name__ == "__main__":
     #     save_puml=False,
     # )
     # print("c6",converter6[0])
-
+    get_ontology("sample/MLLO.rdf").load()
     converter7= axiom_to_puml(
         class_entities={
-        "http://www.w3.org/2002/07/owl#Thing": "t",
+        "http://www.semanticweb.org/mnd14/ml/LinearModel": "n",
         },
-        ontology="https://spec.industrialontologies.org/ontology/core/Core",
-        # layout_type="circular",
+        ontology="/Users/pnc12/Documents/Github/MLLOS-pete/Ontology/OIDE usecase/Example 3/example3_3.rdf",
+        layout_type="bipartite",
         save_puml=0,
     )
     print("c7",converter7[0])

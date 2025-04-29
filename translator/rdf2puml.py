@@ -30,7 +30,7 @@ def determine_direction(angle_degrees):
 
 
 class RdfToPumlConverter:
-    def __init__(self, input, imported_ontologies=[], save_puml=True, layout_type=None, layout_params=None, 
+    def __init__(self, input, import_ontologies=[], save_puml=True, layout_type=None, layout_params=None, 
                  visualize=False, save_viz=None, figsize=(10, 8), relation_excluded=None):
         self.classes = {}
         self.individuals = {}
@@ -48,13 +48,12 @@ class RdfToPumlConverter:
         self.excluded_relations = relation_excluded or []
 
         # Import ontologies
-        print(imported_ontologies, type(imported_ontologies))
-        if isinstance(imported_ontologies, (list, tuple)):
-            for on in imported_ontologies:
+        if isinstance(import_ontologies, (list, tuple)):
+            for on in import_ontologies:
                 print(f"Loading ontology: {on}")
                 get_ontology(on).load()
-        elif isinstance(imported_ontologies, str):
-            get_ontology(imported_ontologies).load()       
+        elif isinstance(import_ontologies, str):
+            get_ontology(import_ontologies).load()       
 
     def load_data(self):
         """Load RDF data and extract classes, individuals, and properties"""
@@ -152,8 +151,42 @@ class RdfToPumlConverter:
         self.classes = {label: cls for label, cls in self.classes.items() 
                        if label in self.G.nodes()}
     
+    def filter_isolated_nodes(self):
+        """
+        Filter out isolated nodes (classes and individuals with no relations)
+        This function works even when layout_type is None
+        """
+        # Create a set to track nodes involved in relationships
+        connected_nodes = set()
+        
+        # Track connected nodes from relationships
+        for s, p, o in self.properties:
+            if p == "typeOf":
+                if hasattr(s, 'name'):
+                    connected_nodes.add(s.name)
+                connected_nodes.add(o)
+            elif isinstance(s, object) and hasattr(s, 'name') and isinstance(o, object) and hasattr(o, 'name'):
+                connected_nodes.add(s.name)
+                connected_nodes.add(o.name)
+            elif isinstance(s, object) and hasattr(s, 'name'):
+                connected_nodes.add(s.name)
+                if isinstance(o, str):
+                    connected_nodes.add(o)
+        
+        # Filter individuals and classes to keep only connected ones
+        self.individuals = {name: ind for name, ind in self.individuals.items() 
+                           if name in connected_nodes}
+        
+        self.classes = {label: cls for label, cls in self.classes.items() 
+                       if label in connected_nodes}
+    
     def calculate_layout(self):
         """Apply the layout algorithm to position the nodes"""
+        # Skip layout calculation if layout_type is None
+        if self.layout_type is None:
+            self.pos = None
+            return
+        
         # Choose layout algorithm
         layout_functions = {
             'spring': nx.spring_layout,
@@ -271,6 +304,10 @@ class RdfToPumlConverter:
         """Calculate the direction of edges based on node positions"""
         self.edge_directions = {}
         
+        # Skip direction calculation if layout was not calculated
+        if self.pos is None:
+            return
+            
         for s, o, data in self.G.edges(data=True):
             if s in self.pos and o in self.pos:  # Make sure both nodes have positions
                 # Calculate angle between nodes
@@ -323,21 +360,21 @@ class RdfToPumlConverter:
             if p == "typeOf" and o in class_map and s.name in individual_map:
                 puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
 
-                # Add typeOf relationships - only for elements that are still in the graph
+        # Add subClass relationships if present
         for s, p, o in self.properties:
             if p == "subClass" and o in class_map and s.name in individual_map:
                 puml_lines.append(f"subClass({individual_map[s.name]}, {class_map[o]})")
         
         # Add property relationships with directions - only for elements that are still in the graph
         for s, p, o in self.properties:
-            if p != "typeOf" and isinstance(o, object) and hasattr(o, "name") and o.name in individual_map and s.name in individual_map:
+            if p != "typeOf" and p != "subClass" and isinstance(o, object) and hasattr(o, "name") and o.name in individual_map and s.name in individual_map:
                 # Only include direction if it was calculated and exists in edge_directions
                 if self.layout_type is not None and (s.name, o.name) in self.edge_directions:
                     direction = self.edge_directions[(s.name, o.name)]
                     puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]}, {direction})")
                 else:
                     puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]})")
-            elif p != "typeOf" and o in individual_map and s.name in individual_map:
+            elif p != "typeOf" and p != "subClass" and o in individual_map and s.name in individual_map:
                 # Only include direction if it was calculated and exists in edge_directions
                 if self.layout_type is not None and (s.name, o) in self.edge_directions:
                     direction = self.edge_directions[(s.name, o)]
@@ -374,9 +411,18 @@ class RdfToPumlConverter:
         """Run the full conversion process"""
         self.reset()
         self.load_data()
+        
+        # Always create graph to filter isolated nodes properly
+        self.create_graph()
+        
+        # Apply additional filtering for isolated nodes
+        # This ensures nodes without relations are removed even if layout_type is None
+        self.filter_isolated_nodes()
+        
+        # Only calculate layout and directions if layout_type is specified
         if self.layout_type is not None:
-            self.create_graph()
             self.calculate_layout()
             self.calculate_directions()
             self.visualize_graph()
+            
         return self.generate_puml()

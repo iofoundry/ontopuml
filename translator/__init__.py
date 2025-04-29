@@ -101,12 +101,12 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
 )
 
 @click.option(
-    "--imported-ontology",
+    "--import-ontology",
     multiple=True,
     type=str,
     help="(optional) Additional ontologies to import. You can provide multiple ontologies.\n"
     "Format: URL or file path to the ontology.\n"
-    "Example: --imported-ontology http://example.org/ontology.owl --imported-ontology ./local_ontology.owl"
+    "Example: --import-ontology http://example.org/ontology.owl --import-ontology ./local_ontology.owl"
 )
 
 @click.option(
@@ -194,7 +194,7 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
 @click.option("--help", is_flag=True, help="Show this help message and exit.")
 def main(
     input,
-    imported_ontology,
+    import_ontology,
     class_diagram,
     class_entity,
     class_included,
@@ -272,8 +272,8 @@ def main(
     else:
         puml_content, output_path = rdf_to_puml(
             input_rdf=input,
-            imported_ontologies=imported_ontology,
-            relation_excluded=relation_excluded,
+            import_ontologies=import_ontology,
+            relation_excluded=list(relation_excluded),
             layout_type=layout,
         )
  

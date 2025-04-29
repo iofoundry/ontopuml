@@ -4,7 +4,7 @@ from .rdf2puml import RdfToPumlConverter
 
 def rdf_to_puml(
     input_rdf,
-    imported_ontologies:list = [],
+    import_ontologies:list = [],
     save_puml=True,
     layout_type=None,
     layout_params=None,
@@ -50,7 +50,7 @@ def rdf_to_puml(
 
     converter = RdfToPumlConverter(
         input=input_rdf,
-        imported_ontologies=imported_ontologies,
+        import_ontologies=import_ontologies,
         save_puml=save_puml,
         layout_type=layout_type,
         layout_params=layout_params,
