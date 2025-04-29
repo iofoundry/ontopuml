@@ -20,4 +20,6 @@ typeOf(ns1:file-path1, ns:FilePath)
 property(ns1:system-model1, iof:serializedIn, ns1:file1)
 property(ns1:file-path1, iof:designates, ns1:file1, right)
 data(ns1:file-path1, rdfs:label, "C:\user\folder\file1")
+data(ns1:file1, rdfs:label, "file1")
+data(ns1:system-model1, rdfs:label, "system-model1")
 @enduml

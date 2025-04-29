@@ -1,0 +1,4 @@
+owlready2==0.47
+click==8.1.8
+matplotlib==3.10.1
+networkx==3.4.2
