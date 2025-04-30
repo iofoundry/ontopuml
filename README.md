@@ -1,19 +1,15 @@
-# ontopuml
-Standard plantUML library for visualising ontology and OWL 2.0 axioms in a notation dedicated to ontologies. 
+# NIST OWL Visual Notation (NOWL)
+Standard plantUML library for visualising ontology and OWL 2.0 axioms in a standardised visual notation. 
 
-The visual notation used in this standard library is below.
-[Ontology visual notation]()
+Visual notations for OWL 2.0 syntax and plantUML commands can be found [here](https://iofoundry.github.io/ontopuml/commands). 
 
-## Table of contents
-- [ontopuml](#ontopuml)
-  - [Table of contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Cheatsheet](#cheatsheet)
-  - [Create class](#create-class)
-  - [Create individual](#create-individual)
-  - [Create membership of an individual](#create-membership-of-an-individual)
+For quick diagramming, see class-relation and object diagramming instructions [here](https://iofoundry.github.io/ontopuml/quick-diagram).
 
-## Fetures
+For detailed instruction on diagramming complex class relation diagrams (with complex axioms), see [here](https://iofoundry.github.io/ontopuml/axioms).
+
+## NOWL diagram generator (Command line program)
+
+### Features
 - Convert RDF data to object diagrams
 - Convert class axioms to class diagrams
 - Apply PlantUML layouts using NetworkX algorithms
