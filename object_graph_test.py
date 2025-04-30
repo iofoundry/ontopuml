@@ -1,4 +1,4 @@
-from translator import rdf_to_puml
+from cli import rdf_to_puml
 
 input_rdf = "sample/object-graph-1.rdf"
 ontologies = []

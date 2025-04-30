@@ -1,5 +1,11 @@
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Author:  Arkopaul Sarkar
+' Date:    2023-10-25
+' Version: 2.0
+' License: MIT
+' Description: PlantUML standard library for ontology diagrams
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 @startuml ontology
-
 ' do not show the circled character in classes
 hide circle
 ' do not show emply members for classes and object 

@@ -1,6 +1,0 @@
-@startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
-class(tb, ns:TireBead)
-class(ma, iof:MaterialArtifact)
-subClass(tb, ma)
-@enduml

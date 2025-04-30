@@ -1,6 +1,23 @@
 # NIST OWL Visual Notation (NOWL)
 Standard plantUML library for visualising ontology and OWL 2.0 axioms in a standardised visual notation. 
 
+## Repository structure
+
+
+- :file_folder: cli : Command line program for generating diagrams from OWL/RDF files.
+
+- :file_folder: doc : Documentations and github pages.
+
+- :file_folder: examples : Usage examples.
+
+- :file_folder: stencil : NOWL visual notation in draw.io stencil.
+- 📄 ontologyv2.iuml : PlantUML standard ilbrary
+- 📄 iof:iuml: IOF-specific stylesheet
+- 📄 run.py: Runner for NOWL cli program
+- 📄 setup.py: Installer for NOWL cli program
+
+## Documentation
+
 Visual notations for OWL 2.0 syntax and plantUML commands can be found [here](https://iofoundry.github.io/ontopuml/commands). 
 
 For quick diagramming, see class-relation and object diagramming instructions [here](https://iofoundry.github.io/ontopuml/quick-diagram).

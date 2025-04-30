@@ -1,5 +1,5 @@
 from owlready2 import get_ontology
-from translator import axiom_to_puml
+from cli import axiom_to_puml
 
 # Example usage
 if __name__ == "__main__":
