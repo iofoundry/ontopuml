@@ -3,6 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import os
 
 # Disable SSL certificate verification to avoid SSL errors when loading ontologies
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -390,10 +391,15 @@ class RdfToPumlConverter:
         
         # Write the entire content to the file at once
         if self.save_puml:
-            file_name = f"{self.input}.puml"
+            if self.input.startswith("http://") or self.input.startswith("https://"):
+                base_name = os.path.basename(self.input) if os.path.basename(self.input) else os.path.basename(os.path.dirname(self.input))
+                file_name = os.path.join(os.getcwd(), f"{base_name}.puml")
+            else:
+                file_name = f"{self.input}.puml"
+            # file_name = f"{self.input}.puml"
             with open(file_name, "w") as f:
                 f.write(puml_content)
-                print(f"PUML file saved as {self.input}.puml")
+                print(f"PUML file saved as {file_name}.puml")
         
         # Return the PUML content as a string
         return puml_content, file_name
