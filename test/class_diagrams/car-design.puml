@@ -1,5 +1,5 @@
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/ontologyv2.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 
 oClass(iof:DesignSpecification)
 oIndividual(ns1:car1-design)
