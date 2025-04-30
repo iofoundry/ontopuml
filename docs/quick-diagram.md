@@ -45,7 +45,7 @@ xDataOnly(class1-name, object-property-name, XSD datatype, <optional>direction=[
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
+https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c2, iof:ValueExpression)
 xOnlyData(c2, iof:hasSimpleExpressionValue, "xsd:double", "", right)   
 @enduml
@@ -55,7 +55,7 @@ xOnlyData(c2, iof:hasSimpleExpressionValue, "xsd:double", "", right)
 
 ```
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
+https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, bfo:Object)
 class(c2, bfo:Site)
 class(c3, bfo:SpatialRegion)
@@ -75,7 +75,7 @@ equiSome(c1, bfo:existsAt, c4)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
+https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, bfo:Object)
 class(c2, bfo:Site)
 class(c3, bfo:SpatialRegion)
