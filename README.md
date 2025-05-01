@@ -25,13 +25,15 @@ For quick diagramming, see class-relation and object diagramming instructions [h
 For detailed instruction on diagramming complex class relation diagrams (with complex axioms), see [here](https://iofoundry.github.io/ontopuml/axioms).
 
 ## NOWL diagram generator (Command line program)
-
+NOWL diagram generator is a Python tool that converts ontology data (RDF) to PlantUML diagram.
+The tool uses NetworkX to calculate optimal layouts for the diagrams and can visualize the graph structure before generating PlantUML code. 
 ### Features
-- Convert RDF data to object diagrams
-- Convert class axioms to class diagrams
+- Convert RDF data to PlantUML object diagrams
+- Convert class axioms to PlantUML class diagrams
 - Apply PlantUML layouts using NetworkX algorithms
-- Exclude specific relations for object  diagrams diagrams
+- Exclude specific relations for object diagrams
 - Choose axiom types to include (necessary, sufficient, equivalent)
+- Command-line interface
 
 ## Installation
 
@@ -45,28 +47,52 @@ pip install -e .
 
 ## Requirements
 - Python 3.7+
-- Owlready2
-- NetworkX
-- Matplotlib
-- Click
+- owlready2 (0.47+)
+- networkx (3.4.2+)
+- matplotlib (3.10.1+)
+- click (8.1.8+)
+- plantuml (optional, for visualization)
 
 You can install all dependencies with:
 pip install -r requirements.txt
 
 ## Usage
 
-ontopuml -i your_ontology.rdf
+ontopuml -i input_ontology.owl [options]
 
-Command Line Options
+##Command Line Options
 
--i, --input: Path to the input ontology file
+```
+-i, --input: Input ontology file (RDF, OWL, etc.)
+--import-ontology: Additional ontologies to import
+--relation-excluded: Relations to exclude from the object diagram
 -c, --class-diagram: Generate a class diagram instead of an object diagram
---class-included: Classes to include in the diagram (can be specified multiple times)
---relation-excluded: Relations to exclude from object diagrams
---condition-included: Type of axioms to include (n=necessary, s=sufficient, ns=equivalent)
--l, --use-layout: Use a layout algorithm for the diagram
---layout-type: Specify which layout algorithm to use (default: spring)
+--class-entity: Class entity to include in the diagram with format <class_name>:<type>
+-l, --layout: Specify the layout algorithm (spring, circular, etc.)
+-v, --view: Visualize the generated PUML using a PlantUML server
+--plantuml-server: URL of the PlantUML server for visualization
+```
+
+##Command Line Examples
+###Converting RDF Data to PlantUML
+ontopuml -i my_ontology.owl -l spring
 
 
+##Python API
+NOWL diagram generator can be used as a Python ligrary:
+```
+from ontopuml import rdf_to_puml, axiom_to_puml
 
+# Convert RDF to PlantUML
+puml_content, output_path = rdf_to_puml(
+    input_rdf="my_ontology.owl",
+    layout_type="spring"
+)
 
+# Convert axioms to PlantUML
+puml_content, output_path = axiom_to_puml(
+    ontology="my_ontology.owl",
+    class_entities=[("MyClass", "ns")],
+    layout_type="circular"
+)
+```
