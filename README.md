@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 ontopuml -i input_ontology.owl [options]
 
-##Command Line Options
+## Command Line Options
 
 ```
 -i, --input: Input ontology file (RDF, OWL, etc.)
@@ -73,11 +73,19 @@ ontopuml -i input_ontology.owl [options]
 --plantuml-server: URL of the PlantUML server for visualization
 ```
 
-##Command Line Examples
-###Converting RDF Data to PlantUML
-ontopuml -i my_ontology.owl -l spring
+## Command Line Examples
+### Converting RDF Data to PlantUML
 
+```
+nowl -i my_ontology.rdf -l spring
 
+nowl -i my_ontology.rdf -c --class-entity "MyClass:ns" -l circular
+
+ontopuml -i my_ontology.owl --relation-excluded "hasParent" --relation-excluded "hasChild"
+
+ontopuml -i my_ontology.owl -v --plantuml-server http://localhost:8080/img/
+
+```
 ##Python API
 NOWL diagram generator can be used as a Python ligrary:
 ```
