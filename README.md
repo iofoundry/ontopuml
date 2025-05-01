@@ -71,10 +71,11 @@ ontopuml -i input_ontology.owl [options]
 --class-entity: Class entity to include in the diagram with format <class_name>:<type>
 -l, --layout: Specify the layout algorithm (spring, circular, etc.)
 -v, --view: Visualize the generated PUML using a PlantUML server
---plantuml-server: URL of the PlantUML server to use for visualization.    Default: http://localhost:8080/img/\n"
-    "Note: If you're having issues with the PlantUML server, you can: \n"
-    "1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty \n"
-    "2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/ \n"
+--plantuml-server: URL of the PlantUML server to use for visualization.   
+    Default: http://localhost:8080/img/"
+    "Note: If you're having issues with the PlantUML server, you can:"
+    "1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty"
+    "2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/"
     "or svg format --plantuml-server http://www.plantuml.com/plantuml/png/ \n",
 
 ```
