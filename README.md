@@ -76,7 +76,7 @@ ontopuml -i input_ontology.owl [options]
     "Note: If you're having issues with the PlantUML server, you can:"
     "1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty"
     "2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/"
-    "or svg format --plantuml-server http://www.plantuml.com/plantuml/png/ \n",
+    "or svg format --plantuml-server http://www.plantuml.com/plantuml/svg/",
 
 ```
 
