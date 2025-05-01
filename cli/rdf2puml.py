@@ -67,68 +67,33 @@ class RdfToPumlConverter:
             self.individuals[ind.name] = ind
             #get ind class
             if ind.is_a:
-                for ind_type in ind.is_a:
+                for class_object in ind.is_a:
                     try:
-                        if ind_type and hasattr(ind_type, "label") and ind_type.label:
-                            class_label = to_pascal_case(ind_type.label[0])
-                        else:
-                            class_label = get_label(ind_type)
-                        self.classes[class_label] = ind_type
+                        class_label = to_pascal_case(get_label(class_object))
+                        self.classes[class_label] = class_object
                         # Only add typeOf relation if it's not excluded
                         if "typeOf" not in self.excluded_relations:
                             self.properties.append((ind, "typeOf", class_label))
                     except:
                         #print(f"Error processing {ind}: {e}")  # Log the exception for debugging
-                        continue
+                        continue 
             #get ind prop
             for prop in ind.get_properties():
-                # Skip if the property is in the excluded relations list
-                prop_name = None
-                if hasattr(prop, 'label') and prop.label:
-                    prop_name = to_camel_case(prop.label[0])
-                else:
-                    prop_name = get_label(prop) if hasattr(prop, 'iri') else "undefined"
-                
                 # Skip this property if it's in the excluded relations
-                if prop_name in self.excluded_relations:
+                if prop.iri in self.excluded_relations:
                     continue
                 
                 for value in prop[ind]:
                     if hasattr(prop, 'inverse') and prop.inverse:
-                        if hasattr(prop.inverse, 'label') and prop.inverse.label:
-                            inverse_label = to_camel_case(prop.inverse.label[0])
-                        else:
-                            inverse_label = get_label(prop.inverse) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
-                    else:
-                        inverse_label = "inverseUndefined"
-
-                    # Skip if the inverse property is in the excluded relations
-                    if inverse_label in self.excluded_relations:
-                        continue
-
-                    # Avoid duplicate property entries
-                    if (value, inverse_label, ind) in self.properties:
-                        continue
-                    if (ind, prop_name, value) not in self.properties:
-                        self.properties.append((ind, prop_name, value))
-            
-                    print(ind, prop, value ,type(value), type(type(value)), "\n")
-                    print(dir(value), "\n")
-                # dataprop_name = None
-                # if hasattr(prop, 'label') and prop.label:
-                #     dataprop_name = to_camel_case(prop.label[0])
-                # else:
-                #     dataprop_name = get_label(prop) if hasattr(prop, 'iri') else "undefined"
-
-                # # Skip this data property if it's in the excluded relations
-                # if dataprop_name in self.excluded_relations:
-                #     continue
-                
-                # for value in prop[ind]:
-                #     if (ind, dataprop_name, value) not in self.properties:
-                #         self.properties.append((ind, dataprop_name, value))
-                        
-        print(self.properties)
+                        # Skip if the inverse property is in the excluded relations
+                        if prop.inverse.iri in self.excluded_relations:
+                            continue
+                        # Avoid duplicate property entries
+                        if (value, prop.inverse, ind) in self.properties:
+                            continue
+                    
+                    if (ind, prop, value) not in self.properties:
+                        self.properties.append((ind, prop, value))
 
     def create_graph(self):
         """Create a NetworkX graph from the RDF data"""
@@ -368,12 +333,13 @@ class RdfToPumlConverter:
 
         # Add class definitions
         for cls_label, cls in self.classes.items():
-            ns_prefix = get_prefix(cls)
-            puml_lines.append(f"class({class_map[cls_label]}, {ns_prefix}{cls_label})")
+            prefix = get_prefix(cls)
+            puml_lines.append(f"class({class_map[cls_label]}, {prefix}{cls_label})")
         
         # Add individual definitions
         for ind_name in self.individuals:
-            puml_lines.append(f"individual({individual_map[ind_name]}, ns1:{ind_name})")
+            prefix = "ns1:"
+            puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
         
         # Add typeOf relationships - only for elements that are still in the graph
         for s, p, o in self.properties:
@@ -396,16 +362,16 @@ class RdfToPumlConverter:
                 elif o in individual_map:
                     target = individual_map[o]
                 elif not isinstance(o, Thing) and not isinstance(type(o), Thing):
-                    puml_lines.append(f"data({individual_map[s.name]}, {p}, \"{o}\")")
+                    puml_lines.append(f"data({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, \"{o}\")")
                     continue
                 else:
                     continue
 
                 if self.layout_type is not None and (s.name, target) in self.edge_directions:
                     direction = self.edge_directions[(s.name, target)]
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {target}, {direction})")
+                    puml_lines.append(f"property({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, {target}, {direction})")
                 else:
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {target})")
+                    puml_lines.append(f"property({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, {target})")
                     
         # Add footer
         puml_lines.append("@enduml")    

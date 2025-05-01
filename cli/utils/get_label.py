@@ -1,13 +1,19 @@
 import re
 from ..utils import to_camel_case, to_pascal_case
 
-def get_label(class_object):
-    """Get the label of a class object, using its IRI if no label exists."""
-    label = get_label_from_iri(class_object.iri) if hasattr(class_object, 'iri') else str(class_object)
+def get_label(object):
+
+    if object and hasattr(object, "label") and object.label:
+        label = object.label[0]
+    elif hasattr(object, 'iri'):
+        """Get the label of a class object, using its IRI if no label exists."""
+        label = get_label_from_iri(object.iri)
+
+    else: label = str(object)
     
     # If the class name starts with "BFO", return it as is
     if label.startswith("BFO"):
-        label = to_camel_case(class_object.label[0])
+        label = object.label[0]
         return label
     return label
 
@@ -24,6 +30,6 @@ def get_prefix(class_object):
     elif "Core" in str(class_object):
         prefix = "iof:"
     else:
-        prefix = ""
+        prefix = "ns:"
 
     return prefix
