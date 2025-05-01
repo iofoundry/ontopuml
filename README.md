@@ -63,6 +63,7 @@ ontopuml -i input_ontology.owl [options]
 ## Command Line Options
 
 ```
+--help: help function
 -i, --input: Input ontology file (RDF, OWL, etc.)
 --import-ontology: Additional ontologies to import
 --relation-excluded: Relations to exclude from the object diagram
@@ -70,7 +71,12 @@ ontopuml -i input_ontology.owl [options]
 --class-entity: Class entity to include in the diagram with format <class_name>:<type>
 -l, --layout: Specify the layout algorithm (spring, circular, etc.)
 -v, --view: Visualize the generated PUML using a PlantUML server
---plantuml-server: URL of the PlantUML server for visualization
+--plantuml-server: URL of the PlantUML server to use for visualization.    Default: http://localhost:8080/img/\n"
+    "Note: If you're having issues with the PlantUML server, you can: \n"
+    "1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty \n"
+    "2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/ \n"
+    "or svg format --plantuml-server http://www.plantuml.com/plantuml/png/ \n",
+
 ```
 
 ## Command Line Examples
@@ -81,26 +87,33 @@ nowl -i my_ontology.rdf -l spring
 
 nowl -i my_ontology.rdf -c --class-entity "MyClass:ns" -l circular
 
-ontopuml -i my_ontology.owl --relation-excluded "hasParent" --relation-excluded "hasChild"
+nowl -i my_ontology.owl --relation-excluded "hasParent" --relation-excluded "hasChild"
 
-ontopuml -i my_ontology.owl -v --plantuml-server http://localhost:8080/img/
+nowl -i my_ontology.rdf -v --plantuml-server http://localhost:8080/img/
 
 ```
-##Python API
+## Python API
 NOWL diagram generator can be used as a Python ligrary:
 ```
-from ontopuml import rdf_to_puml, axiom_to_puml
+from owlready2 import get_ontology
+from cli import rdf_to_puml, axiom_to_puml
 
-# Convert RDF to PlantUML
+# Convert object diagram to PlantUML
 puml_content, output_path = rdf_to_puml(
-    input_rdf="my_ontology.owl",
+    input_rdf="my_ontology.rdf",
     layout_type="spring"
 )
 
-# Convert axioms to PlantUML
-puml_content, output_path = axiom_to_puml(
-    ontology="my_ontology.owl",
-    class_entities=[("MyClass", "ns")],
-    layout_type="circular"
-)
+# Convert class diagram to PlantUML
+from cli import rdf_to_puml
+
+input_rdf = "example/object-graph-1.rdf"
+imported_ontologies = ["https://spec.industrialontologies.org/ontology/202401/core/Core/"]
+
+result, output_path = rdf_to_puml(input_rdf, 
+                     imported_ontologies=imported_ontologies ,
+                     save_puml = False, 
+                    layout_type="bipartite", 
+                     relation_excluded=[],
+                     visualize=1)
 ```
