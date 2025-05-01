@@ -87,7 +87,7 @@ nowl -i my_ontology.rdf -l spring
 
 nowl -i my_ontology.rdf -c --class-entity "MyClass:ns" -l circular
 
-nowl -i my_ontology.owl --relation-excluded "hasParent" --relation-excluded "hasChild"
+nowl -i my_ontology.rdf --relation-excluded "hasParent" --relation-excluded "hasChild"
 
 nowl -i my_ontology.rdf -v --plantuml-server http://localhost:8080/img/
 
