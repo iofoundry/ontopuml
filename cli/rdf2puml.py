@@ -8,7 +8,7 @@ import os
 # Disable SSL certificate verification to avoid SSL errors when loading ontologies
 ssl._create_default_https_context = ssl._create_unverified_context
 
-from owlready2 import get_ontology
+from owlready2 import *
 from .utils import to_pascal_case, to_camel_case, get_label, get_prefix
 
 
@@ -62,9 +62,10 @@ class RdfToPumlConverter:
             data = get_ontology(self.input).load()
         else:
             data = self.input  # input_rdf is already ontology python object
+        
         for ind in data.individuals():
-            
             self.individuals[ind.name] = ind
+            #get ind class
             if ind.is_a:
                 for ind_type in ind.is_a:
                     try:
@@ -79,7 +80,7 @@ class RdfToPumlConverter:
                     except:
                         #print(f"Error processing {ind}: {e}")  # Log the exception for debugging
                         continue
-
+            #get ind prop
             for prop in ind.get_properties():
                 # Skip if the property is in the excluded relations list
                 prop_name = None
@@ -110,6 +111,24 @@ class RdfToPumlConverter:
                         continue
                     if (ind, prop_name, value) not in self.properties:
                         self.properties.append((ind, prop_name, value))
+            
+                    print(ind, prop, value ,type(value), type(type(value)), "\n")
+                    print(dir(value), "\n")
+                # dataprop_name = None
+                # if hasattr(prop, 'label') and prop.label:
+                #     dataprop_name = to_camel_case(prop.label[0])
+                # else:
+                #     dataprop_name = get_label(prop) if hasattr(prop, 'iri') else "undefined"
+
+                # # Skip this data property if it's in the excluded relations
+                # if dataprop_name in self.excluded_relations:
+                #     continue
+                
+                # for value in prop[ind]:
+                #     if (ind, dataprop_name, value) not in self.properties:
+                #         self.properties.append((ind, dataprop_name, value))
+                        
+        print(self.properties)
 
     def create_graph(self):
         """Create a NetworkX graph from the RDF data"""
@@ -346,7 +365,7 @@ class RdfToPumlConverter:
         # Create mappings for remaining classes and individuals
         class_map = {cls_label: f"c{idx}" for idx, cls_label in enumerate(self.classes, start=1)}
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
-        
+
         # Add class definitions
         for cls_label, cls in self.classes.items():
             ns_prefix = get_prefix(cls)
@@ -368,23 +387,28 @@ class RdfToPumlConverter:
         
         # Add property relationships with directions - only for elements that are still in the graph
         for s, p, o in self.properties:
-            if p != "typeOf" and p != "subClass" and isinstance(o, object) and hasattr(o, "name") and o.name in individual_map and s.name in individual_map:
-                # Only include direction if it was calculated and exists in edge_directions
-                if self.layout_type is not None and (s.name, o.name) in self.edge_directions:
-                    direction = self.edge_directions[(s.name, o.name)]
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]}, {direction})")
+            if p in {"typeOf", "subClass"}:
+                continue  # Skip excluded relationships
+
+            if s.name in individual_map:
+                if isinstance(o, object) and hasattr(o, "name") and o.name in individual_map:
+                    target = individual_map[o.name]
+                elif o in individual_map:
+                    target = individual_map[o]
+                elif not isinstance(o, Thing) and not isinstance(type(o), Thing):
+                    puml_lines.append(f"data({individual_map[s.name]}, {p}, \"{o}\")")
+                    continue
                 else:
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]})")
-            elif p != "typeOf" and p != "subClass" and o in individual_map and s.name in individual_map:
-                # Only include direction if it was calculated and exists in edge_directions
-                if self.layout_type is not None and (s.name, o) in self.edge_directions:
-                    direction = self.edge_directions[(s.name, o)]
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]}, {direction})")
+                    continue
+
+                if self.layout_type is not None and (s.name, target) in self.edge_directions:
+                    direction = self.edge_directions[(s.name, target)]
+                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {target}, {direction})")
                 else:
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]})")
-        
+                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {target})")
+                    
         # Add footer
-        puml_lines.append("@enduml")
+        puml_lines.append("@enduml")    
         
         # Join all lines with newlines to create the complete PUML content
         puml_content = "\n".join(puml_lines)
