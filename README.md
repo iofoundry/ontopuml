@@ -80,7 +80,6 @@ ontopuml -i input_ontology.owl [options]
 ```
 
 ## Command Line Examples
-### Converting RDF Data to PlantUML
 
 ```
 nowl -i my_ontology.rdf -l spring
