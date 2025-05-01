@@ -94,6 +94,7 @@ nowl -i my_ontology.rdf -v --plantuml-server http://localhost:8080/img/
 ```
 ## Python API
 NOWL diagram generator can be used as a Python ligrary:
+More example can be found [here](https://github.com/iofoundry/ontopuml/tree/9aeb1f66257196b8272d56a8ee325df3b053ff03/examples).
 ```
 from owlready2 import get_ontology
 from cli import rdf_to_puml, axiom_to_puml
