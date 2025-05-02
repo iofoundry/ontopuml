@@ -333,9 +333,7 @@ class RdfToPumlConverter:
         # Create mappings for remaining classes and individuals
         class_map = {cls_label: f"c{idx}" for idx, cls_label in enumerate(self.classes, start=1)}
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
-        print("\n",self.individuals)
-        print("\n indmap",individual_map)
-        
+
         # Add class definitions
         for cls_label, cls in self.classes.items():
             prefix = get_prefix(cls)
@@ -366,13 +364,11 @@ class RdfToPumlConverter:
                     target = individual_map[o.name]
                 elif o in individual_map:
                     target = individual_map[o]
-                    print(target, 2)
                 elif not isinstance(o, Thing) and not isinstance(type(o), Thing):
                     puml_lines.append(f"data({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, \"{o}\")")
                     continue
                 else:
                     continue
-                print(s.name, target, o.name)
                 if self.layout_type is not None and (s.name, o.name) in self.edge_directions:
                     direction = self.edge_directions[(s.name, o.name)]
                     puml_lines.append(f"property({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, {target}, {direction})")
