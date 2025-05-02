@@ -1,14 +1,14 @@
 from cli import rdf_to_puml
 
 input_rdf = "sample/object-graph-1.rdf"
-imported_ontologies = []
+import_ontologies = [] 
 
 result, output_path = rdf_to_puml(input_rdf, 
-                     imported_ontologies=imported_ontologies ,
+                     import_ontologies=import_ontologies ,
                      save_puml = False, 
-                    #  layout_type="bipartite", 
+                     layout_type="spring", 
                      relation_excluded=[],
-                     visualize=1)
+                     visualize=0)
 print(result)
 
 

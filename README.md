@@ -64,7 +64,7 @@ ontopuml -i input_ontology.owl [options]
 
 ```
 --help: help function
--i, --input: Input ontology file (RDF, OWL, etc.)
+-i, --input: Input ontology file (RDF, OWL, etc.). The local imported ontology that are in the same directory as the input rdf will be automatically imported. 
 --import-ontology: Additional ontologies to import
 --relation-excluded: Relations to exclude from the object diagram
 -c, --class-diagram: Generate a class diagram instead of an object diagram
@@ -87,7 +87,7 @@ nowl -i my_ontology.rdf -l spring
 
 nowl -i my_ontology.rdf -c --class-entity "MyClass:ns" -l circular
 
-nowl -i my_ontology.rdf --relation-excluded "hasParent" --relation-excluded "hasChild"
+nowl -i my_ontology.owl --relation-excluded "hasParent" --relation-excluded "hasChild"
 
 nowl -i my_ontology.rdf -v --plantuml-server http://localhost:8080/img/
 
@@ -118,3 +118,4 @@ result, output_path = rdf_to_puml(input_rdf,
                      relation_excluded=[],
                      visualize=1)
 ```
+## Acknowledgements

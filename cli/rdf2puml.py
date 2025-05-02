@@ -59,10 +59,13 @@ class RdfToPumlConverter:
     def load_data(self):
         """Load RDF data and extract classes, individuals, and properties"""
         if isinstance(self.input, str):  # input_rdf is a file path
+            if self.input.startswith("http"):
+                onto_path.append(".")  
+            else:
+                onto_path.append(os.path.dirname(self.input))
             data = get_ontology(self.input).load()
         else:
             data = self.input  # input_rdf is already ontology python object
-        
         for ind in data.individuals():
             self.individuals[ind.name] = ind
             #get ind class
@@ -119,7 +122,7 @@ class RdfToPumlConverter:
                 self.G.add_edge(s.name, o.name, relation=p)
                 connected_nodes.add(s.name)
                 connected_nodes.add(o.name)
-        
+
         # Remove isolated nodes (no relationships after filtering)
         isolated_nodes = []
         for node in self.G.nodes():
@@ -306,7 +309,7 @@ class RdfToPumlConverter:
                 
                 # Store direction
                 self.edge_directions[(s, o)] = direction
-    
+
     def generate_puml(self):
         """Generate the PlantUML content based on the RDF data and edge directions"""
         puml_lines = []
@@ -330,7 +333,9 @@ class RdfToPumlConverter:
         # Create mappings for remaining classes and individuals
         class_map = {cls_label: f"c{idx}" for idx, cls_label in enumerate(self.classes, start=1)}
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
-
+        print("\n",self.individuals)
+        print("\n indmap",individual_map)
+        
         # Add class definitions
         for cls_label, cls in self.classes.items():
             prefix = get_prefix(cls)
@@ -361,14 +366,15 @@ class RdfToPumlConverter:
                     target = individual_map[o.name]
                 elif o in individual_map:
                     target = individual_map[o]
+                    print(target, 2)
                 elif not isinstance(o, Thing) and not isinstance(type(o), Thing):
                     puml_lines.append(f"data({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, \"{o}\")")
                     continue
                 else:
                     continue
-
-                if self.layout_type is not None and (s.name, target) in self.edge_directions:
-                    direction = self.edge_directions[(s.name, target)]
+                print(s.name, target, o.name)
+                if self.layout_type is not None and (s.name, o.name) in self.edge_directions:
+                    direction = self.edge_directions[(s.name, o.name)]
                     puml_lines.append(f"property({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, {target}, {direction})")
                 else:
                     puml_lines.append(f"property({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, {target})")
@@ -389,7 +395,7 @@ class RdfToPumlConverter:
             # file_name = f"{self.input}.puml"
             with open(file_name, "w") as f:
                 f.write(puml_content)
-                print(f"PUML file saved as {file_name}.puml")
+                print(f"PUML file saved as {file_name}")
         
         # Return the PUML content as a string
         return puml_content, file_name
