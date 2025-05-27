@@ -1,7 +1,0 @@
-@startuml
-!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
-
-oClass(iof:class1)
-oIndividual(time:indi1)
-value(iof:class1, iof:property1, time:indi1, right)
-@enduml

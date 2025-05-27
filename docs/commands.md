@@ -6,7 +6,7 @@ class(c1, "bfo:Quality")
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, "bfo:Quality")   
 @enduml
 ```
@@ -17,7 +17,7 @@ oClass(bfo:Quality)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(bfo:Quality)   
 @enduml
 ```
@@ -31,7 +31,7 @@ individual(o1, "ns1:temperature1")
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml 
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml 
 individual(o1, "ns1:temperature1")
 @enduml
 ```
@@ -42,7 +42,7 @@ oIndividual(ns1:temperature1)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml 
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml 
 oIndividual(ns1:temperature1)
 @enduml
 ```
@@ -58,7 +58,7 @@ equivalent(c2, cx)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, "iof:SpatialRegion")   
 complement(cx, c1)
 class(c2, "iof:MaterialArtifact")
@@ -75,7 +75,7 @@ typeOf(o1, c1)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, "bfo:Quality")   
 individual(o1, "ns1:temperature1")
 typeOf(o1, c1)
@@ -90,7 +90,7 @@ typeOf(ns1:temperature1, bfo:Quality)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(bfo:Quality)
 oIndividual(ns1:temperature1)
 typeOf(ns1:temperature1, bfo:Quality)
@@ -107,7 +107,7 @@ property(p1, bfo:bears, l1, right)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 individual(p1, "ns1:plank1")
 individual(l1, "ns1:length1")
 property(p1, bfo:bears, l1, right)
@@ -122,7 +122,7 @@ property(ns1:plank1, bfo:bears, ns1:length1, right)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oIndividual(ns1:plank1)
 oIndividual(ns1:length1)
 property(ns1:plank1, bfo:bears, ns1:length1, right)
@@ -138,7 +138,7 @@ data(l1, iof:hasSimpleExpressionValue, 30^^xsd:decimal)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 individual(l1, "ns1:length-value")
 data(l1, iof:hasSimpleExpressionValue, 30^^xsd:decimal)
 @enduml
@@ -151,7 +151,7 @@ data(ns1:length-value, iof:hasSimpleExpressionValue, 30^^xsd:decimal)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oIndividual(ns1:length-value)
 data(ns1:length-value, iof:hasSimpleExpressionValue, 30^^xsd:decimal)
 @enduml
@@ -167,7 +167,7 @@ sameAs(ns1:smith, ns1:simpson)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oIndividual(ns1:smith)
 oIndividual(ns1:simpson)
 sameAs(ns1:smith, ns1:simpson)
@@ -184,7 +184,7 @@ differentFrom(ns1:apple-as-fruit, ns1:apple-as-company)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oIndividual(ns1:apple-as-fruit)
 oIndividual(ns1:apple-as-company)
 differentFrom(ns1:apple-as-fruit, ns1:apple-as-company)
@@ -202,7 +202,7 @@ allDifferent('["ns1:apple-as-fruit", "ns1:apple-as-company", "ns1:apple-as-logo"
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oIndividual(ns1:apple-as-fruit)
 oIndividual(ns1:apple-as-company)
 oIndividual(ns1:apple-as-logo)
@@ -220,7 +220,7 @@ subClass(iof:Temperature, bfo:Quality)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(bfo:Quality)
 oClass(iof:Temperature)
 subClass(iof:Temperature, bfo:Quality)
@@ -237,7 +237,7 @@ equivalent(iof:Temperature, qk:Temperature)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:Temperature)
 oClass(qk:Temperature)
 equivalent(iof:Temperature, qk:Temperature)
@@ -253,7 +253,7 @@ disjoint(bfo:Continuant, bfo:Occurrent)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(bfo:Continuant)
 oClass(bfo:Occurrent)
 disjoint(bfo:Continuant, bfo:Occurrent)
@@ -270,7 +270,7 @@ allDisjoint('["bfo:FiatPoint", "bfo:FiatLine", "bfo:FiatSurface"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(bfo:FiatPoint)
 oClass(bfo:FiatLine)
 oClass(bfo:FiatSurface)
@@ -289,7 +289,7 @@ intersection('["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -306,7 +306,7 @@ intersection(m1, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -326,7 +326,7 @@ equiIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:Sys
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -347,7 +347,7 @@ subIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:Syst
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -368,7 +368,7 @@ superIntersection(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:Sy
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -388,7 +388,7 @@ union(u, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -405,7 +405,7 @@ union(m1, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -425,7 +425,7 @@ equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -447,7 +447,7 @@ equivalent(m1, m2)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, iof:PieceOfEquipment)
 class(c2, iof:Assembly)
 class(c3, iof:System)
@@ -469,7 +469,7 @@ subUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -490,7 +490,7 @@ superUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]'
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(iof:PieceOfEquipment)
 oClass(iof:Assembly)
 oClass(iof:System)
@@ -511,7 +511,7 @@ oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(ns:ProductionManager)
 oIndividual(ns1:John)
 oIndividual(ns1:Mary)
@@ -532,7 +532,7 @@ oneOf(ns:ProductionManager, '["ns1:John", "ns1:Mary", "ns1:Avery"]')
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(ns:ProductionManager)
 oIndividual(ns1:John)
 oIndividual(ns1:Mary)
@@ -554,7 +554,7 @@ equivalent(eo, pb, right)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(eo, ns:ElectricVehicle)
 class(bat, ns:Battery)
 only(pb, ns:poweredBy, bat)
@@ -563,7 +563,7 @@ equivalent(eo, pb, right)
 ```
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(eo, ns:ElectricVehicle)
 class(bat, ns:Battery)
 some(pb, ns:poweredBy, bat)
@@ -584,7 +584,7 @@ equivalent(ev, pb)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(v, ns:Vehicle)
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
@@ -595,7 +595,7 @@ equivalent(ev, pb)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(v, ns:Vehicle)
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
@@ -618,7 +618,7 @@ equivalent(ev, pb)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(v, ns:Vehicle)
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
@@ -629,7 +629,7 @@ equivalent(ev, pb)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(v, ns:Vehicle)
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
@@ -650,7 +650,7 @@ equivalent(ev, pb)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
 someCard(pb, ns:poweredBy, bat, min, 1)
@@ -660,7 +660,7 @@ equivalent(ev, pb, right)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
 someCard(pb, ns:poweredBy, bat, max, 4)
@@ -670,7 +670,7 @@ equivalent(ev, pb, right)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(ev, ns:ElectricVehicle)
 class(bat, ns:Battery)
 someCard(pb, ns:poweredBy, bat, exactly, 2)
@@ -691,7 +691,7 @@ xOnly(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(ns:ElectricVehicle)
 oClass(ns:Battery)
 xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
@@ -701,7 +701,7 @@ xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(ns:ElectricVehicle)
 oClass(ns:Battery)
 xOnly(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
@@ -719,7 +719,7 @@ xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(ns:ElectricVehicle)
 oClass(ns:Battery)
 oClass(ns:Vehicle)
@@ -739,7 +739,7 @@ xSome(ns:ElectricVehicle, ns:poweredBy, ns:Battery)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 oClass(ns:ElectricVehicle)
 oClass(ns:Battery)
 oClass(ns:Vehicle)

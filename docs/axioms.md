@@ -43,7 +43,7 @@ class(c5, iof:SupplyingBusinessProcess)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, iof:ProcuringBusinessProcess)
 class(c2, iof:BusinessProcess)
 class(c3, iof:BuyingBusinessProcess)
@@ -66,7 +66,7 @@ some(ce3, bfo:hasOccurrentPart, c3)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, iof:ProcuringBusinessProcess)
 class(c2, iof:BusinessProcess)
 class(c3, iof:BuyingBusinessProcess)
@@ -125,7 +125,7 @@ equivalent(c1, ce4)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, iof:ProcuringBusinessProcess)
 class(c2, iof:BusinessProcess)
 class(c3, iof:BuyingBusinessProcess)
@@ -156,7 +156,7 @@ equivalent(c1, ce4, right)
 
 ```plantuml
 @startuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/iof.iuml
 class(c1, iof:ProcuringBusinessProcess)
 class(c2, iof:BusinessProcess)
 class(c3, iof:BuyingBusinessProcess)

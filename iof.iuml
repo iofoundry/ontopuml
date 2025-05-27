@@ -11,6 +11,7 @@ skinparam object{
     BorderColor White 
     FontName Helvetica   
 }
+
 !$namespace_colors = { "bfo" : "DFA702", 
                         "iof":"1E90FF", 
                         "ns":"Green", 

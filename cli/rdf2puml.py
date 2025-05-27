@@ -3,11 +3,12 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import os
 
 # Disable SSL certificate verification to avoid SSL errors when loading ontologies
 ssl._create_default_https_context = ssl._create_unverified_context
 
-from owlready2 import get_ontology
+from owlready2 import *
 from .utils import to_pascal_case, to_camel_case, get_label, get_prefix
 
 
@@ -61,54 +62,38 @@ class RdfToPumlConverter:
             data = get_ontology(self.input).load()
         else:
             data = self.input  # input_rdf is already ontology python object
+        
         for ind in data.individuals():
-            
             self.individuals[ind.name] = ind
+            #get ind class
             if ind.is_a:
-                for ind_type in ind.is_a:
+                for class_object in ind.is_a:
                     try:
-                        if ind_type and hasattr(ind_type, "label") and ind_type.label:
-                            class_label = to_pascal_case(ind_type.label[0])
-                        else:
-                            class_label = get_label(ind_type)
-                        self.classes[class_label] = ind_type
+                        class_label = to_pascal_case(get_label(class_object))
+                        self.classes[class_label] = class_object
                         # Only add typeOf relation if it's not excluded
                         if "typeOf" not in self.excluded_relations:
                             self.properties.append((ind, "typeOf", class_label))
                     except:
                         #print(f"Error processing {ind}: {e}")  # Log the exception for debugging
-                        continue
-
+                        continue 
+            #get ind prop
             for prop in ind.get_properties():
-                # Skip if the property is in the excluded relations list
-                prop_name = None
-                if hasattr(prop, 'label') and prop.label:
-                    prop_name = to_camel_case(prop.label[0])
-                else:
-                    prop_name = get_label(prop) if hasattr(prop, 'iri') else "undefined"
-                
                 # Skip this property if it's in the excluded relations
-                if prop_name in self.excluded_relations:
+                if prop.iri in self.excluded_relations:
                     continue
                 
                 for value in prop[ind]:
                     if hasattr(prop, 'inverse') and prop.inverse:
-                        if hasattr(prop.inverse, 'label') and prop.inverse.label:
-                            inverse_label = to_camel_case(prop.inverse.label[0])
-                        else:
-                            inverse_label = get_label(prop.inverse) if hasattr(prop.inverse, 'iri') else "inverseUndefined"
-                    else:
-                        inverse_label = "inverseUndefined"
-
-                    # Skip if the inverse property is in the excluded relations
-                    if inverse_label in self.excluded_relations:
-                        continue
-
-                    # Avoid duplicate property entries
-                    if (value, inverse_label, ind) in self.properties:
-                        continue
-                    if (ind, prop_name, value) not in self.properties:
-                        self.properties.append((ind, prop_name, value))
+                        # Skip if the inverse property is in the excluded relations
+                        if prop.inverse.iri in self.excluded_relations:
+                            continue
+                        # Avoid duplicate property entries
+                        if (value, prop.inverse, ind) in self.properties:
+                            continue
+                    
+                    if (ind, prop, value) not in self.properties:
+                        self.properties.append((ind, prop, value))
 
     def create_graph(self):
         """Create a NetworkX graph from the RDF data"""
@@ -345,15 +330,16 @@ class RdfToPumlConverter:
         # Create mappings for remaining classes and individuals
         class_map = {cls_label: f"c{idx}" for idx, cls_label in enumerate(self.classes, start=1)}
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
-        
+
         # Add class definitions
         for cls_label, cls in self.classes.items():
-            ns_prefix = get_prefix(cls)
-            puml_lines.append(f"class({class_map[cls_label]}, {ns_prefix}{cls_label})")
+            prefix = get_prefix(cls)
+            puml_lines.append(f"class({class_map[cls_label]}, {prefix}{cls_label})")
         
         # Add individual definitions
         for ind_name in self.individuals:
-            puml_lines.append(f"individual({individual_map[ind_name]}, ns1:{ind_name})")
+            prefix = "ns1:"
+            puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
         
         # Add typeOf relationships - only for elements that are still in the graph
         for s, p, o in self.properties:
@@ -367,33 +353,43 @@ class RdfToPumlConverter:
         
         # Add property relationships with directions - only for elements that are still in the graph
         for s, p, o in self.properties:
-            if p != "typeOf" and p != "subClass" and isinstance(o, object) and hasattr(o, "name") and o.name in individual_map and s.name in individual_map:
-                # Only include direction if it was calculated and exists in edge_directions
-                if self.layout_type is not None and (s.name, o.name) in self.edge_directions:
-                    direction = self.edge_directions[(s.name, o.name)]
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]}, {direction})")
+            if p in {"typeOf", "subClass"}:
+                continue  # Skip excluded relationships
+
+            if s.name in individual_map:
+                if isinstance(o, object) and hasattr(o, "name") and o.name in individual_map:
+                    target = individual_map[o.name]
+                elif o in individual_map:
+                    target = individual_map[o]
+                elif not isinstance(o, Thing) and not isinstance(type(o), Thing):
+                    puml_lines.append(f"data({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, \"{o}\")")
+                    continue
                 else:
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o.name]})")
-            elif p != "typeOf" and p != "subClass" and o in individual_map and s.name in individual_map:
-                # Only include direction if it was calculated and exists in edge_directions
-                if self.layout_type is not None and (s.name, o) in self.edge_directions:
-                    direction = self.edge_directions[(s.name, o)]
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]}, {direction})")
+                    continue
+
+                if self.layout_type is not None and (s.name, target) in self.edge_directions:
+                    direction = self.edge_directions[(s.name, target)]
+                    puml_lines.append(f"property({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, {target}, {direction})")
                 else:
-                    puml_lines.append(f"property({individual_map[s.name]}, {p}, {individual_map[o]})")
-        
+                    puml_lines.append(f"property({individual_map[s.name]}, {get_prefix(p)}{get_label(p)}, {target})")
+                    
         # Add footer
-        puml_lines.append("@enduml")
+        puml_lines.append("@enduml")    
         
         # Join all lines with newlines to create the complete PUML content
         puml_content = "\n".join(puml_lines)
         
         # Write the entire content to the file at once
         if self.save_puml:
-            file_name = f"{self.input}.puml"
+            if self.input.startswith("http://") or self.input.startswith("https://"):
+                base_name = os.path.basename(self.input) if os.path.basename(self.input) else os.path.basename(os.path.dirname(self.input))
+                file_name = os.path.join(os.getcwd(), f"{base_name}.puml")
+            else:
+                file_name = f"{self.input}.puml"
+            # file_name = f"{self.input}.puml"
             with open(file_name, "w") as f:
                 f.write(puml_content)
-                print(f"PUML file saved as {self.input}.puml")
+                print(f"PUML file saved as {file_name}.puml")
         
         # Return the PUML content as a string
         return puml_content, file_name
