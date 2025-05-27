@@ -1,5 +1,11 @@
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Author:  Arkopaul Sarkar
+' Date:    2023-10-25
+' Version: 2.0
+' License: MIT
+' Description: PlantUML standard library for ontology diagrams
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 @startuml ontology
-
 ' do not show the circled character in classes
 hide circle
 ' do not show emply members for classes and object 
@@ -121,7 +127,15 @@ skinparam object{
 
 !unquoted procedure oIndividual($iri)
     !$var = newVar()
-    object "<u>$iri" as $var 
+    object "<u>$iri" as $var #getColor($iri)
+    addVariable($var, $iri)
+!endprocedure
+
+!unquoted procedure oIndividual($iri, $class = "")   
+    !$var = newVar()
+    object "<u>$iri" as $var #getColor($iri)
+    $var : <back:#getColor($class)>type = $class</back> 
+    ' $var : --
     addVariable($var, $iri)
 !endprocedure
 
@@ -172,10 +186,12 @@ skinparam object{
     !$m = getVariable($subject)
     !if $m
         object $m {
+            --
             $predicate  = $value
         }
     !else
         object $subject {
+            --
             $predicate  = $value
         }
     !endif
