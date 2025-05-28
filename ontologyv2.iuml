@@ -125,6 +125,12 @@ skinparam object{
     object "<u>$iri" as $alias #getColor($iri)
 !endprocedure
 
+' iri should use only prefix and not complete url
+!unquoted procedure individual($alias, $iri, $class)
+    object "<u>$iri" as $alias #getColor($iri)
+    $alias : <back:#getColor($class)>type = $class</back>
+!endprocedure
+
 !unquoted procedure oIndividual($iri)
     !$var = newVar()
     object "<u>$iri" as $var #getColor($iri)
