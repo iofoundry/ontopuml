@@ -12,7 +12,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "nowl=translator:main",
+            "nowl=cli:main",
         ],
     },
 )

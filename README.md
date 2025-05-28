@@ -3,7 +3,6 @@ Standard plantUML library for visualising ontology and OWL 2.0 axioms in a stand
 
 ## Repository structure
 
-
 - :file_folder: cli : Command line program for generating diagrams from OWL/RDF files.
 
 - :file_folder: doc : Documentations and github pages.

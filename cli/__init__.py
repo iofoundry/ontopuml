@@ -16,7 +16,7 @@ IRI = IRIParamType()
 
 def find_ontology_file():
     """Search for an ontology file in the current directory."""
-    extensions = [".rdf", ".owl", ".jsonld"]
+    extensions = [".rdf", ".owl"]
     for file in os.listdir():
         if any(file.endswith(ext) for ext in extensions):
             return file
