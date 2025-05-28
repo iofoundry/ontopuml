@@ -26,7 +26,7 @@ skinparam object{
     FontName Helvetica   
 }
 
-!$default_direction = left
+!$default_direction = x
 
 ' global variable for prefixes 
 ' (expects json with key = prefix, value = namespace)
@@ -179,13 +179,21 @@ skinparam object{
 '-------------------------------------------------------'
 ' create object property ($predicate) association from $subject individual to $object individual
 ' proeprty direction is left of $subject by default
-!unquoted procedure property($subject, $predicate, $object, $direction = $default_direction)
+!unquoted procedure property($subject, $predicate, $object, $direction = x)
     !$m = getVariable($subject)
     !$n = getVariable($object)
-    !if $m && $n
-        $m -$direction-> $n : $predicate
+    !$dir = x
+    !if $direction != x 
+        !$dir = $direction
+    !elseif $default_direction != x
+        !$dir = $default_direction
     !else
-        $subject -$direction-> $object : $predicate
+        !$dir = left
+    !endif 
+    !if $m && $n
+        $m -$dir-> $n : $predicate
+    !else
+        $subject -$dir-> $object : $predicate
     !endif
 !endprocedure
 
