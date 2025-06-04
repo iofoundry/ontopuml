@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://example.com/sub/"
+         xmlns="http://example.com/sub/">
+
+<owl:Ontology rdf:about="http://example.com/sub">
+  <owl:imports rdf:resource="http://example.com"/>
+</owl:Ontology>
+
+<owl:Class rdf:about="MinCardinalityClass">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <owl:equivalentClass>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="http://example.com/simpleProperty1"/>
+      <owl:onClass rdf:resource="http://example.com/SimpleClass1"/>
+      <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+    </owl:Restriction>
+  </owl:equivalentClass>
+</owl:Class>
+
+
+</rdf:RDF>
