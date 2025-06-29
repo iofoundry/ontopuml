@@ -539,25 +539,17 @@ skinparam object{
 '-------------------------------------------------------'
 ' make the intersection of given %classes subClass of $class
 ' individual variables need to be passed as a json list
-!unquoted procedure oneOf($class, $individuals, $directionOneOf = x, $direction = x)
-    !$var = "one" + increment(1)
-    () "<<owl:oneOf>>" as $var
-    !$dirOne = getDirection($directionOneOf, down)
+!unquoted procedure oneOf($alias, $individuals, $direction = x)
+    () "<<owl:oneOf>>" as $alias
+    !$dir = getDirection($direction, down)
     !foreach $item in %str2json($individuals)
         !$m = getVariable($item)
         !if $m
-            $var .$dirOne. $m
+            $alias .$dir. $m
         !else
-            $var .$dirOne. $item
+            $alias .$dir. $item
         !endif
-    !endfor 
-    !$n = getVariable($class)
-    !$dir = getDirection($direction, down)
-    !if $n
-        $var <.$dir. $n
-    !else
-        $var <.$dir. $class
-    !endif
+    !endfor     
 !endprocedure
 
 '-------------------------------------------------------'
