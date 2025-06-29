@@ -522,6 +522,19 @@ skinparam object{
 !endprocedure
 
 '-------------------------------------------------------'
+' self constraint
+'-------------------------------------------------------'
+!unquoted procedure self($class, $property, $direction = x)
+    !$n = getVariable($class)
+    !$dir = getDirection($direction, right)
+    !if $n
+        $n -$dir-> $n : $property <<self>>
+    !else
+        $class -$dir-> $class : $property <<self>>
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
 ' One of constraint
 '-------------------------------------------------------'
 ' make the intersection of given %classes subClass of $class
