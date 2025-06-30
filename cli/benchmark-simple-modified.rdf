@@ -1,0 +1,498 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://nist.gov/nowl/benchmark-simple/"
+     xml:base="http://nist.gov/nowl/benchmark-simple/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://nist.gov/nowl/benchmark-simple">
+        <owl:imports rdf:resource="http://nist.gov/nowl/benchmark-core"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/SimpleClass1 -->
+
+    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass1">
+        <owl:equivalentClass rdf:resource="http://nist.gov/nowl/benchmark-simple/EquivalentClass"/>
+        <owl:disjointWith rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass4"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/SimpleClass3 -->
+
+    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass3">
+        <owl:disjointUnionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass4"/>
+            <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass5"/>
+        </owl:disjointUnionOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/SimpleClass4 -->
+
+    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass4"/>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/AllValuesFromClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/AllValuesFromClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty2"/>
+                <owl:allValuesFrom rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass3"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/ComplementClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/ComplementClass">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:complementOf rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass1"/>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataAllComplexDatatypeClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllComplexDatatypeClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
+                <owl:allValuesFrom>
+                    <rdfs:Datatype>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdfs:Datatype>
+                                <owl:datatypeComplementOf>
+                                    <rdfs:Datatype>
+                                        <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                                        <owl:withRestrictions rdf:parseType="Collection">
+                                            <rdf:Description>
+                                                <xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">5.0</xsd:minInclusive>
+                                            </rdf:Description>
+                                        </owl:withRestrictions>
+                                    </rdfs:Datatype>
+                                </owl:datatypeComplementOf>
+                            </rdfs:Datatype>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.5</xsd:minExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:intersectionOf>
+                    </rdfs:Datatype>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataAllDatatypeOneOfClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllDatatypeOneOfClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty1"/>
+                <owl:allValuesFrom>
+                    <rdfs:Datatype>
+                        <owl:oneOf>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                                <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</rdf:first>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </owl:oneOf>
+                    </rdfs:Datatype>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataAllDatatypeRangeClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllDatatypeRangeClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
+                <owl:allValuesFrom>
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:minExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.11</xsd:minExclusive>
+                            </rdf:Description>
+                            <rdf:Description>
+                                <xsd:maxExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">233.34</xsd:maxExclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataAllValueClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllValueClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty2"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataExactCardinalityClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataExactCardinalityClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataMaxCardinalityClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataMaxCardinalityClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty2"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">3</owl:maxQualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataMinCardinalityClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataMinCardinalityClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty1"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataSomeComplexDatatypeClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataSomeComplexDatatypeClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
+                <owl:someValuesFrom>
+                    <rdfs:Datatype>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">100.0</xsd:minInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-0.5</xsd:minExclusive>
+                                    </rdf:Description>
+                                    <rdf:Description>
+                                        <xsd:maxExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">33.4</xsd:maxExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:unionOf>
+                    </rdfs:Datatype>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataSomeDatatypeRangeClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataSomeDatatypeRangeClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty2"/>
+                <owl:someValuesFrom>
+                    <rdfs:Datatype>
+                        <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+                        <owl:withRestrictions rdf:parseType="Collection">
+                            <rdf:Description>
+                                <xsd:minExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</xsd:minExclusive>
+                            </rdf:Description>
+                            <rdf:Description>
+                                <xsd:maxExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</xsd:maxExclusive>
+                            </rdf:Description>
+                        </owl:withRestrictions>
+                    </rdfs:Datatype>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataSomeValueClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataSomeValueClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty1"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/DataValueClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataValueClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.0</owl:hasValue>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/EquivalentClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/EquivalentClass">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/ExactCardinalityClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/ExactCardinalityClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty3"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass1"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/IntersectionClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/IntersectionClass">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass1"/>
+                    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass2"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/MaxCardinalityClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/MaxCardinalityClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty2"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">3</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass3"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/MinCardinalityClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/MinCardinalityClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty1"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass2"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/OneOfClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/OneOfClass">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/individual1"/>
+                    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/individual2"/>
+                    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/individual3"/>
+                </owl:oneOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/SelfClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/SelfClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty1"/>
+                <owl:hasSelf rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</owl:hasSelf>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/SomeValuesFromClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/SomeValuesFromClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty1"/>
+                <owl:someValuesFrom rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass2"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/SubClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/SubClass">
+        <rdfs:subClassOf rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass1"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/UnionClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/UnionClass">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass1"/>
+                    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass2"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-simple/ValueClass -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/ValueClass">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty3"/>
+                <owl:hasValue rdf:resource="http://nist.gov/nowl/benchmark-core/individual1"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/individual1"/>
+            <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/individual3"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
