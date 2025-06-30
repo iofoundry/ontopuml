@@ -186,11 +186,11 @@ skinparam object{
 ' Assert associations
 '-------------------------------------------------------'
 ' create object property ($predicate) association from $subject individual to $object individual
-' proeprty direction is left of $subject by default
+' proeprty direction is right of $subject by default
 !unquoted procedure property($subject, $predicate, $object, $direction = x)
     !$m = getVariable($subject)
     !$n = getVariable($object)
-    !$dir = getDirection($direction, left)
+    !$dir = getDirection($direction, right)
     !if $m && $n
         $m -$dir-> $n : $predicate
     !else
@@ -218,11 +218,11 @@ skinparam object{
 ' Mapping among individuals
 '-------------------------------------------------------'
 ' create data property ($predicate) association from $subject individual to $value
-' link direction is left of $subject by default
+' link direction is right of $subject by default
 !unquoted procedure sameAs($individual1, $individual2, $direction = x)
     !$m = getVariable($individual1)
     !$n = getVariable($individual2)
-    !$dir = getDirection($direction, left)
+    !$dir = getDirection($direction, right)
     !if $m && $n
         $m <-$dir-> $n : <<owl:sameAs>>
     !else
@@ -231,11 +231,11 @@ skinparam object{
 !endprocedure
 
 ' create data property ($predicate) association from $subject individual to $value
-' link direction is left of $subject by default
+' link direction is right of $subject by default
 !unquoted procedure differentFrom($individual1, $individual2, $direction = x)
     !$m = getVariable($individual1)
     !$n = getVariable($individual2)
-    !$dir = getDirection($direction, left)
+    !$dir = getDirection($direction, right)
     !if $m && $n
         $m <-$dir-> $n : <<owl:differentFrom>>
     !else
@@ -276,11 +276,11 @@ skinparam object{
 !endprocedure
 
 ' define $class1 as equivalent class of $class2
-' link direction is left of $subject by default
+' link direction is right of $subject by default
 !unquoted procedure equivalent($class1, $class2, $direction = x)
     !$m = getVariable($class1)
     !$n = getVariable($class2)
-    !$dir = getDirection($direction, left)
+    !$dir = getDirection($direction, right)
     !if $m && $n
         $m <-$dir-> $n : <<owl:equivalentClass>> 
     !else
@@ -289,11 +289,11 @@ skinparam object{
 !endprocedure
 
 ' define $class1 as equivalent class of $class2
-' link direction is left of $subject by default
+' link direction is right of $subject by default
 !unquoted procedure disjoint($class1, $class2, $direction = x)
     !$m = getVariable($class1)
     !$n = getVariable($class2)
-    !$dir = getDirection($direction, left)
+    !$dir = getDirection($direction, right)
     !if $m && $n
         $m <-$dir-> $n : <<owl:disjointWith>>
     !else
@@ -513,7 +513,7 @@ skinparam object{
 !unquoted procedure value($alias, $property, $individual, $direction = x)
     class "    " as $alias
     !$n = getVariable($individual)
-    !$dir = getDirection($direction, left)
+    !$dir = getDirection($direction, right)
     !if $n
         $alias -$dir-> $n : $property <<value>>
     !else
@@ -556,7 +556,7 @@ skinparam object{
 ' Existential constraint on object property
 '-------------------------------------------------------'
 ' define '$property some $class2'
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternative: variable can be supplied
 !unquoted procedure some($alias, $property, $class2, $direction = x)
     class "    " as $alias
@@ -570,7 +570,7 @@ skinparam object{
 !endprocedure
 
 ' define '$property max/min/exactly cadinality $class2'
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternative: variable can be supplied
 !unquoted procedure someCard($alias, $property, $class2, $scope, $cardinality, $direction = x)
     class "    " as $alias
@@ -600,7 +600,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is equivalent to '$property some $class2'
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure xSome($class1, $property, $class2, $tag = "", $direction = x)
     !$m = getVariable($class1)
     !$n = getVariable($class2)
@@ -622,7 +622,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 and $property some $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for union
 !unquoted procedure andSome($alias, $class1, $property, $class2, $directionIntersection = x, $direction = x)
     !$var = "andSome" + increment(1)
@@ -639,7 +639,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 or $property some $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for union
 !unquoted procedure orSome($alias, $class1, $property, $class2, $directionUnion = x, $direction = x)
     !$var = "orSome" + increment(1)
@@ -656,7 +656,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is subClass of '$property some $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure subSome($class1, $property, $class2, $directionSub = x, $direction = x)
     !$var = "subSome" + increment(1)
     class "    " as $var
@@ -674,7 +674,7 @@ skinparam object{
 !endprocedure
 
 ' define '$property some $class2' is subClass of $class1
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure superSome($class1, $property, $class2, $directionSuper = x, $direction = x)
     !$var = "superSome" + increment(1)
     class "    " as $var
@@ -695,7 +695,7 @@ skinparam object{
 ' Existential constraint on Data property
 '-------------------------------------------------------'
 ' define $class1 is equivalent to '$property some $datatype'
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternative can pass variable 
 !unquoted procedure someData($alias, $property, $datatype, $direction = x)
     class "    " as $alias
@@ -705,7 +705,7 @@ skinparam object{
 !endprocedure
 
 ' define '$property max/min/exactly cadinality $datatype'
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternative: variable can be supplied
 !unquoted procedure someDataCard($alias, $property, $datatype, $scope, $cardinality, $direction = x)
     class "    " as $alias
@@ -723,7 +723,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is equivalent to '$property some $datatype'
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure xSomeData($class1, $property, $datatype, $tag = "", $direction = x)
     class "$datatype" #white;text:black ##[dotted]black
     !$m = getVariable($class1)
@@ -744,7 +744,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 and $property some $datatype' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for union
 !unquoted procedure andSomeData($alias, $class1, $property, $class2, $directionIntersection = x, $direction = x)
     !$var = "andSomeData" + increment(1)
@@ -761,7 +761,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 or $property some $datatype' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for union
 !unquoted procedure orSomeData($alias, $class1, $property, $class2, $directionUnion = x, $direction = x)
     !$var = "orSomeData" + increment(1)
@@ -778,7 +778,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is subClass of '$property some $datatype' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure subSomeData($class1, $property, $datatype, $directionSub = x, $direction = x)
     !$var = "subSomeData" + increment(1)
     class "    " as $var
@@ -795,7 +795,7 @@ skinparam object{
 !endprocedure
 
 ' define '$property some $datatype' is subClass of $class1
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure superSomeData($class1, $property, $datatype, $directionSup = x, $direction = x)
     !$var = "superSomeData" + increment(1)
     class "    " as $var
@@ -816,7 +816,7 @@ skinparam object{
 '-------------------------------------------------------'
 
 ' define $class1 is equivalent to '$property only $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternative: variable can be supplied
 !unquoted procedure only($alias, $property, $class2, $direction = x)
     class "    " as $alias
@@ -830,7 +830,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is equivalent to '$property only $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure xOnly($class1, $property, $class2, $tag = "", $direction = x)
     !$m = getVariable($class1)
     !$n = getVariable($class2)
@@ -851,7 +851,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 and $property only $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for intersection
 !unquoted procedure andOnly($alias, $class1, $property, $class2, $directionInter = x, $direction = x)
     !$var = "andOnly" + increment(1)
@@ -868,7 +868,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 or $property only $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for union
 !unquoted procedure orOnly($alias, $class1, $property, $class2, $directionUnion = x, $direction = x)
     !$var = "orOnly" + increment(1)
@@ -885,7 +885,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is subClass of '$property only $class2' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure subOnly($class1, $property, $class2, $directionSub = x, $direction = x)
     !$var = "subOnly" + increment(1)
     class "    " as $var
@@ -903,7 +903,7 @@ skinparam object{
 !endprocedure
 
 ' define '$property only $class2' is subClass of $class1
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure superOnly($class1, $property, $class2, $directionSup = x, $direction = x)
     !$var = "superOnly" + increment(1)
     class "    " as $var
@@ -935,7 +935,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is equivalent to '$property only $datatype' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure xOnlyData($class1, $property, $datatype, $tag = "", $direction = x)
     class "$datatype" #white;line:black;line.dotted;text:black
     !$m = getVariable($class1)
@@ -956,7 +956,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 and $property only $datatype' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for union
 !unquoted procedure andOnlyData($alias, $class1, $property, $class2, $directionIntersection = x, $direction = x)
     !$var = "andOnlyData" + increment(1)
@@ -973,7 +973,7 @@ skinparam object{
 !endprocedure
 
 ' State '$class1 or $property only $datatype' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 ' alternaitve: pass the variable for union
 !unquoted procedure orOnlyData($alias, $class1, $property, $class2, $directionUnion = x, $direction = x)
     !$var = "orOnlyData" + increment(1)
@@ -990,7 +990,7 @@ skinparam object{
 !endprocedure
 
 ' define $class1 is subClass of '$property some $datatype' 
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure subOnlyData($class1, $property, $datatype, $directionSub = x, $direction = x)
     !$var = "subSomeData" + increment(1)
     class "    " as $var
@@ -1007,7 +1007,7 @@ skinparam object{
 !endprocedure
 
 ' define '$property some $datatype' is subClass of $class1
-' link direction is left of $class1 by default
+' link direction is right of $class1 by default
 !unquoted procedure superOnlyData($class1, $property, $datatype, $directionSup = x, $direction = x)
     !$var = "superSomeData" + increment(1)
     class "    " as $var
