@@ -8,7 +8,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import *
 
-from .utils import to_camel_case, to_pascal_case, get_prefix, get_label
+from .utils import to_camel_case, to_pascal_case, get_prefix, get_label, python_name_to_xsd
 
 def get_axiom(class_entity, ontology, type):
     #equivalent to
@@ -92,7 +92,7 @@ class AxiomToPumlConverter:
         self.class_entities, self.types = self._process_class_entities_types(class_entities, types, self.ontology)
         self.puml_output = []
         self.puml_output.append("@startuml\n!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv2.iuml")
-        self.puml_output.append(f"title {self.class_entities}")
+        self.puml_output.append('title '+'_'.join(i.name for i in self.class_entities if hasattr(self.class_entities[0], 'name')))
         self.class_map = {}
         self.restriction_map = {}  # New map to track restrictions and avoid duplicates
         self.counter = 0
@@ -358,21 +358,20 @@ class AxiomToPumlConverter:
             self.relationships.append((var_name, prop_name, node))
         
             if restriction_type == 'only':
-                print("only",restriction, restriction.value, node)
                 if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not)) :
                     self.puml_output.append(f"only({var_name}, {prop_name}, {node})")
                 else:
-                    self.puml_output.append(f"onlyData({var_name}, {prop_name}, {restriction.value})")
+                    self.puml_output.append(f"onlyData({var_name}, {prop_name}, {python_name_to_xsd(restriction.value)})")
             elif restriction_type == 'some':
-                if isinstance(restriction, (ThingClass, Restriction)):
+                if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not)):
                     self.puml_output.append(f"some({var_name}, {prop_name}, {node})")
                 else:
-                    self.puml_output.append(f"someData({var_name}, {prop_name}, {restriction.value})")
+                    self.puml_output.append(f"someData({var_name}, {prop_name}, {python_name_to_xsd(restriction.value)})")
             elif restriction_type in ['min','max','exactly'] and cardinality is not None:
-                if isinstance(restriction.value, type) :
-                    self.puml_output.append(f"someDataCard({var_name}, {prop_name}, {node}, {restriction_type}, {cardinality})")
-                # else:
-                #     self.puml_output.append(f"someDataCard({var_name}, {prop_name}, {node}, {restriction_type}, {cardinality})")
+                if isinstance(restriction.value, (ThingClass, Restriction)):
+                    self.puml_output.append(f"someCard({var_name}, {prop_name}, {node}, {restriction_type}, {cardinality})")
+                else:
+                    self.puml_output.append(f"someDataCard({var_name}, {prop_name}, {python_name_to_xsd(node)}, {restriction_type}, {cardinality})")
            
             elif restriction_type == 'value':
                 self.puml_output.append(f"value({var_name}, {prop_name}, {node})")
