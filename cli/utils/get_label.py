@@ -12,10 +12,13 @@ def get_label(object):
     else: label = str(object)
     
     # If the class name starts with "BFO", return it as is
-    if label.startswith("BFO"):
-        label = object.label[0]
+    try:
+        if label.startswith("BFO"):
+            label = object.label[0]
+            return label
         return label
-    return label
+    except Exception as e:
+        return str(object)
 
 def get_label_from_iri(url_string):
     match = re.search(r'/([^/]+)$', url_string)
@@ -84,3 +87,48 @@ def get_prefix(class_object, prefix_map=None, default_prefix_counter=None):
     
     # If we got here, use the generic ns prefix
     return "ns:"
+
+
+def python_type_to_xsd(python_type):
+    """
+    Convert Python type to XSD (XML Schema Definition) type string.
+    
+    Args:
+        python_type: Python type object (e.g., str, int, float, bool)
+        
+    Returns:
+        str: XSD type string (e.g., "xsd:string", "xsd:int", "xsd:float")
+
+    """
+    # Handle both type objects and type names
+    if isinstance(python_type, type):
+        type_name = python_type.__name__
+    elif isinstance(python_type, str):
+        type_name = python_type
+    else:
+        type_name = str(python_type)
+    
+    # Mapping from Python types to XSD types
+    type_mapping = {
+        'str': 'xsd:string',
+        'string': 'xsd:string',
+        'int': 'xsd:int',
+        'integer': 'xsd:integer',
+        'float': 'xsd:double',
+        'double': 'xsd:double',
+        'bool': 'xsd:boolean',
+        'boolean': 'xsd:boolean',
+        'bytes': 'xsd:hexBinary',
+        'bytearray': 'xsd:hexBinary',
+        'datetime': 'xsd:dateTime',
+        'date': 'xsd:date',
+        'time': 'xsd:time',
+        'decimal': 'xsd:decimal',
+        'long': 'xsd:long',
+        'short': 'xsd:short',
+        'byte': 'xsd:byte',
+        'NoneType': 'xsd:string',  # Default fallback
+    }
+    
+    # Return mapped type or default to xsd:string if not found
+    return type_mapping.get(type_name, 'xsd:string')
