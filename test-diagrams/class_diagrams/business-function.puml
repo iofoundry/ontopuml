@@ -1,0 +1,17 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(c1, iof:BusinessFunction)
+class(c2, bfo:function)
+subClass(c1, "c2")
+class(c3, iof:BusinessProcess)
+only(ce4, bfo:hasRealization, c3, down)
+subClass(c1, "ce4")
+class(c5, iof:Organization)
+some(ce6, iof:functionOf, c5, up)
+subClass(c1, "ce6")
+class(c7, iof:ObjectiveSpecification)
+some(ce8, bfo:genericallyDependsOn, c5, right)
+intersection(ce9, '["c7", "ce8"]')
+some(ce10, iof:prescribedBy, ce9, down)
+subClass(c1, "ce10")
+@enduml

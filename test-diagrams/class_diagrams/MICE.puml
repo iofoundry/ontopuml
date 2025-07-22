@@ -1,0 +1,30 @@
+@startuml
+left to right direction
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+
+class(c3, iof:MeasuredValueExpression)
+some(ce4, bfo:hasContinuantPartAtAllTimes, c3)
+
+class(c5, bfo:TemporalRegion)
+class(c6, bfo:SpecificallyDependentContinuant)
+class(c7, iof:ProcessCharacteristic)
+union(ce8, '["c5", "c6", "c7"]')
+some(ce9, iof:describes, ce8, down)
+
+class(c9, bfo:Process)
+class(c10, bfo:ProcessBoundary)
+class(c11, bfo:IndependentContinuant)
+class(c12, bfo:SpatialRegion)
+complement(ce13, "c12")
+intersection(ce14, '["c11", "ce13"]')
+union(ce15, '["c9", "c10", "ce14"]')
+some(ce17, iof:isAbout, ce15, down)
+
+class(c18, iof:MeasurementProcess)
+some(c19, iof:isOutputOf, c18)
+
+intersection(ce20, '["ce4", "ce9", "ce17", "c19"]')
+
+class(c1, iof:MeasurementInformationContentEntity)
+equivalent(c1, ce20, down)
+@enduml

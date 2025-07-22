@@ -1,0 +1,65 @@
+@startuml
+left to right direction
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+
+class(c1, "bfo:Quality")  
+individual(o1, "ns1:temperature1")
+class(c2, "bfo:SpatialRegion")   
+
+complement(cx, c2)
+
+typeOf(o1, c1)
+
+individual(p1, "ns1:plank1")
+individual(l1, "ns1:length1")
+property(p1, bfo:bears, l1, right) 
+
+oIndividual(ns1:plank1)
+oIndividual(ns1:length1)
+property(ns1:plank1, bfo:bears, ns1:length1, right)
+
+data(l1, iof:hasSimpleExpressionValue, 30^^xsd:decimal)
+
+
+oIndividual(ns1:smith)
+oIndividual(ns1:simpson)
+sameAs(ns1:smith, ns1:simpson)
+
+oIndividual(ns1:apple-as-fruit)
+oIndividual(ns1:apple-as-company)
+differentFrom(ns1:apple-as-fruit, ns1:apple-as-company)
+
+oIndividual(ns1:apple-as-logo)
+allDifferent('["ns1:apple-as-fruit", "ns1:apple-as-company", "ns1:apple-as-logo"]')
+
+class(c3, iof:Temperature)
+subClass(c3, c1)
+
+class(c31, qk:Temperature)
+equivalent(c3, c31)
+
+oClass(bfo:Continuant)
+oClass(bfo:Occurrent)
+disjoint(bfo:Continuant, bfo:Occurrent)
+
+oClass(bfo:FiatPoint)
+oClass(bfo:FiatLine)
+oClass(bfo:FiatSurface)
+allDisjoint('["bfo:FiatPoint", "bfo:FiatLine", "bfo:FiatSurface"]')
+
+oClass(iof:PieceOfEquipment)
+oClass(iof:Assembly)
+oClass(iof:System)
+oClass(ns1:Machine)
+equiUnion(ns1:Machine, '["iof:PieceOfEquipment", "iof:Assembly", "iof:System"]')
+
+class(v, ns:Vehicle)
+class(ev, ns:ElectricVehicle)
+class(bat, ns:Battery)
+' andSome(pb, v, ns:poweredBy, bat) 
+
+
+someCard(pb, ns:poweredBy, bat, max, 2)
+subClass(pb, ev, right)
+
+@enduml

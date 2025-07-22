@@ -1,0 +1,7 @@
+@startuml diagram1
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+
+' Start diagramming!
+
+
+@enduml

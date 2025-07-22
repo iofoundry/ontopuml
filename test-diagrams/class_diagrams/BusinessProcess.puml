@@ -1,0 +1,50 @@
+@startuml BusinessProcess
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(c1, iof:BusinessOrganization)
+some(ce2, iof:genericallyDependsOn, c1, down)
+class(c3, iof:ObjectiveSpecification)
+intersection(ce3, '["c3", "ce2"]')  
+some(ce4, bfo:hasContinuantPart, ce3, down)
+class(c5, iof:PlanSpecification)
+intersection(ce6, '["ce4", "c5"]')  
+some(ce7, iof:prescribedBy, ce6, down)  
+class(c8, iof:BusinessProcess)
+subClass(c8, ce7, up)
+some(ce8, iof:actsOnBehalfOf, c1, down)
+class(c3, iof:Agent)
+intersection(ce9, '["c3", "ce8"]')
+subClass(c8, ce9, up)
+class(c9, iof:Organization)
+some(ce10, iof:genericallyDependsOn, c9, down)
+intersection(ce11, '["c3", "ce10"]')
+some(ce12, iof:prescribedBy, ce11, down)
+some(ce13, iof:functionOf, c9, down)
+some(ce14, iof:hasRealization, c8, down)
+class(c10, bfo:Function)
+intersection(ce15, '["ce12", "ce13", "ce14", "c10"]')
+class(c11, iof:BusinessFunction)
+subClass(ce15, c11, up)
+@enduml
+
+
+
+
+@startuml BusinessProcess (Quick notation)
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+oClass(iof:BusinessOrganization)
+oClass(iof:ObjectiveSpecification)
+xSome(iof:ObjectiveSpecification, iof:genericallyDependsOn, iof:BusinessOrganization, "", right)
+oClass(iof:PlanSpecification)
+xSome(iof:PlanSpecification, bfo:hasContinuantPart, iof:ObjectiveSpecification, "", right)   
+oClass(iof:BusinessProcess)
+xSome(iof:BusinessProcess, iof:prescribedBy, iof:PlanSpecification, "", right)
+oClass(iof:Agent)
+xSome(iof:Agent, bfo:hasParticipant, iof:BusinessOrganization, "", down)
+xSome(iof:BusinessProcess, iof:actsOnBehalfOf, iof:Agent, "", down) 
+oClass(bfo:Function)
+xSome(bfo:Function, bfo:hasRealization, iof:BusinessProcess, "", down)
+oClass(iof:Organization)
+xSome(bfo:Function, iof:functionOf, iof:Organization, "", down)
+xSome(bfo:Function, iof:prescribedBy, iof:ObjectiveSpecification, "", down)
+xSome(iof:ObjectiveSpecification, bfo:genericallyDependsOn, iof:Organization, "", down)
+@enduml

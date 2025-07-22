@@ -1,0 +1,57 @@
+@startuml benchmark-simple
+!include C:\Users\arkop\git\IOF-Visual\ontopuml-dev\ontologyv2.iuml
+
+!$default_direction = down
+
+
+class(c1, ns1:SimpleClass1)
+class(c2, ns1:SimpleClass2)
+class(c3, ns1:SimpleClass3)
+class(c4, ns1:SimpleClass4)
+class(c5, ns1:SimpleClass5)
+individual(i1, ns1:individual1)
+individual(i2, ns1:individual2)
+individual(i3, ns1:individual3)
+
+class(c6, ns2:EquivalentClass)
+equivalent(c6, c1)
+
+class(c7, ns2:SubClass)
+subClass(c7, c1)
+
+disjoint(c1, c2)
+
+allDisjoint('["c1", "c2", "c3"]')
+
+class(c8, ns2:ComplementClass)
+complement(ce8, c1)
+equivalent(c8, ce8)
+
+class(c9, ns2:UnionClass)
+union(ce9, '["c1", "c2"]')
+equivalent(c9, ce9)
+
+class(c10, ns2:IntersectionClass)
+intersection(ce10, '["c1", "c2"]')
+equivalent(c10, ce10)
+
+class(c11, ns2:ValueClass)
+value(ce11, ns1:simpleProperty3, i1)
+equivalent(c11, ce11)
+
+class(c12, ns2:SelfClass)
+self(c12, ns1:simpleProperty1)
+
+class(c13, ns2:OneOfClass)
+oneOf(ce13, '["i1", "i2", "i3"]')
+subClass(c13, ce13)
+
+class(c14, ns2:SomeValuesFromClass)
+some(ce14, ns1:simpleProperty1, c3)
+equivalent(c14, ce14)
+
+class(c15, ns2:MaxCardinalityClass)
+someCard(ce15, ns1:simpleProperty2, c2, max, 3)
+equivalent(c15, ce15)
+
+@enduml 

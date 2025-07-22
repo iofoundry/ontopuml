@@ -1,0 +1,12 @@
+@startuml
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\ontologyv2.iuml
+
+' oClass(iof:MaterialProduct)
+' oIndividual(ns:mili)
+' oClass(iof:MaterialComponent)
+oClass(wind-farm-1)
+oClass(wind-farm-2)
+oClass(company-1)
+xSome(company-1, owns, wind-farm-1, " ", down)
+xSome(company-1, leases, wind-farm-2, " ", down)
+@enduml

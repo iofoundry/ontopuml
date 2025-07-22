@@ -1,0 +1,80 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+
+class(pro, iof:MaterialProduct)
+class(jet, ns:CommercialPassengerJetAircraft)
+class(heli, ns:PassengerTransportHelicopters)
+subClass(jet, pro)
+subClass(heli, pro)
+class(cl, iof:Classifier)
+class(un, un:UNSPSC)
+subClass(un, cl)
+class(com, un:Commodity)
+subClass(com, un)
+class(uns, un:UNS)
+subClass(uns, cl)
+class(psc, un:PSC)
+subClass(psc, cl)
+class(comp, iof:MaterialComponent)
+class(con, iof:MaterialConstituent)
+
+
+individual(bo, ns1:boeing-747)
+typeOf(bo, jet)
+individual(air, ns1:airbus-H145)
+typeOf(air, heli)
+individual(unjet, ns1:UNSPSC-25131506)
+typeOf(unjet, com)
+property(bo, iof:isClassifiedBy, unjet, up)
+individual(unheli, ns1:UNSPSC-25131601)
+typeOf(unheli, com)
+property(air, iof:isClassifiedBy, unheli, up)
+
+individual(fus, ns1:fusalage)
+' typeOf(fus, comp)
+property(bo, iof:hasCompoenent, fus, down)
+property(air, iof:hasCompoenent, fus, down)
+individual(unfus, ns1:UNSPSC-25201500)
+typeOf(unfus, com)
+property(fus, iof:isClassifiedBy, unfus, up)
+
+individual(tfe, ns1:turbofan-engine)
+' typeOf(tfe, comp)
+individual(tse, ns1:turboshaft-engine)
+' typeOf(tse, comp)
+property(bo, iof:hasCompoenent, tfe, down)
+property(air, iof:hasCompoenent, tse, down)
+individual(untfe, ns1:UNSPSC-26101507)
+typeOf(untfe, com)
+property(tfe, iof:isClassifiedBy, untfe, up)
+individual(untse, ns1:UNSPSC-26101506)
+typeOf(untse, com)
+property(tse, iof:isClassifiedBy, untse, up)
+
+individual(fw, ns1:fixed-wing)
+individual(rw, ns1:rotary-wing)
+property(bo, iof:hasCompoenent, fw, down)
+property(air, iof:hasCompoenent, rw, down)
+
+individual(rwc, ns1:PSC1615)
+typeOf(rwc, psc)
+property(rw, iof:isClassifiedBy, rwc, up)
+
+individual(has, ns1:HastelloyX)
+property(tfe, iof:hasMaterialConstituent, has, down)
+individual(titan, ns1:Ti-6Al-4V)
+property(tse, iof:hasMaterialConstituent, titan, down)
+individual(cfrp, ns1:carbon-fiber-reinforced-polymer)
+property(rw, iof:hasMaterialConstituent, cfrp, down)
+property(fw, iof:hasMaterialConstituent, cfrp, down)
+
+individual(hs, ns1:R56400)
+typeOf(hs, uns)
+property(titan, iof:isClassifiedBy, hs, up)
+
+individual(to, ns1:generate lift)
+property(rw, iof:hasCapability, to, left)
+
+@enduml
+
+

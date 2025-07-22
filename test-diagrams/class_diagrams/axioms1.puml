@@ -1,0 +1,84 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+class(c1, iof:MeasurementInformationContentEntity)
+class(c2, iof:InformationContentEntity)
+class(c3, iof:MeasuredValueExpression)
+xSome(c1, bfo:hasContinuantPartAtAllTimes, c3, "",down)
+class(c5, bfo:temporalRegion)
+class(c6, bfo:specificallyDependentContinuant)
+class(c7, iof:ProcessCharacteristic)
+union(ce8, '["c5", "c6", "c7"]')
+xSome(c1, iof:describes, ce8, "", down)
+class(c9, bfo:process)
+class(c10, bfo:processBoundary)
+class(c11, bfo:independentContinuant)
+class(c12, bfo:spatialRegion)
+complement(ce13, "c12")
+intersection(ce14, '["c11", "ce13"]')
+union(ce15, '["c9", "c10", "ce14"]')
+xSome(c1, iof:isAbout, ce15, "", down)
+class(c16, iof:MeasurementProcess)
+xSome(c1, iof:isOutputOf, c16,"",down)
+subClass(c1, c2)
+@enduml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@startuml
+!include C:\Users\arkop\git\IOF-Visual\ontopuml\iof.iuml
+
+' process 
+'   and ('occupies temporal region' some 
+'     ('temporal interval'
+'      and ((meets some ('temporal interval' and ( inverse ('exists at') some role))) 
+' 	    or (temporallyOverlaps some ('temporal interval' and ( inverse ('exists at') some role))) 
+'       or (temporallyStarts some ('temporal interval' and ( inverse ('exists at') some role))))))
+'  and (hasOutput some role)
+'  and ('has participant at all times' some ('independent continuant' and (not ('spatial region'))))
+class(c1, iof:GainOfRole)
+class(c2, bfo:process)
+class(c3, bfo:temporalInterval)
+class(c4, bfo:role)
+subClass(c1, c2)
+' ('temporal interval' and ( inverse ('exists at') some role)
+xSome(c3, <<inverse>> bfo:existsAt, c4, "", down)
+'  ('temporal interval' and ((meets some c3
+xSome(c3, iof:meets, c3, "", up)
+' ('occupies temporal region' some c3
+xSome(c1, bfo:occupiesTemporalRegion, c3, "", right)
+' ('temporal interval' and ((temporallyOverlaps some c3
+xSome(c3, iof:temporallyOverlaps, c3, "", up)
+' ('temporal interval' and ((temporallyStarts some c3
+xSome(c3, iof:temporallyStarts, c3, "", up)
+'  (hasOutput some role)
+xSome(c1, iof:hasOutput, c4, "", right)
+' ('has participant at all times' some ('independent continuant' and (not ('spatial region'))))
+class(c15, bfo:independentContinuant)
+class(c16, bfo:spatialRegion)
+complement(ce17, "c16")
+intersection(ce18, '["c15", "ce17"]')
+xSome(c1, iof:hasParticipantAtAllTimes, ce18, "")
+@enduml

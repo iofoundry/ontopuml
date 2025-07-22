@@ -1,0 +1,76 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml
+
+
+
+individual(p1, ns1:car1-moving-process1 @ bfo:Process)
+individual(p2, ns1:car1-moving-process-phase1 @ bfo:Process)
+individual(p3, ns1:car1-moving-process-phase2 @ bfo:Process)
+property(p1, iof:hasTemporalPart, p2, down)
+property(p1, iof:hasTemporalPart, p3, down)
+
+individual(pp1, ns1:speed-1 @ iof:ProcessProfile)
+individual(pp2, ns1:speed-2 @ iof:ProcessProfile)
+individual(pp3, ns1:speed-3 @ iof:ProcessProfile)
+
+property(p1, iof:hasProperOccurrentPartAtSomeTime, pp1, down)
+property(p2, iof:hasProperOccurrentPartAtSomeTime, pp2, down)
+property(p3, iof:hasProperOccurrentPartAtSomeTime, pp3, down)
+
+individual(u, qudt:KiloM-PER-HR @ qudt:Unit)
+
+individual(mv3, ns1:speed-value2 @ iof:MeasurementValueExpression)
+property(mv3, iof:isMeasuredValueExpressionAtSomeTime, pp2, up)
+data(mv3, iof:hasSimpleExpressionValue, 30.0^xsd:double)
+property(mv3, qudt:unit, u, down)
+
+individual(mv4, ns1:speed-value2 @ iof:MeasurementValueExpression)
+property(mv4, iof:isMeasuredValueExpressionAtSomeTime, pp3, up)
+data(mv4, iof:hasSimpleExpressionValue, 60.0^xsd:double)
+property(mv4, qudt:unit, u, down)
+
+' individual(mv1, ns1:speed-value1 @ iof:MeasurementValueExpression)
+' property(mv1, iof:isMeasuredValueExpressionAtSomeTime, pp1, up)
+' data(mv1, iof:hasSimpleExpressionValue, 33.4^xsd:double)
+
+' property(mv1, qudt:unit, u, down)
+
+individual(i1, ns1:temporal-interval-1 @ bfo:TemporalInterval)
+
+property(pp1, bfo:occupiesTemporalRegion, i1, down)
+individual(i2, ns1:temporal-interval-1 @ bfo:TemporalInterval)
+
+property(pp2, bfo:occupiesTemporalRegion, i2, down)
+
+
+individual(d1, ns1:duration-1 @ time:Duration)
+
+individual(ut, time:unitHour)
+property(d1, iof:isMeasuredValueExpressionAtAllTimes, i1, up)
+data(d1, time:numericDuration, 2.0^xsd:decimal)
+property(d1, time:unitType, ut, down)
+individual(d2, ns1:duration-1 @ time:Duration)
+
+property(d2, iof:isMeasuredValueExpressionAtAllTimes, i2, up)
+data(d2, time:numericDuration, 3.0^xsd:decimal)
+property(d2, time:unitType, ut, down)
+
+individual(pc1, ns1:avg-speed-1 @ bfo:ProcessCharacteristic)
+property(pc1, iof:characterizes, pp1, down)
+individual(mv2, ns1:avg-speed-value-1 @ iof:MeasurementValueExpression)
+data(mv2, iof:hasSimpleExpressionValue, 48.0^xsd:double)
+property(mv2, qudt:unit, u, down)
+
+property(mv2, iof:isMeasuredValueExpressionAtSomeTime, pc1, up)
+
+
+
+
+
+
+
+
+
+
+
+@enduml

@@ -1,0 +1,94 @@
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/Development/iof.iuml
+oIndividual(ns1:instance1, ns:Class)
+data(ns1:instance1, ns:dataProperty1, 100)
+oIndividual(data:Mazak-br-name, cmns-dsg:Name)
+property(ns1:instance1, ex:proeprty1, data:Mazak-br-name, right)
+oIndividual(ns1:machine1)
+property(data:Mazak-br-name, ns:property2, ns1:machine1 )
+oClass(bfo:continuant)
+typeOf(ns1:machine1, bfo:continuant)
+@enduml
+
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/Development/iof.iuml
+
+individual(i1, ns1:instance1, ns:Class)
+data(i1, ns:dataProperty1, 100)
+individual(i2, data:Mazak-br-name, cmns-dsg:Name)
+property(i1, ex:proeprty1, i2, right)
+@enduml
+
+@startuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/Development/iof.iuml
+
+oIndividual(ns1:instance1, ns:Class)
+data(ns1:instance1, ns:dataProperty1, 100)
+oIndividual(data:Mazak-br-name, cmns-dsg:Name)
+property(ns1:instance1, ex:proeprty1, data:Mazak-br-name, right)
+@enduml
+
+@startuml
+!include C:\Users\arkop\git\IOF-Visual\ontopuml-dev\ontologyv2.iuml
+class(eo, ns:ElectricVehicle)
+class(bat, ns:Battery)
+individual(indi, ns1:instance1)
+value(pb, ns:poweredBy, indi, right)
+equivalent(eo, pb, right)
+@enduml
+
+@startuml Mazak-cont
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/Development/iof.iuml
+
+skinparam linetype polyline
+title Mazak-cont
+
+!$default_direction = down
+
+!$namespace_colors = { "bfo":"DFA702", 
+                      "iof":"1E90FF", 
+                      "ns":"Green", 
+                      "ns1":"76608A",
+"ex":"Green","data":"76608A","core":"1E90FF","units":"Blue"
+}
+individual(i1, data:Mazak-cont, ex:ControlSystem)
+individual(i2, data:Mazak-cont-name, cmns-dsg:Name)
+individual(i3, data:Mazak-cont-path1, ex:ControlSystemPath)
+individual(i4, data:Mazak-cont-path1-name, cmns-dsg:Name)
+individual(i5, data:Mazak, ex:Machine)
+property(i1, cmns-dsg:hasName, i2)
+data(i2, cmns-dsg:hasTextualName, controller)
+property(i1, "bfo:has member part at some time", i3)
+property(i3, cmns-dsg:hasName, i4)
+property(i5, "bfo:has member part at some time", i1)
+@enduml
+
+@startuml Mazak-cont1
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/Development/iof.iuml
+
+skinparam linetype polyline
+title Mazak-cont
+
+!$default_direction = down
+
+!$namespace_colors = { 
+    "bfo":"DFA702", 
+    "iof":"1E90FF", 
+    "ns":"Green", 
+    "ns1":"76608A",
+    "ex":"Green",
+    "data":"76608A",
+    "core":"1E90FF",
+    "units":"Blue"
+}
+oIndividual(data:Mazak-cont, ex:ControlSystem)
+oIndividual(data:Mazak-cont-name, cmns-dsg:Name)
+oIndividual(data:Mazak-cont-path1, ex:ControlSystemPath)
+oIndividual(data:Mazak-cont-path1-name, cmns-dsg:Name)
+oIndividual(data:Mazak, ex:Machine)
+property(data:Mazak-cont, cmns-dsg:hasName, data:Mazak-cont-name)
+data(data:Mazak-cont-name, cmns-dsg:hasTextualName, controller)
+property(data:Mazak-cont, "bfo:has member part at some time", data:Mazak-cont-path1)
+property(data:Mazak-cont-path1, cmns-dsg:hasName, data:Mazak-cont-path1-name)
+property(data:Mazak, "bfo:has member part at some time", data:Mazak-cont, left)
+@enduml
