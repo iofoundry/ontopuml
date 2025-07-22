@@ -522,6 +522,20 @@ skinparam object{
 !endprocedure
 
 '-------------------------------------------------------'
+' data value constraint
+'-------------------------------------------------------'
+!unquoted procedure dataValue($alias, $property, $individual, $direction = x)
+    class "    " as $alias
+    !$n = getVariable($individual)
+    !$dir = getDirection($direction, right)
+    !if $n
+        $alias -$dir-> $n : $property <<value>>
+    !else
+        $alias -$dir-> $individual : $property <<value>>
+    !endif
+!endprocedure
+
+'-------------------------------------------------------'
 ' self constraint
 '-------------------------------------------------------'
 !unquoted procedure self($class, $property, $direction = x)
