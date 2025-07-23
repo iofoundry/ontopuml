@@ -1,7 +1,7 @@
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' Author:  Arkopaul Sarkar
-' Date:    2024-10-25
-' Version: 2.0
+' Creation Date:    2024-10-25
+' Version: 2.3
 ' License: MIT
 ' Description: PlantUML standard library for ontology diagrams
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -133,6 +133,7 @@ skinparam object{
     object "<u>$iri" as $alias #getColor($iri)
 !endprocedure
 
+' alternative style in place type display
 ' iri should use only prefix and not complete url
 !unquoted procedure individual($alias, $iri, $class)
     object "<u>$iri" as $alias #getColor($iri)
