@@ -22,7 +22,7 @@ def find_ontology_file():
             return file
     return None
 
-def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
+def visualize_puml(output_path, server_url="http://www.plantuml.com/plantuml/img/"):
     """
     Visualize a PlantUML file using a PlantUML server.
     
@@ -31,7 +31,7 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
     output_path : str
         Path to the PUML file to visualize
     server_url : str, optional
-        URL of the PlantUML server, defaults to http://localhost:8080/img/
+        URL of the PlantUML server (http://localhost:8080/img/), defaults to http://www.plantuml.com/plantuml/img/ 
     
     Returns:
     --------
@@ -163,10 +163,22 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
             "random",
             "bipartite",
             "multipartite",
+            "u",
+            "d",
+            "l",
+            "r"
         ]
     ),
     help="(optional) Specifies the layout algorithm to use.",
 )
+
+@click.option(
+    "--inline-class",
+    is_flag=True,
+    help="(optional) Use inline class declaration for individuals in object diagrams.\n"
+    "When enabled, generates individual(i1, ns1:instance1, ns:Class) instead of separate class() and typeOf() declarations.",
+)
+
 # @click.option(
 #     "--visualize",
 #     is_flag=True,
@@ -182,16 +194,17 @@ def visualize_puml(output_path, server_url="http://localhost:8080/img/"):
 
 @click.option(
     "--plantuml-server",
-    default="http://localhost:8080/img/",
+    default="http://www.plantuml.com/plantuml/img/",
     help="(optional) URL of the PlantUML server to use for visualization. Default: http://localhost:8080/img/\n"
     "Note: If you're having issues with the PlantUML server, you can: \n"
     "1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty \n"
     "2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/ \n"
-    "or svg format --plantuml-server http://www.plantuml.com/plantuml/png/ \n",
+    "or svg format --plantuml-server http://www.plantuml.com/plantuml/svg/ \n",
     
 )
 
 @click.option("--help", is_flag=True, help="Show this help message and exit.")
+
 def main(
     input,
     import_ontology,
@@ -203,6 +216,7 @@ def main(
     layout,
     view,
     plantuml_server,
+    inline_class,
     help,
 ):
     if help:
@@ -275,6 +289,7 @@ def main(
             import_ontologies=import_ontology,
             relation_excluded=list(relation_excluded),
             layout_type=layout,
+            inline_class_declaration=inline_class
         )
  
     if view and puml_content:

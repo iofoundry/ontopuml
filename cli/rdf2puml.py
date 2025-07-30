@@ -32,7 +32,7 @@ def determine_direction(angle_degrees):
 
 class RdfToPumlConverter:
     def __init__(self, input, import_ontologies=[], save_puml=True, layout_type=None, layout_params=None, 
-                 visualize=False, save_viz=None, figsize=(10, 8), relation_excluded=None):
+                 visualize=False, save_viz=None, figsize=(10, 8), relation_excluded=None, inline_class_declaration=False):
         self.classes = {}
         self.individuals = {}
         self.properties = []
@@ -47,6 +47,7 @@ class RdfToPumlConverter:
         self.pos = None
         self.edge_directions = {}
         self.excluded_relations = relation_excluded or []
+        self.inline_class_declaration = inline_class_declaration  # New parameter
 
         # Import ontologies
         if isinstance(import_ontologies, (list, tuple)):
@@ -289,10 +290,24 @@ class RdfToPumlConverter:
             plt.show()
     
     def calculate_directions(self):
-        """Calculate the direction of edges based on node positions"""
+        """Calculate the direction of edges based on node positions or uniform direction"""
         self.edge_directions = {}
         
-        # Skip direction calculation if layout was not calculated
+        # Handle uniform directional layouts
+        directional_layouts = {
+            'u': 'up',
+            'd': 'down', 
+            'l': 'left',
+            'r': 'right'
+        }
+        
+        if self.layout_type in directional_layouts:
+            # Apply uniform direction to all edges
+            uniform_direction = directional_layouts[self.layout_type]
+            for s, o, data in self.G.edges(data=True):
+                self.edge_directions[(s, o)] = uniform_direction
+            return
+        
         if self.pos is None:
             return
             
@@ -310,10 +325,19 @@ class RdfToPumlConverter:
                 # Store direction
                 self.edge_directions[(s, o)] = direction
 
+    def get_individual_classes(self, individual_name):
+        """Get all classes for a given individual"""
+        classes = []
+        for s, p, o in self.properties:
+            if p == "typeOf" and hasattr(s, 'name') and s.name == individual_name:
+                classes.append(o)
+        return classes
+
     def generate_puml(self):
         """Generate the PlantUML content based on the RDF data and edge directions"""
         puml_lines = []
         file_name = None
+        
         # If there are no nodes left after filtering, return empty PUML
         if not self.classes and not self.individuals:
             puml_lines.append("@startuml")
@@ -333,21 +357,50 @@ class RdfToPumlConverter:
         # Create mappings for remaining classes and individuals
         class_map = {cls_label: f"c{idx}" for idx, cls_label in enumerate(self.classes, start=1)}
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
-
-        # Add class definitions
-        for cls_label, cls in self.classes.items():
-            prefix = get_prefix(cls)
-            puml_lines.append(f"class({class_map[cls_label]}, {prefix}{cls_label})")
         
-        # Add individual definitions
-        for ind_name in self.individuals:
-            prefix = "ns1:"
-            puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
-        
-        # Add typeOf relationships - only for elements that are still in the graph
-        for s, p, o in self.properties:
-            if p == "typeOf" and o in class_map and s.name in individual_map:
-                puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
+        #Inline class declaration mode
+        if self.inline_class_declaration:
+            for ind_name in self.individuals:
+                prefix = "ns1:"
+                # Get classes for this individual
+                individual_classes = self.get_individual_classes(ind_name)
+                
+                if individual_classes:
+                    # Use the first class for inline declaration
+                    first_class = individual_classes[0]
+                    if first_class in self.classes:
+                        class_prefix = get_prefix(self.classes[first_class])
+                        puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name}, {class_prefix}{first_class})")
+                    else:
+                        # Fallback if class not found
+                        puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
+                else:
+                    # No class found, use standard individual declaration
+                    puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
+            
+            # Add typeOf relationships for additional classes (if an individual has multiple classes)
+            for s, p, o in self.properties:
+                if p == "typeOf" and o in class_map and s.name in individual_map:
+                    individual_classes = self.get_individual_classes(s.name)
+                    # Only add typeOf for classes beyond the first one
+                    if len(individual_classes) > 1 and o != individual_classes[0]:
+                        puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
+        else:
+            # ORIGINAL: Separate class and typeOf declarations
+            # Add class definitions
+            for cls_label, cls in self.classes.items():
+                prefix = get_prefix(cls)
+                puml_lines.append(f"class({class_map[cls_label]}, {prefix}{cls_label})")
+            
+            # Add individual definitions
+            for ind_name in self.individuals:
+                prefix = "ns1:"
+                puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
+            
+            # Add typeOf relationships - only for elements that are still in the graph
+            for s, p, o in self.properties:
+                if p == "typeOf" and o in class_map and s.name in individual_map:
+                    puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
 
         # Add subClass relationships if present
         for s, p, o in self.properties:
@@ -419,8 +472,12 @@ class RdfToPumlConverter:
         
         # Only calculate layout and directions if layout_type is specified
         if self.layout_type is not None:
-            self.calculate_layout()
+            # For directional layouts (u, d, l, r), we don't need to calculate positions
+            directional_layouts = ['u', 'd', 'l', 'r']
+            if self.layout_type not in directional_layouts:
+                self.calculate_layout()
             self.calculate_directions()
-            self.visualize_graph()
+            if self.layout_type not in directional_layouts:
+                self.visualize_graph()
             
         return self.generate_puml()

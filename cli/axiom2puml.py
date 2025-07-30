@@ -683,6 +683,7 @@ class AxiomToPumlConverter:
             for src, rel, tgt in self.relationships:
                 if s == src and o == tgt:
                     direction_map[(src, rel, tgt)] = direction
+        # print(direction_map)
         # Update PUML lines with directions where applicable
         updated_output = []
         for line in self.puml_output:
@@ -724,11 +725,27 @@ class AxiomToPumlConverter:
                     updated_output.append(updated_line)
                     updated = True
                     break
+                elif f"someCard({tgt}, {rel}, {src})" in line:
+                    updated_line = f"someCard({src}, {tgt}, {direction})"
+                    updated_output.append(updated_line)
+                    updated = True
+                    break
+                elif f"complement({tgt}, \"{src}\")" in line:
+                    updated_line = f"complement({tgt}, {src}, {direction})"
+                    updated_output.append(updated_line)
+                    updated = True
+                    break
+                elif f"value({src}, {rel}," in line and f"value({src}, {rel}, {tgt})" in line:
+                    updated_line = f"value({src}, {rel}, {tgt}, {direction})"
+                    updated_output.append(updated_line)
+                    updated = True
+                    break
             
             if not updated:
                 updated_output.append(line)
         
         return updated_output
+
 
     def convert(self):
         """Convert multiple class entities and their axioms to PUML with optimized directions"""

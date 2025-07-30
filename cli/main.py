@@ -12,6 +12,7 @@ def rdf_to_puml(
     save_viz=None,
     figsize=(10, 8),
     relation_excluded=None,
+    inline_class_declaration=False,
 ):
     """
     Convert RDF data to PlantUML code, generating an object diagram.
@@ -41,6 +42,8 @@ def rdf_to_puml(
     excluded_relations : list, optional
         List of relation names to exclude from the conversion, defaults to None
         Classes and individuals with no relations after exclusion will also be removed
+    inline_class_declaration : boolean, optional
+        declare class inline with individual, defaults to False
 
     Returns:
     --------
@@ -58,6 +61,7 @@ def rdf_to_puml(
         save_viz=save_viz,
         figsize=figsize,
         relation_excluded=relation_excluded,
+        inline_class_declaration=inline_class_declaration,
     )
     
     puml_content = converter.convert()
