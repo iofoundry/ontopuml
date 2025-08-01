@@ -1,0 +1,19 @@
+@startuml iof
+' !include C:\Users\arkop\git\IOF-Visual\ontopuml\ontologyv2.iuml
+!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/ontologyv2.iuml
+skinparam class{
+ fontColor white
+}
+skinparam object{
+    BackgroundColor 76608A
+    fontColor White
+    BorderColor White 
+    FontName Helvetica   
+}
+
+!$namespace_colors = { "bfo" : "DFA702", 
+                        "iof":"1E90FF", 
+                        "ns":"Green", 
+                        "ns1":"76608A"}
+!$namespace_default_color = "DarkGrey"
+@enduml
