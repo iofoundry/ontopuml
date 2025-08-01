@@ -3,17 +3,18 @@ Standard plantUML library for visualising ontology and OWL 2.0 axioms in a stand
 
 ## Repository structure
 
-- :file_folder: cli : Command line program for generating diagrams from OWL/RDF files.
+- :file_folder: generator : Program for generating diagrams from OWL/RDF files.
 
-- :file_folder: doc : Documentations and github pages.
+- :file_folder: docs : Documentations and github pages.
 
-- :file_folder: examples : Usage examples.
+- 📁: nowl : plantuml standard library for generating nowl diagrams, examples and profiles  
+
+-     📄 ontologyv2.iuml : PlantUML standard ilbrary
+-     📄 run.py: Runner for NOWL cli program
+-     📄 setup.py: Installer for NOWL cli program
 
 - :file_folder: stencil : NOWL visual notation in draw.io stencil.
-- 📄 ontologyv2.iuml : PlantUML standard ilbrary
-- 📄 iof:iuml: IOF-specific stylesheet
-- 📄 run.py: Runner for NOWL cli program
-- 📄 setup.py: Installer for NOWL cli program
+
 
 ## Documentation
 
