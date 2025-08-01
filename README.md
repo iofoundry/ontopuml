@@ -9,9 +9,9 @@ Standard plantUML library for visualising ontology and OWL 2.0 axioms in a stand
 
 - 📁: nowl : plantuml standard library for generating nowl diagrams, examples and profiles  
 
--     📄 ontologyv2.iuml : PlantUML standard ilbrary
--     📄 run.py: Runner for NOWL cli program
--     📄 setup.py: Installer for NOWL cli program
+    - 📄 ontologyv2.iuml : PlantUML standard library
+    - 📄 run.py: Runner for NOWL cli program
+    - 📄 setup.py: Installer for NOWL cli program
 
 - :file_folder: stencil : NOWL visual notation in draw.io stencil.
 
