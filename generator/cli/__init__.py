@@ -2,7 +2,7 @@ import os
 
 import click
 
-from .main import rdf_to_puml, axiom_to_puml
+from main import rdf_to_puml, axiom_to_puml
 
 class IRIParamType(click.ParamType):
     name = "IRI"

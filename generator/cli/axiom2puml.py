@@ -91,7 +91,7 @@ class AxiomToPumlConverter:
         self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
         self.class_entities, self.types = self._process_class_entities_types(class_entities, types, self.ontology)
         self.puml_output = []
-        self.puml_output.append("@startuml\n!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv2.iuml")
+        self.puml_output.append("@startuml\n!include /Users/pnc12/Documents/GitHub/nowl/nowl/nowl.iuml")
         self.puml_output.append('title '+'_'.join(i.name for i in self.class_entities if hasattr(self.class_entities[0], 'name')))
         self.class_map = {}
         self.restriction_map = {}  # New map to track restrictions and avoid duplicates
@@ -216,9 +216,8 @@ class AxiomToPumlConverter:
     def process_restriction(self, restriction, prop_name):
         if isinstance(restriction, And):
             self.counter += 1
-            entities = [self.get_class_name(e) for e in restriction.Classes]
-
             node = f"ce{self.counter}"
+            entities = [self.get_class_name(e) for e in restriction.Classes]
             entity_list = ", ".join(f'\"{e}\"' for e in entities)
             
             # Add node to the graph
@@ -236,8 +235,8 @@ class AxiomToPumlConverter:
 
         elif isinstance(restriction, Or):
             self.counter += 1
-            entities = [self.get_class_name(e) for e in restriction.Classes]
             node = f"ce{self.counter}"
+            entities = [self.get_class_name(e) for e in restriction.Classes]
             entity_list = ", ".join(f'\"{e}\"' for e in entities)
             
             # Add node to the graph
@@ -254,10 +253,9 @@ class AxiomToPumlConverter:
             return node
     
         elif isinstance(restriction, Not):
-            complemented_entity = self.get_class_name(restriction.Class)
             self.counter += 1
             node = f"ce{self.counter}"
-            
+            complemented_entity = self.get_class_name(restriction.Class)
             # Add node to the graph
             self.graph.add_node(node, type='complement')
             self.node_labels[node] = "Complement"
@@ -267,7 +265,7 @@ class AxiomToPumlConverter:
             self.graph.add_edge(complemented_entity, node, relation='complemented_by')
             self.relationships.append((complemented_entity, 'complemented_by', node))
             
-            self.puml_output.append(f"complement({node}, \"{complemented_entity}\")")
+            self.puml_output.append(f"complement({node}, {complemented_entity})")
             
             return node
 
@@ -306,13 +304,21 @@ class AxiomToPumlConverter:
             # for entity in entities:
             #     self.graph.add_edge(entity, node, relation='member_of')
             #     self.relationships.append((entity, 'member_of', node))
+            
             self.puml_output.append(f"individual(i{self.counter}, ns1:{restriction.value.name})")
             self.puml_output.append(f"value({node}, {restriction.property.name},i{self.counter})")
-            
             return node
 
+        # elif hasattr(restriction, 'type') and (restriction.type == HAS_SELF or restriction.type == 117):
+        #     node = None
+
         elif hasattr(restriction, 'value'):
-            class_name = self.get_class_name(restriction.value)
+            # Handle the case where the value is a complement (Not class)
+            if isinstance(restriction.value, Not):
+                class_name = self.get_class_name(restriction.value)
+            else:
+                class_name = self.get_class_name(restriction.value)
+            
             if prop_name is None:
                 return class_name
             else:
@@ -323,39 +329,49 @@ class AxiomToPumlConverter:
             node = restriction
             pass
         else:
-            class_name = self.get_class_name(restriction)
-            if prop_name is None:
-                return class_name
+            # Only process as a general class if it's not a self restriction
+            if not (hasattr(restriction, 'type') and (restriction.type == HAS_SELF or restriction.type == 117)):
+                class_name = self.get_class_name(restriction)
+                if prop_name is None:
+                    return class_name
+                else:
+                    node = class_name
             else:
-                node = class_name
+                node = None  # No target node for self restrictions
 
         if prop_name is not None:
             self.counter += 1
             var_name = f"ce{self.counter}"
             restriction_type = 'some'
-
+            
+            cardinality = None
             if hasattr(restriction, 'type'):
                 try:
                     if restriction.type == ONLY or restriction.type == 25: restriction_type = "only"
                     elif restriction.type == SOME or restriction.type == 24: restriction_type = "some"  
                     elif restriction.type == VALUE or restriction.type == 29: restriction_type = "value"
-                    elif restriction.type == EXACTLY or restriction.type == 26: restriction_type = "exactly"
-                    elif restriction.type == MIN or restriction.type == 27: restriction_type = "min"
-                    elif restriction.type == MAX or restriction.type == 28: restriction_type = "max"
+                    elif restriction.type == EXACTLY or restriction.type == 26: 
+                        restriction_type = "exactly"
+                        cardinality = getattr(restriction, 'cardinality', None)
+                    elif restriction.type == MIN or restriction.type == 27: 
+                        restriction_type = "min"
+                        cardinality = getattr(restriction, 'cardinality', None)
+                    elif restriction.type == MAX or restriction.type == 28: 
+                        restriction_type = "max"
+                        cardinality = getattr(restriction, 'cardinality', None)
                     elif restriction.type == HAS_SELF or restriction.type == 117: restriction_type = "self"
                 except ImportError:
                     pass
-            if hasattr(restriction, 'cardinality'):
-                cardinality = restriction.cardinality
             
             # Add node to the graph with appropriate type
             self.graph.add_node(var_name, type=restriction_type)
             self.node_labels[var_name] = f"{restriction_type.capitalize()} {prop_name}"
             self.node_types[var_name] = 'restriction'
             
-            # Add edge from restriction to target class
-            self.graph.add_edge(var_name, node, relation=prop_name)
-            self.relationships.append((var_name, prop_name, node))
+            # Add edge from restriction to target class (if node is not None)
+            if node is not None:
+                self.graph.add_edge(var_name, node, relation=prop_name)
+                self.relationships.append((var_name, prop_name, node))
         
             if restriction_type == 'only':
                 if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not)) :
@@ -368,13 +384,15 @@ class AxiomToPumlConverter:
                 else:
                     self.puml_output.append(f"someData({var_name}, {prop_name}, {python_name_to_xsd(restriction.value)})")
             elif restriction_type in ['min','max','exactly'] and cardinality is not None:
-                if isinstance(restriction.value, (ThingClass, Restriction)):
-                    self.puml_output.append(f"someCard({var_name}, {prop_name}, {node}, {restriction_type}, {cardinality})")
+                if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not)):
+                    self.puml_output.append(f"cardinality({var_name}, {prop_name}, {node}, {restriction_type}, {cardinality})")
                 else:
-                    self.puml_output.append(f"someDataCard({var_name}, {prop_name}, {python_name_to_xsd(node)}, {restriction_type}, {cardinality})")
+                    self.puml_output.append(f"dataCardinality({var_name}, {prop_name}, {python_name_to_xsd(node)}, {restriction_type}, {cardinality})")
            
             elif restriction_type == 'value':
                 self.puml_output.append(f"value({var_name}, {prop_name}, {node})")
+            # elif restriction_type == 'value':
+            #     self.puml_output.append(f"dataValue({var_name}, {prop_name}, {node})")
 
             elif restriction_type == 'self':
                 self.puml_output.append(f"self({var_name}, {prop_name})")

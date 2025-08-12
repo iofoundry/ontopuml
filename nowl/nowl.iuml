@@ -39,8 +39,6 @@ skinparam object{
 !$namespace_colors = { "rdf" : "White" }
 !$namespace_default_color = "White"
 
-' 
-
 ' add new variable to the collection
 !$chain = ","
 !unquoted procedure addVariable($var, $iri)
@@ -587,13 +585,13 @@ skinparam object{
 ' define '$property max/min/exactly cadinality $class2'
 ' link direction is right of $class1 by default
 ' alternative: variable can be supplied
-!unquoted procedure someCard($alias, $property, $class2, $scope, $cardinality, $direction = x)
+!unquoted procedure cardinality($alias, $property, $class2, $scope, $cardinality, $direction = x)
     class "    " as $alias
     !$n = getVariable($class2)
     !$dir = getDirection($direction, right)    
     !if $n
         !if $scope == "max"
-            $alias -$dir-> $n : $property [1..$cardinality]
+            $alias -$dir-> $n : $property [0..$cardinality]
         !endif
         !if $scope == "min"
             $alias -$dir-> $n : $property [$cardinality..*]
@@ -603,7 +601,7 @@ skinparam object{
         !endif
     !else
         !if $scope == "max"
-            $alias -$dir-> $class2 : $property [1..$cardinality]
+            $alias -$dir-> $class2 : $property [0..$cardinality]
         !endif
         !if $scope == "min"
             $alias -$dir-> $class2 : $property [$cardinality..*]
@@ -722,12 +720,12 @@ skinparam object{
 ' define '$property max/min/exactly cadinality $datatype'
 ' link direction is right of $class1 by default
 ' alternative: variable can be supplied
-!unquoted procedure someDataCard($alias, $property, $datatype, $scope, $cardinality, $direction = x)
+!unquoted procedure dataCardinality($alias, $property, $datatype, $scope, $cardinality, $direction = x)
     class "    " as $alias
     class "$datatype" #white;text:black ##[dotted]black   
     !$dir = getDirection($direction, right)
     !if $scope == "max"
-        $alias -$dir-> "$datatype" : $property [1..$cardinality]
+        $alias -$dir-> "$datatype" : $property [0..$cardinality]
     !endif
     !if $scope == "min"
         $alias -$dir-> "$datatype" : $property [$cardinality..*]
