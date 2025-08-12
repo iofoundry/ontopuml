@@ -138,6 +138,13 @@ skinparam object{
     $alias : <back:#getColor($class)>type = $class</back>
 !endprocedure
 
+' alternative style in place type display
+' any number of types are accepted
+' !unquoted procedure individual($alias, $iri, $classes)
+'     object "<u>$iri" as $alias #getColor($iri)
+'     $alias : <back:#getColor($class)>type = $class</back>
+' !endprocedure
+
 !unquoted procedure oIndividual($iri)
     !$var = newVar()
     object "<u>$iri" as $var #getColor($iri)

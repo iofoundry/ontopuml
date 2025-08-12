@@ -1,6 +1,6 @@
 @startuml iof
 ' !include C:\Users\arkop\git\IOF-Visual\ontopuml\ontologyv2.iuml
-!include https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/ontologyv2.iuml
+!include nowl\nowl.iuml
 skinparam class{
  fontColor white
 }

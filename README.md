@@ -1,4 +1,4 @@
-<img src="Logo.png" width="200" />
+![NOWL logo](Logo.png "Logo")
 
 # NIST OWL Visual Notation (NOWL)
 Standard plantUML library for visualising ontology and OWL 2.0 axioms in a standardised visual notation. 
@@ -53,8 +53,8 @@ pip install -r requirements.txt
 Clone the repository and install using pip:
 
 ```
-git clone https://github.com/iofoundry/ontopuml.git
-cd ontopuml
+git clone https://github.com/usnistgov/nowl.git
+cd nowl\generator
 pip install -e .
 ```
 

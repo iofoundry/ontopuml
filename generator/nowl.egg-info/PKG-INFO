@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: nowl
+Version: 0.1
+Requires-Dist: click
+Requires-Dist: owlready2
+Requires-Dist: networkx
+Requires-Dist: matplotlib
+Dynamic: requires-dist
