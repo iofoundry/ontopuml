@@ -15,6 +15,64 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/simpleProperty1 -->
+
+    <owl:ObjectProperty rdf:about="http://nist.gov/nowl/benchmark-core/simpleProperty1"/>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/simpleProperty2 -->
+
+    <owl:ObjectProperty rdf:about="http://nist.gov/nowl/benchmark-core/simpleProperty2"/>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/simpleProperty3 -->
+
+    <owl:ObjectProperty rdf:about="http://nist.gov/nowl/benchmark-core/simpleProperty3"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/simpleDataProperty1 -->
+
+    <owl:DatatypeProperty rdf:about="http://nist.gov/nowl/benchmark-core/simpleDataProperty1"/>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/simpleDataProperty2 -->
+
+    <owl:DatatypeProperty rdf:about="http://nist.gov/nowl/benchmark-core/simpleDataProperty2"/>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/simpleDataProperty3 -->
+
+    <owl:DatatypeProperty rdf:about="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -25,27 +83,45 @@
 
     <!-- http://nist.gov/nowl/benchmark-core/SimpleClass1 -->
 
-    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass1">
-        <owl:equivalentClass rdf:resource="http://nist.gov/nowl/benchmark-simple/EquivalentClass"/>
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass1">
+        <owl:equivalentClass rdf:resource="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/EquivalentClass"/>
         <owl:disjointWith rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass4"/>
-    </rdf:Description>
+    </owl:Class>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/SimpleClass2 -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass2"/>
     
 
 
     <!-- http://nist.gov/nowl/benchmark-core/SimpleClass3 -->
 
-    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass3">
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass3">
         <owl:disjointUnionOf rdf:parseType="Collection">
             <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass4"/>
             <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass5"/>
         </owl:disjointUnionOf>
-    </rdf:Description>
+    </owl:Class>
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/AllValuesFromClass -->
+    <!-- http://nist.gov/nowl/benchmark-core/SimpleClass4 -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/AllValuesFromClass">
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass4"/>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/SimpleClass5 -->
+
+    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-core/SimpleClass5"/>
+    
+
+
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/AllValuesFromClass -->
+
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/AllValuesFromClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty2"/>
@@ -57,9 +133,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/ComplementClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/ComplementClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/ComplementClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/ComplementClass">
         <owl:equivalentClass>
             <owl:Class>
                 <owl:complementOf rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass1"/>
@@ -70,9 +146,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataAllComplexDatatypeClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllComplexDatatypeClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllComplexDatatypeClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllComplexDatatypeClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
@@ -108,9 +184,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataAllDatatypeOneOfClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllDatatypeOneOfClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllDatatypeOneOfClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllDatatypeOneOfClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty1"/>
@@ -143,9 +219,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataAllDatatypeRangeClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllDatatypeRangeClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllDatatypeRangeClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllDatatypeRangeClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
@@ -168,9 +244,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataAllValueClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllValueClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataAllValueClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataAllValueClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty2"/>
@@ -182,9 +258,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataExactCardinalityClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataExactCardinalityClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataExactCardinalityClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataExactCardinalityClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
@@ -197,9 +273,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataMaxCardinalityClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataMaxCardinalityClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataMaxCardinalityClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataMaxCardinalityClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty2"/>
@@ -212,9 +288,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataMinCardinalityClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataMinCardinalityClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataMinCardinalityClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataMinCardinalityClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty1"/>
@@ -227,9 +303,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataSomeComplexDatatypeClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataSomeComplexDatatypeClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataSomeComplexDatatypeClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataSomeComplexDatatypeClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
@@ -264,9 +340,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataSomeDatatypeRangeClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataSomeDatatypeRangeClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataSomeDatatypeRangeClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataSomeDatatypeRangeClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty2"/>
@@ -289,9 +365,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataSomeValueClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataSomeValueClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataSomeValueClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataSomeValueClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty1"/>
@@ -303,9 +379,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/DataValueClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataValueClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/DataValueClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/DataValueClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleDataProperty3"/>
@@ -317,17 +393,17 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/EquivalentClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/EquivalentClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/EquivalentClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/EquivalentClass">
         <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     </owl:Class>
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/ExactCardinalityClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/ExactCardinalityClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/ExactCardinalityClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/ExactCardinalityClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty3"/>
@@ -340,9 +416,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/IntersectionClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/IntersectionClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/IntersectionClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/IntersectionClass">
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -356,9 +432,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/MaxCardinalityClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/MaxCardinalityClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/MaxCardinalityClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/MaxCardinalityClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty2"/>
@@ -371,9 +447,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/MinCardinalityClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/MinCardinalityClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/MinCardinalityClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/MinCardinalityClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty1"/>
@@ -386,9 +462,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/OneOfClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/OneOfClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/OneOfClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/OneOfClass">
         <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:subClassOf>
             <owl:Class>
@@ -403,9 +479,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/SelfClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/SelfClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/SelfClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/SelfClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty1"/>
@@ -417,9 +493,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/SomeValuesFromClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/SomeValuesFromClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/SomeValuesFromClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/SomeValuesFromClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty1"/>
@@ -431,17 +507,17 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/SubClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/SubClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/SubClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/SubClass">
         <rdfs:subClassOf rdf:resource="http://nist.gov/nowl/benchmark-core/SimpleClass1"/>
     </owl:Class>
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/UnionClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/UnionClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/UnionClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/UnionClass">
         <owl:equivalentClass>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -455,9 +531,9 @@
     
 
 
-    <!-- http://nist.gov/nowl/benchmark-simple/ValueClass -->
+    <!-- https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/ValueClass -->
 
-    <owl:Class rdf:about="http://nist.gov/nowl/benchmark-simple/ValueClass">
+    <owl:Class rdf:about="https://raw.githubusercontent.com/iofoundry/ontopuml/refs/heads/main/test/import/benchmark-simple.rdf/ValueClass">
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://nist.gov/nowl/benchmark-core/simpleProperty3"/>
@@ -482,9 +558,21 @@
 
     <!-- http://nist.gov/nowl/benchmark-core/individual1 -->
 
-    <rdf:Description rdf:about="http://nist.gov/nowl/benchmark-core/individual1">
+    <owl:NamedIndividual rdf:about="http://nist.gov/nowl/benchmark-core/individual1">
         <owl:differentFrom rdf:resource="http://nist.gov/nowl/benchmark-core/individual3"/>
-    </rdf:Description>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/individual2 -->
+
+    <owl:NamedIndividual rdf:about="http://nist.gov/nowl/benchmark-core/individual2"/>
+    
+
+
+    <!-- http://nist.gov/nowl/benchmark-core/individual3 -->
+
+    <owl:NamedIndividual rdf:about="http://nist.gov/nowl/benchmark-core/individual3"/>
 </rdf:RDF>
 
 
