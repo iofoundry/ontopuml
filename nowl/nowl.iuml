@@ -107,55 +107,118 @@ skinparam object{
     !endif 
 !endfunction
 
+!unquoted function getEmptyString($label)
+    !if (%strlen($label) > 0) && (label != " ")
+        !log $label
+        !return $label
+    !else    
+        !log $label
+        !return " "
+!endfunction
+
+!$inTypes = ","
+!unquoted procedure addInType($var)
+    !$inTypes = $inTypes + $var + ","
+!endprocedure
+
+!unquoted function isInType($var)
+     !foreach $i in %splitstr($inTypes, ",")
+        !if $i == $var
+            !return %true()
+        !endif
+    !endfor
+    !return %false()
+!endfunction
+
 '-------------------------------------------------------'
 ' Class declaration
 '-------------------------------------------------------'
 ' create a class
 ' iri should use only prefix and not complete url
 !unquoted procedure class($alias, $iri)
-    class "$iri" as $alias #getColor($iri)
+    class "getEmptyString($iri)" as $alias #getColor($iri)
 !endprocedure
 
 !unquoted procedure oClass($iri)
     !$var = newVar()
-    class "$iri" as $var #getColor($iri)
+    class "getEmptyString($iri)" as $var #getColor($iri)
     addVariable($var, $iri)
 !endprocedure
 
 '-------------------------------------------------------'
 ' Individual declaration
 '-------------------------------------------------------'
-'create an instance
-' iri should use only prefix and not complete url
+
+''' create a new instance
+''' $alias : variable for the individual, e.g., i1
+''' $iri : prefixed label of the individual, e.g., ns1:individual1
 !unquoted procedure individual($alias, $iri)
-    object "<u>$iri" as $alias #getColor($iri)
+    object "<u>getEmptyString($iri)" as $alias #getColor($iri)
 !endprocedure
 
-' alternative style in place type display
-' iri should use only prefix and not complete url
+''' create a new instance with its type shown in-line
+''' $alias : variable for the individual, e.g., i1
+''' $iri : prefixed label of the individual, e.g., ns1:individual1
+''' $class: prefixed label of the type of the individual e.g., ns:Class1
 !unquoted procedure individual($alias, $iri, $class)
-    object "<u>$iri" as $alias #getColor($iri)
-    $alias : <back:#getColor($class)>type = $class</back>
+    object "<u>getEmptyString($iri)" as $alias #getColor($iri)
+    $alias : <back:#getColor($class)>type = getEmptyString($class)</back>
+    addInType($alias)
 !endprocedure
 
-' alternative style in place type display
-' any number of types are accepted
-' !unquoted procedure individual($alias, $iri, $classes)
+' in-line typing with multiple types in single line is not preferred currently
+' !unquoted procedure individual1($alias, $iri, $classes)
 '     object "<u>$iri" as $alias #getColor($iri)
-'     $alias : <back:#getColor($class)>type = $class</back>
+'     !$type_string = ""
+'     !foreach $item in %str2json($classes)
+'         !$type_string = $type_string + $item + ", "
+'     !endfor 
+'     !$type_string_length = %strlen($type_string) - 2
+'     !$type_string = %substr($type_string, 0, $type_string_length)
+'     $alias : type = $type_string
 ' !endprocedure
 
+''' create a new instance with its multiple types shown in-line 
+''' $alias : variable for the individual, e.g., i1
+''' $iri : prefixed label of the individual, e.g., ns1:individual1
+''' $classes: array of prefixed labels of the types of the individual e.g., '["ns:Class1", "ns:Class2"]'
+!unquoted procedure xIndividual($alias, $iri, $classes)
+    object "<u>getEmptyString($iri)" as $alias #getColor($iri)
+    !foreach $item in %str2json($classes)
+        $alias : <back:#getColor($item)>type = getEmptyString($item)</back>
+    !endfor 
+    addInType($alias)
+!endprocedure
+
+''' create a new instance without alias
+''' $iri : prefixed label of the individual, e.g., ns1:individual1
 !unquoted procedure oIndividual($iri)
     !$var = newVar()
-    object "<u>$iri" as $var #getColor($iri)
+    object "<u>getEmptyString($iri)" as $var #getColor($iri)
     addVariable($var, $iri)
 !endprocedure
 
+''' create a new instance without alias but with in-line type
+''' $iri : prefixed label of the individual, e.g., ns1:individual1
+''' $class: prefixed label of the type of the individual e.g., ns:Class1
 !unquoted procedure oIndividual($iri, $class = "")   
     !$var = newVar()
-    object "<u>$iri" as $var #getColor($iri)
-    $var : <back:#getColor($class)>type = $class</back> 
-    ' $var : --
+    object "<u>getEmptyString($iri)" as $var #getColor($iri)
+    $var : <back:#getColor($class)>type = getEmptyString($class)</back> 
+    addInType($var)
+    addVariable($var, $iri)
+!endprocedure
+
+''' create a new instance without alias but with in-line multiple types
+''' $iri : prefixed label of the individual, e.g., ns1:individual1
+''' $classes: array of prefixed labels of the types of the individual e.g., '["ns:Class1", "ns:Class2"]'
+!unquoted procedure oxIndividual($iri, $classes)   
+    !$var = newVar()
+    object "<u>getEmptyString($iri)" as $var #getColor($iri)
+    !foreach $item in %str2json($classes)
+        $var : <back:#getColor($item)>type = getEmptyString($item)</back>
+    !endfor 
+    addInType($var)
     addVariable($var, $iri)
 !endprocedure
 
@@ -208,15 +271,15 @@ skinparam object{
 !unquoted procedure data($subject, $predicate, $value)
     !$m = getVariable($subject)
     !if $m
-        object $m {
-            --
-            $predicate  = $value
-        }
+        !if isInType($m)
+            $m : --
+        !endif
+        $m : $predicate = $value
     !else
-        object $subject {
-            --
-            $predicate  = $value
-        }
+        !if isInType($subject)
+            $subject : --
+        !endif
+        $subject : $predicate = $value
     !endif
 !endprocedure
 
@@ -516,6 +579,10 @@ skinparam object{
 '-------------------------------------------------------'
 ' value constraint
 '-------------------------------------------------------'
+''' creates a constraint with data value restriction
+''' $alias : variable pointing to the constraint (anonymous class) e.g., ce1
+''' $property: prefixed label of a data property e.g., ns:dataProperty1
+''' $individual: prefixed IRI of an individual e.g., ns1:individual1
 !unquoted procedure value($alias, $property, $individual, $direction = x)
     class "    " as $alias
     !$n = getVariable($individual)
@@ -530,15 +597,15 @@ skinparam object{
 '-------------------------------------------------------'
 ' data value constraint
 '-------------------------------------------------------'
-!unquoted procedure dataValue($alias, $property, $individual, $direction = x)
+''' creates a constraint with data value restriction
+''' $alias : variable pointing to the constraint (anonymous class) e.g., ce1
+''' $property: prefixed label of a data property e.g., ns:dataProperty1
+''' $data: literal with or without data type e.g., 123, 0.34, Hello^^xsd:string
+!unquoted procedure dataValue($alias, $property, $data, $direction = x)
     class "    " as $alias
-    !$n = getVariable($individual)
     !$dir = getDirection($direction, right)
-    !if $n
-        $alias -$dir-> $n : $property <<value>>
-    !else
-        $alias -$dir-> $individual : $property <<value>>
-    !endif
+    class "$data" as datavaluex1 #white;text:black ##[dotted]black
+    $alias -$dir-> datavaluex1 : $property <<value>>
 !endprocedure
 
 '-------------------------------------------------------'

@@ -235,63 +235,72 @@ def main(
 
     output_path = None
     puml_content = None
-    
-    if class_diagram:
-        if class_entity:
-            # Process multiple class entities from command line
-            class_entities_list = []
-            types_list = []
-            
-            for entity in class_entity:
-                # Split on the last colon to handle IRIs that may contain colons
-                parts = entity.rsplit(':', 1)
-                if len(parts) == 2:
-                    entity_name, entity_type = parts
-                    if entity_type in ['n', 's', 'ns', 't']:
-                        class_entities_list.append(entity_name)
-                        types_list.append(entity_type)
+    try:
+        if class_diagram:
+            if class_entity:
+                # Process multiple class entities from command line
+                class_entities_list = []
+                types_list = []
+                
+                for entity in class_entity:
+                    # Split on the last colon to handle IRIs that may contain colons
+                    parts = entity.rsplit(':', 1)
+                    if len(parts) == 2:
+                        entity_name, entity_type = parts
+                        if entity_type in ['n', 's', 'ns', 't']:
+                            class_entities_list.append(entity_name)
+                            types_list.append(entity_type)
+                        else:
+                            click.echo(f"Warning: Invalid type '{entity_type}' for class entity '{entity_name}'. "
+                                    f"Type must be one of 'n', 's', 'ns', or 't'. Skipping this entity.")
                     else:
-                        click.echo(f"Warning: Invalid type '{entity_type}' for class entity '{entity_name}'. "
-                                 f"Type must be one of 'n', 's', 'ns', or 't'. Skipping this entity.")
+                        # If no type is provided, use the default from condition_included
+                        if condition_included:
+                            class_entities_list.append(entity)
+                            types_list.append(condition_included)
+                        else:
+                            click.echo(f"Warning: No type specified for class entity '{entity}' and no default "
+                                    f"condition provided. Skipping this entity.")
+                
+                if class_entities_list:
+                    puml_content, output_path = axiom_to_puml(
+                        ontology=input,
+                        class_entities=list(zip(class_entities_list, types_list)),
+                        layout_type=layout,
+                    )
                 else:
-                    # If no type is provided, use the default from condition_included
-                    if condition_included:
-                        class_entities_list.append(entity)
-                        types_list.append(condition_included)
-                    else:
-                        click.echo(f"Warning: No type specified for class entity '{entity}' and no default "
-                                 f"condition provided. Skipping this entity.")
-            
-            if class_entities_list:
-                puml_content, output_path = axiom_to_puml(
-                    ontology=input,
-                    class_entities=list(zip(class_entities_list, types_list)),
-                    layout_type=layout,
-                )
+                    click.echo("No valid class entities provided. Exiting.")
+            elif class_included:
+                # Legacy support for class_included option
+                if condition_included:
+                    puml_content, output_path = axiom_to_puml(
+                        ontology=input,
+                        class_entities=class_included,
+                        types=condition_included,
+                        layout_type=layout,
+                    )
+                else:
+                    click.echo("When using --class-included, you must also specify --condition-included. Exiting.")
             else:
-                click.echo("No valid class entities provided. Exiting.")
-        elif class_included:
-            # Legacy support for class_included option
-            if condition_included:
-                puml_content, output_path = axiom_to_puml(
-                    ontology=input,
-                    class_entities=class_included,
-                    types=condition_included,
-                    layout_type=layout,
-                )
-            else:
-                click.echo("When using --class-included, you must also specify --condition-included. Exiting.")
+                click.echo("No class entities provided. Use --class-entity or --class-included options. Exiting.")
         else:
-            click.echo("No class entities provided. Use --class-entity or --class-included options. Exiting.")
-    else:
-        puml_content, output_path = rdf_to_puml(
-            input_rdf=input,
-            import_ontologies=import_ontology,
-            relation_excluded=list(relation_excluded),
-            layout_type=layout,
-            inline_class_declaration=inline_class
-        )
- 
+            puml_content, output_path = rdf_to_puml(
+                input_rdf=input,
+                import_ontologies=import_ontology,
+                relation_excluded=list(relation_excluded),
+                layout_type=layout,
+                inline_class_declaration=inline_class
+            )
+    except FileNotFoundError as e:
+        click.echo(f"Error: {e}", err=True)
+        raise click.Abort()
+    except ImportError as e:
+        click.echo(f"Import Error: {e}", err=True)
+        raise click.Abort()
+    except Exception as e:
+        click.echo(f"Unexpected error: {e}", err=True)
+        raise click.Abort()
+
     if view and puml_content:
         if not output_path or not os.path.exists(output_path):
             # If we don't have a valid file path, look for recently created PUML files

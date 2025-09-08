@@ -9,7 +9,12 @@ import os
 ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import *
-from .utils import to_pascal_case, to_camel_case, get_label, get_prefix
+from .utils import (to_pascal_case, 
+                    to_camel_case, 
+                    get_label, 
+                    get_prefix, 
+                    check_ontology_imports,
+                    check_file_exists)
 
 
 def determine_direction(angle_degrees):
@@ -65,15 +70,26 @@ class RdfToPumlConverter:
             else:
                 onto_path.append(os.path.dirname(self.input))
             data = get_ontology(self.input).load()
+            # Check for failed imports
+            from .utils import check_ontology_imports
+            check_ontology_imports(data)
         else:
             data = self.input  # input_rdf is already ontology python object
-        for ind in data.individuals():
+            # Check for failed imports if it's an ontology object
+            if hasattr(data, 'imported_ontologies'):
+                from .utils import check_ontology_imports
+                check_ontology_imports(data)
+
+        all_individuals = list(data.individuals())
+        print(f"Found {len(all_individuals)} individual(s) in the ontology.")
+
+        for ind in all_individuals:
             self.individuals[ind.name] = ind
             #get ind class
             if ind.is_a:
                 for class_object in ind.is_a:
                     try:
-                        class_label = to_pascal_case(get_label(class_object))
+                        class_label = get_label(class_object)
                         self.classes[class_label] = class_object
                         # Only add typeOf relation if it's not excluded
                         if "typeOf" not in self.excluded_relations:
@@ -341,14 +357,13 @@ class RdfToPumlConverter:
         # If there are no nodes left after filtering, return empty PUML
         if not self.classes and not self.individuals:
             puml_lines.append("@startuml")
-            puml_lines.append("!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
             puml_lines.append("note \"No elements to display after applying exclusion filters\" as N1")
             puml_lines.append("@enduml")
             return "\n".join(puml_lines)
         
         # Add header
         puml_lines.append("@startuml")
-        puml_lines.append("!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/iof.iuml")
+        puml_lines.append("!include nowl/nowl.iuml")
         
         # Only add direction if layout_type is specified
         if self.layout_type is not None and self.layout_type in ["bipartite", "multipartite"]:
@@ -359,6 +374,27 @@ class RdfToPumlConverter:
         individual_map = {ind_name: f"i{idx}" for idx, ind_name in enumerate(self.individuals, start=1)}
         
         #Inline class declaration mode
+        # if self.inline_class_declaration:
+        #     for ind_name in self.individuals:
+        #         prefix = "ns1:"
+        #         # Get classes for this individual
+        #         individual_classes = self.get_individual_classes(ind_name)
+                
+        #         if individual_classes:
+        #             # Use the first class for inline declaration
+        #             first_class = individual_classes[0]
+        #             if first_class in self.classes:
+        #                 class_prefix = get_prefix(self.classes[first_class])
+        #                 puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name}, {class_prefix}{first_class})")
+        #             else:
+        #                 # Fallback if class not found
+        #                 puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
+        #         else:
+        #             # No class found, use standard individual declaration
+        #             puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
+        
+###
+    # Inline class declaration mode
         if self.inline_class_declaration:
             for ind_name in self.individuals:
                 prefix = "ns1:"
@@ -366,25 +402,41 @@ class RdfToPumlConverter:
                 individual_classes = self.get_individual_classes(ind_name)
                 
                 if individual_classes:
-                    # Use the first class for inline declaration
-                    first_class = individual_classes[0]
-                    if first_class in self.classes:
-                        class_prefix = get_prefix(self.classes[first_class])
-                        puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name}, {class_prefix}{first_class})")
+                    if len(individual_classes) == 1:
+                        # Single class - use original format
+                        first_class = individual_classes[0]
+                        if first_class in self.classes:
+                            class_prefix = get_prefix(self.classes[first_class])
+                            puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name}, {class_prefix}{first_class})")
+                        else:
+                            # Fallback if class not found
+                            puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
                     else:
-                        # Fallback if class not found
-                        puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
+                        # Multiple classes - use array format
+                        class_list = []
+                        for cls in individual_classes:
+                            if cls in self.classes:
+                                class_prefix = get_prefix(self.classes[cls])
+                                class_list.append(f"{class_prefix}{cls}")
+                            else:
+                                class_list.append(cls)  # Fallback without prefix
+                        
+                        # Format as array string
+                        classes_array = '[' + ', '.join(f'"{cls}"' for cls in class_list) + ']'
+                        puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name}, '{classes_array}')")
                 else:
                     # No class found, use standard individual declaration
                     puml_lines.append(f"individual({individual_map[ind_name]}, {prefix}{ind_name})")
-            
+###
+
+        
             # Add typeOf relationships for additional classes (if an individual has multiple classes)
-            for s, p, o in self.properties:
-                if p == "typeOf" and o in class_map and s.name in individual_map:
-                    individual_classes = self.get_individual_classes(s.name)
-                    # Only add typeOf for classes beyond the first one
-                    if len(individual_classes) > 1 and o != individual_classes[0]:
-                        puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
+            # for s, p, o in self.properties:
+            #     if p == "typeOf" and o in class_map and s.name in individual_map:
+            #         individual_classes = self.get_individual_classes(s.name)
+            #         # Only add typeOf for classes beyond the first one
+            #         if len(individual_classes) > 1 and o != individual_classes[0]:
+            #             puml_lines.append(f"typeOf({individual_map[s.name]}, {class_map[o]})")
         else:
             # ORIGINAL: Separate class and typeOf declarations
             # Add class definitions

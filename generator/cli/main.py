@@ -51,22 +51,29 @@ def rdf_to_puml(
         The generated PlantUML code
     """
 
-    converter = RdfToPumlConverter(
-        input=input_rdf,
-        import_ontologies=import_ontologies,
-        save_puml=save_puml,
-        layout_type=layout_type,
-        layout_params=layout_params,
-        visualize=visualize,
-        save_viz=save_viz,
-        figsize=figsize,
-        relation_excluded=relation_excluded,
-        inline_class_declaration=inline_class_declaration,
-    )
-    
-    puml_content = converter.convert()
-
-    return puml_content[0], puml_content[1]
+    try:
+        converter = RdfToPumlConverter(
+            input=input_rdf,
+            import_ontologies=import_ontologies,
+            save_puml=save_puml,
+            layout_type=layout_type,
+            layout_params=layout_params,
+            visualize=visualize,
+            save_viz=save_viz,
+            figsize=figsize,
+            relation_excluded=relation_excluded,
+            inline_class_declaration=inline_class_declaration,
+        )
+        
+        puml_content = converter.convert()
+        return puml_content[0], puml_content[1]
+        
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Error: {e}")
+    except ImportError as e:
+        raise ImportError(f"Import Error: {e}")
+    except Exception as e:
+        raise Exception(f"Unexpected error during RDF conversion: {e}")
 
 
 def axiom_to_puml(
@@ -109,14 +116,21 @@ def axiom_to_puml(
     str
         The generated PlantUML code
     """
+    try:
+        axiom_result, output_path = AxiomToPumlConverter(
+            class_entities=class_entities,
+            ontology=ontology,
+            types=types,
+            layout_type=layout_type,
+            layout_params=layout_params,
+            visualize=visualize,
+            save_puml=save_puml,
+        ).convert()
+        return axiom_result, output_path
         
-    axiom_result, output_path = AxiomToPumlConverter(
-        class_entities=class_entities,
-        ontology=ontology,
-        types=types,
-        layout_type=layout_type,
-        layout_params=layout_params,
-        visualize=visualize,
-        save_puml=save_puml,
-    ).convert()
-    return axiom_result, output_path
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Error: {e}")
+    except ImportError as e:
+        raise ImportError(f"Import Error: {e}")
+    except Exception as e:
+        raise Exception(f"Unexpected error during axiom conversion: {e}")

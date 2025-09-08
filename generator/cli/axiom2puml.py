@@ -8,7 +8,13 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 from owlready2 import *
 
-from .utils import to_camel_case, to_pascal_case, get_prefix, get_label, python_name_to_xsd
+from .utils import (to_camel_case, 
+                    to_pascal_case, 
+                    get_prefix, 
+                    get_label, 
+                    python_name_to_xsd, 
+                    check_ontology_imports)
+
 
 def get_axiom(class_entity, ontology, type):
     #equivalent to
@@ -30,7 +36,8 @@ def get_axiom(class_entity, ontology, type):
                 pass
     # sub_class            
     elif type == "n":
-        return class_entity.is_a
+        sub_class = [item for item in class_entity.is_a if not (hasattr(item, 'name') and item.name == 'Thing')]
+        return sub_class
     # disjoints
     # elif type == 4:
     #     return ontology[class_entity].disjoints()
@@ -38,8 +45,6 @@ def get_axiom(class_entity, ontology, type):
         return class_entity
     else:
         print(f"Error: Unknown axiom type")
-
-
 
 class AxiomToPumlConverter:
     def _process_class_entities_types(self, class_entities, types, ontology):
@@ -88,10 +93,16 @@ class AxiomToPumlConverter:
         return class_entities_list, types_list
 
     def __init__(self, ontology, class_entities, types=None, layout_type=None, layout_params=None, visualize=False, save_puml = True):
-        self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
+        try:
+            self.ontology = get_ontology(ontology).load() if isinstance(ontology, str) else ontology
+            if isinstance(ontology, str):
+                check_ontology_imports(self.ontology)
+        except Exception as e:
+            raise e
+
         self.class_entities, self.types = self._process_class_entities_types(class_entities, types, self.ontology)
         self.puml_output = []
-        self.puml_output.append("@startuml\n!include https://raw.githubusercontent.com/iofoundry/ontopuml/main/ontologyv2.iuml")
+        self.puml_output.append("@startuml\n!include /Users/pnc12/Documents/GitHub/nowl/nowl/nowl.iuml")
         self.puml_output.append('title '+'_'.join(i.name for i in self.class_entities if hasattr(self.class_entities[0], 'name')))
         self.class_map = {}
         self.restriction_map = {}  # New map to track restrictions and avoid duplicates
@@ -186,7 +197,7 @@ class AxiomToPumlConverter:
             self.restriction_map[restriction_key] = result
             return result
 
-        elif isinstance(entity, (And, Or, Not)):  # Handle logical restrictions
+        elif isinstance(entity, (And, Or, Not, OneOf)):  # Handle logical restrictions
             # Generate a unique key for this logical restriction
             restriction_key = self.get_restriction_key(entity)
             
@@ -201,7 +212,6 @@ class AxiomToPumlConverter:
 
         elif isinstance(entity, type):
             result = self.process_restriction(entity, None)
-            
             return result
 
         elif isinstance(entity, Inverse):  # Handle standalone inverse properties
@@ -216,9 +226,8 @@ class AxiomToPumlConverter:
     def process_restriction(self, restriction, prop_name):
         if isinstance(restriction, And):
             self.counter += 1
-            entities = [self.get_class_name(e) for e in restriction.Classes]
-
             node = f"ce{self.counter}"
+            entities = [self.get_class_name(e) for e in restriction.Classes]
             entity_list = ", ".join(f'\"{e}\"' for e in entities)
             
             # Add node to the graph
@@ -236,8 +245,8 @@ class AxiomToPumlConverter:
 
         elif isinstance(restriction, Or):
             self.counter += 1
-            entities = [self.get_class_name(e) for e in restriction.Classes]
             node = f"ce{self.counter}"
+            entities = [self.get_class_name(e) for e in restriction.Classes]
             entity_list = ", ".join(f'\"{e}\"' for e in entities)
             
             # Add node to the graph
@@ -254,10 +263,9 @@ class AxiomToPumlConverter:
             return node
     
         elif isinstance(restriction, Not):
-            complemented_entity = self.get_class_name(restriction.Class)
             self.counter += 1
             node = f"ce{self.counter}"
-            
+            complemented_entity = self.get_class_name(restriction.Class)
             # Add node to the graph
             self.graph.add_node(node, type='complement')
             self.node_labels[node] = "Complement"
@@ -267,49 +275,70 @@ class AxiomToPumlConverter:
             self.graph.add_edge(complemented_entity, node, relation='complemented_by')
             self.relationships.append((complemented_entity, 'complemented_by', node))
             
-            self.puml_output.append(f"complement({node}, \"{complemented_entity}\")")
-            
-            return node
-
-        elif hasattr(restriction, 'value') and isinstance(restriction.value, Or):
-            self.counter += 1
-            entities = [self.get_class_name(e) for e in restriction.value.Classes]
-            node = f"ce{self.counter}"
-            entity_list = ", ".join(f'\"{e}\"' for e in entities)
-            
-            # Add node to the graph
-            self.graph.add_node(node, type='union')
-            self.node_labels[node] = "Union"
-            self.node_types[node] = 'operator'
-            
-            # Add edges from entities to union
-            for entity in entities:
-                self.graph.add_edge(entity, node, relation='member_of')
-                self.relationships.append((entity, 'member_of', node))
-            
-            self.puml_output.append(f"union({node}, '[{entity_list}]')")
+            self.puml_output.append(f"complement({node}, {complemented_entity})")
             
             return node
         
-        elif hasattr(restriction, "type") and restriction.type == 29: #has_value
+        elif isinstance(restriction, OneOf):
             self.counter += 1
-            #  entities = [self.get_class_name(e) for e in restriction.value.Classes]
+            node = f"ce{self.counter}"
+            
+            # Process the individuals in the OneOf
+            individuals = []
+            for individual in restriction.instances:
+                individual_counter = len([line for line in self.puml_output if line.startswith('individual(')]) + 1
+                individual_id = f"i{individual_counter}"
+                individuals.append(individual_id)
+                
+                # Add individual to PUML output
+                individual_name = individual.name if hasattr(individual, 'name') else str(individual)
+                self.puml_output.append(f"individual({individual_id}, ns2:{individual_name})")
+            
+            # Create the OneOf construct
+            individual_list = ", ".join(f'"{ind}"' for ind in individuals)
+            
+            # Add node to the graph
+            self.graph.add_node(node, type='oneOf')
+            self.node_labels[node] = "OneOf"
+            self.node_types[node] = 'operator'
+            
+            # Add edges from individuals to oneOf
+            for individual_id in individuals:
+                self.graph.add_edge(individual_id, node, relation='member_of')
+                self.relationships.append((individual_id, 'member_of', node))
+            
+            # Add OneOf to PUML output
+            self.puml_output.append(f"oneOf({node}, '[{individual_list}]')")
+
+        elif hasattr(restriction, 'value') and isinstance(restriction.value, (Or, And)):
+            class_name = self.get_class_name(restriction.value)
+            if prop_name is None:
+                return class_name
+            else:
+                node = class_name
+        
+        elif hasattr(restriction, "type") and restriction.type == 29: #value class
+            self.counter += 1
             node = f"v{self.counter}"
-            # entity_list = ", ".join(f'\"{e}\"' for e in entities)
+            
+            # Get the proper prefixed property name
+            prefix = get_prefix(restriction.property)
+            prop_name = prefix + get_label(restriction.property)
             
             # Add node to the graph
             self.graph.add_node(node, type='value')
             self.node_labels[node] = "value"
             self.node_types[node] = 'operator'
-            
-            # Add edges from entities to union
-            # for entity in entities:
-            #     self.graph.add_edge(entity, node, relation='member_of')
-            #     self.relationships.append((entity, 'member_of', node))
-            self.puml_output.append(f"individual(i{self.counter}, ns1:{restriction.value.name})")
-            self.puml_output.append(f"value({node}, {restriction.property.name},i{self.counter})")
+            if hasattr(restriction.value, "name"):
+                self.puml_output.append(f"individual(i{self.counter}, ns1:{restriction.value.name})")
+                self.puml_output.append(f"value({node}, {prop_name}, i{self.counter})")
+            else:
+                self.puml_output.append(f"dataValue({node}, {prop_name}, {restriction.value})")
             
             return node
+
+        elif hasattr(restriction, 'type') and (restriction.type == HAS_SELF or restriction.type == 117):
+            node = None
 
         elif hasattr(restriction, 'value'):
             class_name = self.get_class_name(restriction.value)
@@ -323,58 +352,70 @@ class AxiomToPumlConverter:
             node = restriction
             pass
         else:
-            class_name = self.get_class_name(restriction)
-            if prop_name is None:
-                return class_name
+            # Only process as a general class if it's not a self restriction
+            if not (hasattr(restriction, 'type') and (restriction.type == HAS_SELF or restriction.type == 117)):
+                class_name = self.get_class_name(restriction)
+                if prop_name is None:
+                    return class_name
+                else:
+                    node = class_name
             else:
-                node = class_name
+                node = None  # No target node for self restrictions
 
         if prop_name is not None:
             self.counter += 1
             var_name = f"ce{self.counter}"
             restriction_type = 'some'
-
+            
+            cardinality = None
             if hasattr(restriction, 'type'):
                 try:
                     if restriction.type == ONLY or restriction.type == 25: restriction_type = "only"
                     elif restriction.type == SOME or restriction.type == 24: restriction_type = "some"  
                     elif restriction.type == VALUE or restriction.type == 29: restriction_type = "value"
-                    elif restriction.type == EXACTLY or restriction.type == 26: restriction_type = "exactly"
-                    elif restriction.type == MIN or restriction.type == 27: restriction_type = "min"
-                    elif restriction.type == MAX or restriction.type == 28: restriction_type = "max"
+                    elif restriction.type == EXACTLY or restriction.type == 26: 
+                        restriction_type = "exactly"
+                        cardinality = getattr(restriction, 'cardinality', None)
+                    elif restriction.type == MIN or restriction.type == 27: 
+                        restriction_type = "min"
+                        cardinality = getattr(restriction, 'cardinality', None)
+                    elif restriction.type == MAX or restriction.type == 28: 
+                        restriction_type = "max"
+                        cardinality = getattr(restriction, 'cardinality', None)
                     elif restriction.type == HAS_SELF or restriction.type == 117: restriction_type = "self"
                 except ImportError:
                     pass
-            if hasattr(restriction, 'cardinality'):
-                cardinality = restriction.cardinality
             
             # Add node to the graph with appropriate type
             self.graph.add_node(var_name, type=restriction_type)
             self.node_labels[var_name] = f"{restriction_type.capitalize()} {prop_name}"
             self.node_types[var_name] = 'restriction'
             
-            # Add edge from restriction to target class
-            self.graph.add_edge(var_name, node, relation=prop_name)
-            self.relationships.append((var_name, prop_name, node))
+            # Add edge from restriction to target class (if node is not None)
+            if node is not None:
+                self.graph.add_edge(var_name, node, relation=prop_name)
+                self.relationships.append((var_name, prop_name, node))
         
             if restriction_type == 'only':
-                if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not)) :
+                if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not, OneOf)) :
                     self.puml_output.append(f"only({var_name}, {prop_name}, {node})")
                 else:
                     self.puml_output.append(f"onlyData({var_name}, {prop_name}, {python_name_to_xsd(restriction.value)})")
             elif restriction_type == 'some':
-                if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not)):
+                if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not, OneOf)):
                     self.puml_output.append(f"some({var_name}, {prop_name}, {node})")
                 else:
                     self.puml_output.append(f"someData({var_name}, {prop_name}, {python_name_to_xsd(restriction.value)})")
             elif restriction_type in ['min','max','exactly'] and cardinality is not None:
-                if isinstance(restriction.value, (ThingClass, Restriction)):
-                    self.puml_output.append(f"someCard({var_name}, {prop_name}, {node}, {restriction_type}, {cardinality})")
+                if isinstance(restriction.value, (ThingClass, Restriction, And, Or, Not, OneOf)):
+                    self.puml_output.append(f"cardinality({var_name}, {prop_name}, {node}, {restriction_type}, {cardinality})")
                 else:
-                    self.puml_output.append(f"someDataCard({var_name}, {prop_name}, {python_name_to_xsd(node)}, {restriction_type}, {cardinality})")
+                    self.puml_output.append(f"dataCardinality({var_name}, {prop_name}, {python_name_to_xsd(node)}, {restriction_type}, {cardinality})")
            
             elif restriction_type == 'value':
                 self.puml_output.append(f"value({var_name}, {prop_name}, {node})")
+            # elif restriction_type == 'value':
+            #     self.puml_output.append(f"dataValue({var_name}, {prop_name}, {node})")
 
             elif restriction_type == 'self':
                 self.puml_output.append(f"self({var_name}, {prop_name})")
@@ -423,18 +464,22 @@ class AxiomToPumlConverter:
         main_class_name = self.get_class_name(class_entity)
         
         try:
-            processed_parts = [self.get_class_name(part) for part in axiom.Classes]
-        except:
-            print(f"Error processing general class axiom for {class_entity}")
+            if hasattr(axiom, 'Classes'):
+                processed_parts = [self.get_class_name(part) for part in axiom.Classes]
+            else:
+                # Try to process it as a single entity
+                processed_parts = [self.get_class_name(axiom)]
+        except Exception as e:
+            print(f"Error processing equivalent_to axiom for {class_entity}")
+            print(e)
             return
             
-        final_relationship = self.get_class_name(axiom)#f"ce{self.counter}"
-        # entity_list = ", ".join(f'"{e}"' for e in processed_parts)
+        final_relationship = self.get_class_name(axiom)
         
-        self.graph.add_edge(main_class_name, final_relationship, relation='subclass')
-        self.graph.add_edge(final_relationship, main_class_name, relation='subclass')
-        self.relationships.append((main_class_name, 'subclass', final_relationship))
-        self.puml_output.append(f"subclass({main_class_name}, {final_relationship})")
+        self.graph.add_edge(main_class_name, final_relationship, relation='subClass')
+        self.graph.add_edge(final_relationship, main_class_name, relation='subClass')
+        self.relationships.append((main_class_name, 'subClass', final_relationship))
+        self.puml_output.append(f"subClass({main_class_name}, {final_relationship})")
         return
 
     def _convert_subclass(self, class_entity, axiom_type):
@@ -455,8 +500,8 @@ class AxiomToPumlConverter:
                 
                 # Add subclass relationship for each part
                 for part in processed_parts:
-                    self.graph.add_edge(main_class_name, part, relation='subclass')
-                    self.relationships.append((main_class_name, 'subclass', part))
+                    self.graph.add_edge(main_class_name, part, relation='subClass')
+                    self.relationships.append((main_class_name, 'subClass', part))
                 
                 self.puml_output.append(f"subClass({main_class_name}, {entity_list})")
         return
@@ -745,7 +790,6 @@ class AxiomToPumlConverter:
                 updated_output.append(line)
         
         return updated_output
-
 
     def convert(self):
         """Convert multiple class entities and their axioms to PUML with optimized directions"""
