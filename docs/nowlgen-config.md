@@ -73,6 +73,8 @@ No duplicate lines found.
 PUML file saved as C:\Users\ans83\git\nowl-main\nowlgen\WineDescriptor_t_axiom.puml
 ✅ Class diagram: WineDescriptor_t_axiom.puml
 📍 Location: C:\Users\ans83\git\nowl-main\nowlgen\WineDescriptor_t_axiom.puml
+```
+
 
 ## How to import local ontology files?
 
@@ -86,6 +88,7 @@ If the imported ontology IRI is not resolvable, the following error is thrown.
 
 In this case, additional ontologies can be loaded from local path along with the ontology file. The ontologies need to be imported in the same order the ontologies import each other.
 
+
 ```
 🔧 nowl>-f "..\test\import\complex-import-local.rdf" -i "..\test\import\benchmark-core.rdf" -i "..\test\import\benchmark-simple-local.rdf"
 ⚡ Generating object diagram from ..\test\import\complex-import-local.rdf
@@ -96,7 +99,7 @@ WARNING: All nodes were filtered out! This suggests a problem with relationship 
 📍 Location: s
 ```
 
-## Configure NOWL profile path
+## How to configure custom NOWL profile path
 
 Use the config command to view and edit the NOWL profile to include. This is useful to test a new profile profile than the default profiles already hosted, or simply refer a local profile file.
 
@@ -139,7 +142,7 @@ PUML file saved as C:\Users\ans83\git\nowl-main\nowlgen\Wine_Zinfandel_n_ns_spri
 
 Using `random` layout is a quick way to find a good layout, e.g., the following screenshot shows how diagrams with different layouts can be geenrated quickly by repeatedly generating the same diagram which then automatically renders in the vs code PlantUML preview.
 ![docs/images/random-layout-application.png](images/random-layout-application.png)
-```
+
 
 
 
