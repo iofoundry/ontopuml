@@ -18,3 +18,13 @@ test1.ipynb
 test1.ipynb
 cli/catalog-v001.xml
 .vscode
+test/catalog-v001.xml
+/generator/nowl.egg-info
+test_command.txt
+test/import/catalog-v001.xml
+*.xml
+/nowlgen/build
+climain_depre.py
+/nowlgen/dist
+*.spec
+nowlgen/cli/_main.py

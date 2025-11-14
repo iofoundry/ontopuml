@@ -339,6 +339,10 @@ skinparam object{
     !$dir = getDirection($direction, down)
     !if $m && $n
         $n <|-$dir- $m
+    !elseif $m && ($n == "")
+        $parent <|-$dir- $m
+    !elseif ($m == "") && $n
+        $n <|-$dir- $child
     !else
         $parent <|-$dir- $child
     !endif
@@ -351,7 +355,11 @@ skinparam object{
     !$n = getVariable($class2)
     !$dir = getDirection($direction, right)
     !if $m && $n
-        $m <-$dir-> $n : <<owl:equivalentClass>> 
+        $m <-$dir-> $n : <<owl:equivalentClass>>
+    !elseif $m && ($n == "")
+        $m <-$dir-> $class2 : <<owl:equivalentClass>>
+    !elseif ($m == "") && $n
+        $class1 <-$dir-> $n : <<owl:equivalentClass>>
     !else
         $class1 <-$dir-> $class2 : <<owl:equivalentClass>>
     !endif
@@ -365,6 +373,10 @@ skinparam object{
     !$dir = getDirection($direction, right)
     !if $m && $n
         $m <-$dir-> $n : <<owl:disjointWith>>
+    !elseif $m && ($n == "")
+        $m <-$dir-> $class2 : <<owl:disjointWith>>
+    !elseif ($m == "") && $n
+        $class1 <-$dir-> $n : <<owl:disjointWith>>
     !else
         $class1 <-$dir-> $class2 : <<owl:disjointWith>>
     !endif
@@ -409,16 +421,8 @@ skinparam object{
 ' individual variables need to be passed as a json list
 !unquoted procedure equiUnion($class, $classes, $directionUnion = x, $direction = x)
     !$var = "un" + increment(1)
-    () "<<owl:unionOf>>" as $var
-    !$dirUnion = getDirection($directionUnion, down)
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .$dirUnion. $m
-        !else
-            $var .$dirUnion. $item
-        !endif
-    !endfor 
+    !$diru = getDirection($directionUnion, down)
+    union($var, $classes, $diru)
     !$n = getVariable($class)
     !$dir = getDirection($direction, down)
     !if $n
@@ -432,18 +436,10 @@ skinparam object{
 ' individual variables need to be passed as a json list
 !unquoted procedure subUnion($class, $classes, $directionUnion = x, $direction = x)
     !$var = "un" + increment(1)
-    () "<<owl:unionOf>>" as $var
-    !$dirUnion = getDirection($directionUnion, down)
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .$dirUnion. $m
-        !else
-            $var .$dirUnion. $item
-        !endif
-    !endfor 
+    !$diru = getDirection($directionUnion, up)
+    union($var, $classes, $diru)
     !$n = getVariable($class)
-    !$dir = getDirection($direction, down)
+    !$dir = getDirection($direction, up)
     !if $n
        $n -$dir-|> $var
     !else
@@ -455,18 +451,10 @@ skinparam object{
 ' individual variables need to be passed as a json list
 !unquoted procedure superUnion($class, $classes, $directionUnion = x, $direction = x)
     !$var = "un" + increment(1)
-    () "<<owl:unionOf>>" as $var
-    !$dirUnion = getDirection($directionUnion, down)
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .$dirUnion. $m
-        !else
-            $var .$dirUnion. $item
-        !endif
-    !endfor 
+    !$diru = getDirection($directionUnion, down)
+    union($var, $classes, $diru)
     !$n = getVariable($class)
-    !$dir = getDirection($direction, down)
+    !$dir = getDirection($direction, up)
     !if $n
         $var -$dir-|> $n
     !else
@@ -475,21 +463,6 @@ skinparam object{
 !endprocedure
 
 '-------------------------------------------------------'
-
-' make all given classes in the list as an intersection class  
-' individual variables need to be passed as a json list
-' !unquoted procedure intersection($classes)
-'     !$var = "in" + increment(1)
-'     () "<<owl:intersectionOf>>" as $var
-'     !foreach $item in %str2json($classes)
-'         !$m = getVariable($item)
-'         !if $m
-'             $var .up. $m
-'         !else
-'             $var .up. $item
-'         !endif
-'     !endfor 
-' !endprocedure
 
 ' make all given classes in the list as an union class  
 ' individual variables need to be passed as a json list
@@ -511,16 +484,8 @@ skinparam object{
 ' individual variables need to be passed as a json list
 !unquoted procedure equiIntersection($class, $classes, $directionIntersection = x, $direction = x)
     !$var = "in" + increment(1)
-    () "<<owl:intersectionOf>>" as $var
     !$dirInt = getDirection($directionIntersection, down)
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .$dirInt. $m
-        !else
-            $var .$dirInt. $item
-        !endif
-    !endfor 
+    intersection($var, $classes, $dirInt) 
     !$n = getVariable($class)
     !$dir = getDirection($direction, down)
     !if $n
@@ -534,18 +499,10 @@ skinparam object{
 ' individual variables need to be passed as a json list
 !unquoted procedure subIntersection($class, $classes, $directionIntersection = x, $direction = x)
     !$var = "in" + increment(1)
-    () "<<owl:intersectionOf>>" as $var
-    !$dirInt = getDirection($directionIntersection, down)
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .$dirInt. $m
-        !else
-            $var .$dirInt. $item
-        !endif
-    !endfor 
+    !$dirInt = getDirection($directionIntersection, up)    
+    intersection($var, $classes, $dirInt) 
     !$n = getVariable($class)
-    !$dir = getDirection($direction, down)
+    !$dir = getDirection($direction, up)
     !if $n
        $n -$dir-|> $var
     !else
@@ -557,18 +514,10 @@ skinparam object{
 ' individual variables need to be passed as a json list
 !unquoted procedure superIntersection($class, $classes, $directionIntersection = x, $direction = x)
     !$var = "in" + increment(1)
-    () "<<owl:intersectionOf>>" as $var
     !$dirInt = getDirection($directionIntersection, down)
-    !foreach $item in %str2json($classes)
-        !$m = getVariable($item)
-        !if $m
-            $var .$dirInt. $m
-        !else
-            $var .$dirInt. $item
-        !endif
-    !endfor 
+    intersection($var, $classes, $dirInt) 
     !$n = getVariable($class)
-    !$dir = getDirection($direction, down)
+    !$dir = getDirection($direction, up)
     !if $n
         $var -$dir-|> $n
     !else
@@ -581,7 +530,7 @@ skinparam object{
 '-------------------------------------------------------'
 ''' creates a constraint with data value restriction
 ''' $alias : variable pointing to the constraint (anonymous class) e.g., ce1
-''' $property: prefixed label of a data property e.g., ns:dataProperty1
+''' $property: prefixed label of a object property e.g., ns:objectProperty1
 ''' $individual: prefixed IRI of an individual e.g., ns1:individual1
 !unquoted procedure value($alias, $property, $individual, $direction = x)
     class "    " as $alias
@@ -624,7 +573,7 @@ skinparam object{
 '-------------------------------------------------------'
 ' One of constraint
 '-------------------------------------------------------'
-' make the intersection of given %classes subClass of $class
+' make the one of axiom on the given individual
 ' individual variables need to be passed as a json list
 !unquoted procedure oneOf($alias, $individuals, $direction = x)
     () "<<owl:oneOf>>" as $alias
@@ -697,10 +646,10 @@ skinparam object{
         !$tag = "<<some>>"
     !endif
 
-    !if $m && %not($n)
+    !if $m && ($n == "")
         $m -$dir-> $class2 : $property $tag   
-    !elseif %not($m) && $n
-        $class1 -$dir-> $m : $property $tag      
+    !elseif ($m == "") && $n
+        $class1 -$dir-> $n : $property $tag      
     !elseif $m && $n
         $m -$dir-> $n : $property $tag     
     !else

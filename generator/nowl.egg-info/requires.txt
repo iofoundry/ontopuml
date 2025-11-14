@@ -1,4 +1,0 @@
-click
-owlready2
-networkx
-matplotlib

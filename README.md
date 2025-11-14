@@ -1,21 +1,30 @@
-![NOWL logo](Logo.png "Logo")
+<img src="Logo.png" width="200" />
 
 # NIST OWL Visual Notation (NOWL)
-Standard plantUML library for visualising ontology and OWL 2.0 axioms in a standardised visual notation. 
+Standard plantUML library for visualising ontology and OWL 2.0 in a standardised visual notation.
+
+# NOWL Generator
+A command-line tool for converting RDF/OWL ontology files into PlantUML diagrams.
+The tool supports two main diagram types:
+
+- **Object Diagrams**: Visualize individuals, their classes, and relationships
+- **Class Diagrams**: Display class axioms, restrictions, and logical relationships
 
 ## Repository structure
 
-- :file_folder: generator : Program for generating diagrams from OWL/RDF files.
+- 📁 nowlgen : Program for generating diagrams from OWL/RDF files
+    - 📁 generator : NOWL generator engines
+    - 📁 cli : Command-line interface
     - 📄 run.py: Runner for NOWL cli program
-    - 📄 setup.py: Installer for NOWL cli program
+    - 📄 build.py: Build a single executable file of NOWL Generator (Pyinstaller is required)
 
 - :file_folder: docs : Documentations and github pages.
 
-- 📁: nowl : plantuml standard library for generating nowl diagrams, examples and profiles  
+- 📁 nowl : plantuml standard library for generating nowl diagrams, examples and profiles  
 
     - 📄 ontologyv2.iuml : PlantUML standard library
 
-- :file_folder: stencil : NOWL visual notation in draw.io stencil.
+- 📁 stencil : NOWL visual notation in draw.io stencil.
 
 
 ## Documentation
@@ -41,74 +50,105 @@ The tool uses NetworkX to calculate optimal layouts for the diagrams and can vis
 - Python 3.7+
 - owlready2 (0.47+)
 - networkx (3.4.2+)
-- matplotlib (3.10.1+)
 - click (8.1.8+)
-- plantuml (optional, for visualization)
+- plantuml server (optional)
 
 You can install all dependencies with:
 pip install -r requirements.txt
 
-## Installation
+### Install from Source
 
-Clone the repository and install using pip:
+```bash
+git clone 
+cd nowlgen
+pip install -r requirements.txt
+```
 
+#### Build Executable
+
+For a standalone executable:
+
+```bash
+python build.py
 ```
-git clone https://github.com/usnistgov/nowl.git
-cd nowl\generator
-pip install -e .
-```
+
+The executable will be created in the `dist/` folder.
 
 ## Command Line Options
 
-```
---help: help function
--i, --input: Input ontology file (RDF). The local imported ontology that are in the same directory as the input rdf will be automatically imported. 
---import-ontology: Additional ontologies to import
---relation-excluded: Relations to exclude from the object diagram
--c, --class-diagram: Generate a class diagram instead of an object diagram
---class-entity: Specify class entities with types (format: <class_name>:<type>)
-    Types: n (necessary), s (sufficient), ns (necessary & sufficient), t (taxonomy)
-    Example: --class-entity "ComputingProcess:ns" --class-entity "Agent:n"
--l, --layout: Specify the layout algorithm (spring, circular, kamada_kawai, spectral, shell, planar, random, bipartite, multipartite) or specify direction (u, d, l ,r), it will apply to all
---inline-class: Use inline class declarations for individuals in object diagrams
--v, --view: Visualize the generated PUML using a PlantUML server
---plantuml-server: URL of the PlantUML server to use for visualization.   
-    Default: http://localhost:8080/img/"
-    "Note: If you're having issues with the PlantUML server, you can:"
-    "1. Run a local server: docker run -d -p 8080:8080 plantuml/plantuml-server:jetty"
-    "2. Use the PlantUML web server: --plantuml-server http://www.plantuml.com/plantuml/img/"
-    "or svg format --plantuml-server http://www.plantuml.com/plantuml/svg/",
+### Simple Interactive Commands
+- **help**, **h**, **?** — Show help  
+- **object**, **o** — Generate object diagram  
+- **class**, **c** — Generate class diagram  
+- **list**, **ls**, **files** — List available ontology files  
+- **config** — Configure NOWL include path  
+- **status**, **info** — Show current settings  
+- **history** — Show command history  
+- **cd** — Change directory  
+- **pwd** — Show current directory  
+- **version** — Show version  
+- **exit**, **quit**, **q** — Exit program  
+  
+**Keyboard shortcut**
+- **↑/↓** — Navigate history  
+- **Tab** — Auto-complete  
+- **Ctrl+C** — Interrupt  
+- **Ctrl+D** — Exit  
+- **Ctrl+L** — Clear screen  
 
-```
+### Available Flags
+- `-f`, `--file FILE` — Input ontology  
+- `-c`, `--class-diagram` — Generate class diagram  
+- `-e`, `--class-entity CLASS-LIST` — Entitie(s) (e.g., `Person:n,Student:ns`)  
+- `-a`, `--axiom-type CHOICE` — Axiom type (`n/s/ns/t`)  
+- `-l`, `--layout CHOICE` — Apply a layouting algorithm (see layout algorithms below for choices)   
+- `-i`, `--import-ontology FILE` — path to additional ontology(s) to import  
+- `--exclude-relation IRI` — Exclude relations  
+- `--inline-class` — Inline class declarations  
+- `--nowl-profile FILE` — NOWL include path  
+- `-v`, `--view` — Visualize PUML  
+- `--plantuml-server URL` — Remote PlantUML server  
 
-## Command Line Examples
+**Axiom Types:**
+- `n` - Necessary conditions (subclass)
+- `s` - Sufficient conditions (general class axioms)
+- `ns` - Necessary & sufficient (equivalent classes)
+- `t` - Taxonomy (subclass hierarchy)
 
+**Layout algorithm**
+`spring`, `circular`, `kamada_kawai`, `spectral`, `shell`, `planar`, `random`, `bipartite`, `multipartite`, `u`, `d`, `l`,`r` (last four options are for making every edge direct up, down, left, or roght respectively)
+
+### Basic usage
+
+The output puml file will be saved at current working directory. See detailed tutorial [here](docs\nowlgen-config.md). 
 ```
 # Basic usage - generates object diagram from ontology file
-nowl -i ontology.rdf
+# For stand-alone execuatatble 
+./nowl -f ontology.rdf
 
 # Auto-detect ontology file in current directory
-nowl
+./nowl
 
 # Generate class diagram instead of object diagram
-nowl -i ontology.rdf -c
+./nowl -f ontology.rdf -c
 
 # Specify layout
-nowl -i ontology.rdf -l circular
+./nowl -f ontology.rdf -l circular
 
 # Specify direction
-nowl -i ontology.rdf -l u
+./nowl -f ontology.rdf -l u
 
-# Include specific classes only
-nowl -i ontology.rdf --class-included http://example.org/Class1
+# Include specific class
+./nowl -f ontology.rdf --include-class http://example.org/Class1 -a ns
 
-# Generate class diagram with specific axiom types
+# Generate class diagram with specific axiom type
+./nowl -f ontology.rdf -c -e http://example.org/Class1:ns -l u
 
-nowl -i ontology.rdf -c --class-entity "MyClass:ns" -l u
+# Generate class diagram with multiple classes and specific axiom types
 
-nowl -i ontology.rdf --relation-excluded "hasParent" --relation-excluded "hasChild"
+./nowl -f ontology.rdf -c -e http://example.org/Class1:ns,http://example.org/Class2:ns
 
-nowl -i ontology.rdf -v --plantuml-server http://localhost:8080/img/
+./nowl -f ontology.rdf --exclude-relation http://example.org/hasPart --exclude-relation http://example.org/isMadeOf
 
 ```
 
@@ -119,47 +159,42 @@ python run.py [OPTIONS]
 This accepts all the same CLI options as the main command. For example:
 ```
 # Basic usage
-python run.py -i your_ontology.rdf
+python run.py -f your_ontology.rdf
 
 # Generate class diagram with specific layout
-python run.py -i your_ontology.rdf -c -l bipartite
+python run.py -f your_ontology.rdf -c -l bipartite
 
-# Auto-detect ontology file in the same folder with run.py
-python run.py
 ```
 
 ## Python API
-NOWL diagram generator can be used as a Python ligrary:
+NOWL diagram generator can be used as a Python library:
 ### Object diagram from RDF data
 ```
-from ontopuml import rdf_to_puml, axiom_to_puml
+from generator.main import rdf_to_puml
+
 puml_content, output_path = rdf_to_puml(
     input_rdf="path/to/ontology.owl",
     import_ontologies=["http://example.org/imported.owl"],
     layout_type="bipartite",
     visualize=False,
     save_puml=True,
-    relation_excluded=["hasMetadata"],
+    exclude_relation=["hasMetadata"],
     inline_class_declaration=True
 )
 ```
 
 ### Class diagram from axioms
 ```
-from cli import rdf_to_puml
+from generator.main import axiom_to_puml
 
-input_rdf = "examples/object-graph-1.rdf"
-import_ontologies = [] 
-
-result, output_path = rdf_to_puml(input_rdf, 
-                     import_ontologies=import_ontologies ,
-                     save_puml = False, 
-                     layout_type="spring", 
-                     relation_excluded=[],
-                     visualize=0,
-                     inline_class_declaration=False)
-print(result)
-
-print(f"PUML content: {puml_content}")
-print(f"Saved to: {output_path}")
+converter = axiom_to_puml(
+    class_entities=[
+        ("ComputingProcess", "n"),
+        ("https://spec.industrialontologies.org/ontology/core/Core/Organization", "n"),
+    ],
+    ontology="https://spec.industrialontologies.org/ontology/core/Core",
+    layout_type="u",
+    save_puml=False,
+)
+print(converter[0])
 ```
