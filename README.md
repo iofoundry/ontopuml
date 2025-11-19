@@ -47,7 +47,7 @@ The tool uses NetworkX to calculate optimal layouts for the diagrams and can vis
 - Command-line interface
 
 ## Requirements
-- Python 3.7+
+- Python 3.10+
 - owlready2 (0.47+)
 - networkx (3.4.2+)
 - click (8.1.8+)
@@ -56,19 +56,23 @@ The tool uses NetworkX to calculate optimal layouts for the diagrams and can vis
 You can install all dependencies with:
 pip install -r requirements.txt
 
-### Install from Source
-
-```bash
-git clone 
-cd nowlgen
-pip install -r requirements.txt
-```
-
 #### Build Executable
 
-For a standalone executable:
-
+Install dependencies (with Conda)
 ```bash
+# Create a new environment
+conda create -n nowlgen python=3.10
+conda activate nowlgen
+
+# Install pip if not already present
+conda install pip -y
+
+# Install project requirements
+pip install -r nowlgen/requirements.txt
+```
+Build
+```bash
+cd nowlgen
 python build.py
 ```
 
