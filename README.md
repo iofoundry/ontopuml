@@ -53,12 +53,10 @@ The tool uses NetworkX to calculate optimal layouts for the diagrams and can vis
 - click (8.1.8+)
 - plantuml server (optional)
 
-You can install all dependencies with:
-pip install -r requirements.txt
+### Platform-Specific Setup
 
-#### Build Executable
+#### Windows
 
-Install dependencies (with Conda)
 ```bash
 # Create a new environment
 conda create -n nowlgen python=3.10
@@ -69,14 +67,66 @@ conda install pip -y
 
 # Install project requirements
 pip install -r nowlgen/requirements.txt
+
+# (Optional) For enhanced interactive features, install pyreadline3
+pip install pyreadline3
 ```
-Build
+
+Build executable:
 ```bash
 cd nowlgen
 python build.py
 ```
 
-The executable will be created in the `dist/` folder.
+Run the executable:
+```bash
+dist\nowl.exe
+```
+
+#### macOS / Linux
+
+```bash
+# Create a new environment with conda
+conda create -n nowlgen python=3.10
+conda activate nowlgen
+
+# Install project requirements
+pip install -r nowlgen/requirements.txt
+```
+
+Build executable:
+```bash
+cd nowlgen
+python build.py
+```
+
+Run the executable:
+```bash
+# Run in interactive mode
+./dist/nowl
+
+# Run with command-line options
+./dist/nowl -f ontology.owl
+```
+
+### Cross-Platform Path Handling
+
+The tool automatically handles path separators across platforms:
+- **Windows**: Use backslashes (`\`) or forward slashes (`/`) — both work
+- **macOS/Linux**: Use forward slashes (`/`)
+- **Home directory**: Use `~` to reference home directory (e.g., `~/ontologies/nowl.iuml`)
+
+Examples that work on all platforms:
+```bash
+# Windows
+nowl -f C:\Users\myuser\ontology.owl --nowl-profile ~/.nowl/nowl.iuml
+
+# macOS/Linux
+./nowl -f ~/Documents/ontology.owl --nowl-profile ~/.nowl/nowl.iuml
+
+# Cross-platform (forward slashes work everywhere)
+nowl -f path/to/ontology.owl --nowl-profile path/to/nowl.iuml
+```
 
 ## Command Line Options
 

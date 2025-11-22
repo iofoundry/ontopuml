@@ -6,8 +6,8 @@ PlantUML diagrams, supporting both object diagrams and class diagrams.
 """
 
 # Version information
-__version__ = "0.2.20250916"
-__author__ = "Perawit Charoenwut, ArkoPaul Sakar"
+__version__ = "0.2.20251121"
+__author__ = "Perawit Charoenwut, Arkopaul Sarkar"
 
 # Import main conversion functions
 from .main import rdf_to_puml, axiom_to_puml
@@ -33,7 +33,6 @@ __all__ = [
     'get_label',
     '__version__',
     '__author__',
-    '__email__',
 ]
 
 # Package-level documentation

@@ -10,9 +10,9 @@ This package contains all command-line interface components including:
 
 # Import main CLI entry point
 from cli.main import main
-__version__ = "0.2.20250919"
+__version__ = "0.2.20251121"
 __all__ = [
     # Main entry point
-    'main'
+    'main',
     '__version__',
 ]

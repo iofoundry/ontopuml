@@ -400,7 +400,9 @@ class RdfToPumlConverter:
         
         # Add header
         puml_lines.append("@startuml")
-        puml_lines.append(f"!include {self.nowl_profile_path}")
+        # Normalize include path to forward slashes for PlantUML cross-platform compatibility
+        include_path = self.nowl_profile_path.replace("\\", "/") if self.nowl_profile_path else ""
+        puml_lines.append(f"!include {include_path}")
         
         # Only add direction if layout_type is specified
         if self.layout_type is not None and self.layout_type in ["bipartite", "multipartite"]:
@@ -504,9 +506,10 @@ class RdfToPumlConverter:
                 base_name = os.path.splitext(base_name)[0]
                 file_name = os.path.join(os.getcwd(), f"{base_name}.puml")
             else:
-                # For local files, extract base name without extension
+                # For local files, save in the same directory as the input file
+                input_dir = os.path.dirname(os.path.abspath(self.input))
                 base_name = os.path.splitext(os.path.basename(self.input))[0]
-                file_name = os.path.join(os.getcwd(), f"{base_name}.puml")
+                file_name = os.path.join(input_dir, f"{base_name}.puml")
             
             with open(file_name, "w") as f:
                 f.write(puml_content)

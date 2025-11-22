@@ -28,3 +28,5 @@ climain_depre.py
 /nowlgen/dist
 *.spec
 nowlgen/cli/_main.py
+/generator/build
+/generator/nowl.egg-info

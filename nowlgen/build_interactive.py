@@ -124,7 +124,7 @@ def build_executable():
     data_dirs = ["generator"]  # Include generator package
     for data_dir in data_dirs:
         if os.path.exists(data_dir):
-            if sys.platform == "win32":
+            if os.name == "nt":
                 cmd.append(f"--add-data={data_dir};{data_dir}")
             else:
                 cmd.append(f"--add-data={data_dir}:{data_dir}")
@@ -132,7 +132,7 @@ def build_executable():
     
     # Add nowl files if they exist
     if os.path.exists("nowl"):
-        if sys.platform == "win32":
+        if os.name == "nt":
             cmd.append("--add-data=nowl;nowl")
         else:
             cmd.append("--add-data=nowl:nowl")
@@ -140,7 +140,7 @@ def build_executable():
     
     # Add owlready2 data files
     for src, dst in owlready2_data:
-        if sys.platform == "win32":
+        if os.name == "nt":
             cmd.append(f"--add-data={src};{dst}")
         else:
             cmd.append(f"--add-data={src}:{dst}")
@@ -172,7 +172,7 @@ def build_executable():
     ]
     
     # Only add readline if it's not Windows or if it's working properly
-    if sys.platform != "win32":
+    if os.name != "nt":
         hidden_imports.append("readline")
     else:
         # On Windows, be very selective about readline imports
@@ -230,7 +230,7 @@ def build_executable():
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         
         # Check if executable was created
-        if sys.platform == "win32":
+        if os.name == "nt":
             exe_path = "dist/nowl.exe"
         else:
             exe_path = "dist/nowl"
@@ -284,7 +284,7 @@ if %errorlevel% neq 0 (
 def test_executable():
     """Test the built executable"""
     
-    if sys.platform == "win32":
+    if os.name == "nt":
         exe_path = "dist/nowl.exe"
     else:
         exe_path = "dist/nowl"
@@ -413,7 +413,7 @@ def main():
     # Build executable
     if build_executable():
         # Create additional files for better user experience
-        if sys.platform == "win32":
+        if os.name == "nt":
             create_wrapper_script()
         
         create_readme()
@@ -428,7 +428,7 @@ def main():
             
             print("\n📋 Next steps:")
             print("1. Find your executable in the 'dist' folder")
-            if sys.platform == "win32":
+            if os.name == "nt":
                 print("2. For Windows: Use 'nowl_launcher.bat' or double-click 'nowl.exe'")
             else:
                 print("2. For Linux/Mac: Run './nowl' from terminal")

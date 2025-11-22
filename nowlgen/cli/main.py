@@ -8,35 +8,49 @@ import sys
 from generator.main import rdf_to_puml, axiom_to_puml
 
 # Enhanced readline support for command history and completion
-try:
-    import readline
-    import atexit
-    HAS_READLINE = True
-except ImportError:
-    HAS_READLINE = False
+# Use dynamic imports to avoid hard failures during packaging (PyInstaller)
+# and to support multiple readline implementations on Windows.
+import importlib
+import pathlib
 
-# For Windows compatibility - handle multiple readline libraries and Python version issues
-if sys.platform == "win32" and not HAS_READLINE:
+# Defaults
+HAS_READLINE = False
+readline = None
+
+def _try_import(module_name):
     try:
-        # Try pyreadline3 first (newer, better Python 3.9+ support)
-        import pyreadline3 as readline
-        import atexit
-        HAS_READLINE = True
-    except ImportError:
-        try:
-            # Try pyreadline (older, may have issues with Python 3.10+)
-            import pyreadline as readline
-            import atexit
+        return importlib.import_module(module_name)
+    except Exception:
+        return None
+
+# Try the platform-default 'readline' first (POSIX)
+_mod = _try_import('readline')
+if _mod:
+    readline = _mod
+    try:
+        import atexit  # atexit is in stdlib; import normally
+    except Exception:
+        pass
+    HAS_READLINE = True
+
+# On Windows, try pyreadline3 then pyreadline if builtin isn't available
+if os.name == 'nt' and not HAS_READLINE:
+    for candidate in ('pyreadline3', 'pyreadline'):
+        _mod = _try_import(candidate)
+        if _mod:
+            readline = _mod
+            try:
+                import atexit
+            except Exception:
+                pass
             HAS_READLINE = True
-        except (ImportError, AttributeError) as e:
-            # Handle the 'collections.Callable' error in pyreadline with Python 3.10+
-            HAS_READLINE = False
-            if "collections" in str(e) and "Callable" in str(e):
-                print("⚠️  Note: pyreadline is incompatible with this Python version.")
-                print("   Install pyreadline3 for enhanced features: pip install pyreadline3")
-            else:
-                print("⚠️  Note: No readline support available on Windows.")
-                print("   Install pyreadline3 for enhanced features: pip install pyreadline3")
+            break
+    # If neither is available, provide a helpful message (don't raise)
+    if not HAS_READLINE:
+        # Note: avoid noisy output during automated builds; print only on interactive sessions
+        if sys.stdout and sys.stderr and sys.stdin and sys.stdin.isatty():
+            print("⚠️  Note: No readline support available on Windows.")
+            print("   For enhanced interactive features, install: pip install pyreadline3")
 
 # Fix for PyInstaller
 if hasattr(sys, '_MEIPASS'):
@@ -70,14 +84,30 @@ def configure_include_path():
             SESSION_CONFIG['nowl_profile_path'] = None
             print("✅ Include statement will be omitted from PUML files")
         else:
-            SESSION_CONFIG['nowl_profile_path'] = new_path.strip()
+            # Normalize and expand user path to be cross-platform
+            normalized = os.path.normpath(os.path.expanduser(new_path.strip()))
+            SESSION_CONFIG['nowl_profile_path'] = normalized
             print(f"✅ Include path updated to: {SESSION_CONFIG['nowl_profile_path']}")
     else:
         print("✅ Keeping current path")
 
 def get_current_profile_path():
     """Get the current include path for this session"""
-    return SESSION_CONFIG.get('nowl_profile_path', './nowl/nowl.iuml')
+    path = SESSION_CONFIG.get('nowl_profile_path', './nowl/nowl.iuml')
+    if path is None:
+        return None
+    return os.path.normpath(os.path.expanduser(path))
+
+def clear_screen():
+    """Clear the terminal screen in a cross-platform way"""
+    try:
+        if os.name == 'nt':
+            os.system('cls')
+        else:
+            os.system('clear')
+    except Exception:
+        # Fallback: print a bunch of newlines
+        print('\n' * 100)
 
 def setup_readline():
     global HAS_READLINE   # ✅ Declare first
@@ -87,7 +117,7 @@ def setup_readline():
     
     try:
         # History file setup
-        history_file = os.path.expanduser("~/.nowl_history")
+        history_file = os.path.join(os.path.expanduser("~"), ".nowl_history")
         
         # Load existing history
         try:
@@ -168,8 +198,9 @@ def setup_completion():
                 
                 # Complete file paths
                 try:
-                    if '/' in text or '\\' in text or text.endswith('.'):
-                        import glob
+                    import glob
+                    # Accept either OS separator or common forward/back slashes typed by users
+                    if any(sep in text for sep in (os.path.sep, '/', '\\')) or text.endswith('.'):
                         options.extend(glob.glob(text + '*'))
                 except:
                     pass
@@ -209,7 +240,7 @@ def print_welcome():
     else:
         print("📝 Basic Input Mode:")
         print("• Command history and auto-completion not available")
-        if sys.platform == "win32":
+        if os.name == "nt":
             print("• For enhanced features, install: pip install pyreadline3")
     print()
     print("⚠️  NOWL Include Path Configuration:")
@@ -510,6 +541,9 @@ def parse_cli_command(command_line):
     """Parse CLI-style commands with flags in interactive mode"""
     import shlex
     
+    # Normalize backslashes to forward slashes for cross-platform compatibility
+    command_line = command_line.replace('\\', '/')
+    
     try:
         # Use shlex to properly parse quoted arguments
         parts = shlex.split(command_line)
@@ -520,8 +554,14 @@ def parse_cli_command(command_line):
     if not parts:
         return None, {}, []
     
-    command = parts[0]
-    args = parts[1:]
+    # Check if first part is a flag (for cases like "-i file.rdf" or "-f file.rdf")
+    if parts[0].startswith('-'):
+        # If it starts with a flag, there's no explicit command
+        command = None
+        args = parts
+    else:
+        command = parts[0]
+        args = parts[1:]
     
     # Parse flags and options
     flags = {}
@@ -563,22 +603,27 @@ def handle_cli_style_command(command_line):
     """Handle CLI-style commands with flags"""
     command, flags, args = parse_cli_command(command_line)
     
-    if not command:
+    if command is None and not flags:
         return False
     
     # Handle nowl include path configuration
     nowl_profile = flags.get('nowl-profile')
     if nowl_profile is not None:
         global SESSION_CONFIG
-        if nowl_profile.lower() == 'none':
+        if isinstance(nowl_profile, str) and nowl_profile.lower() == 'none':
             SESSION_CONFIG['nowl_profile_path'] = None
             print("✅ NOWL include disabled for this session")
         else:
-            SESSION_CONFIG['nowl_profile_path'] = nowl_profile
-            print(f"✅ NOWL include path set to: {nowl_profile}")
+            # Normalize the provided path
+            try:
+                normalized = None if nowl_profile is None else os.path.normpath(os.path.expanduser(str(nowl_profile)))
+            except Exception:
+                normalized = nowl_profile
+            SESSION_CONFIG['nowl_profile_path'] = normalized
+            print(f"✅ NOWL include path set to: {normalized}")
     
     # Handle nowl-style commands
-    if command.lower() == 'nowl':
+    if command and command.lower() == 'nowl':
         # Extract the actual command if "nowl" prefix is used
         if args:
             actual_command = args[0]
@@ -590,6 +635,14 @@ def handle_cli_style_command(command_line):
         actual_command = command
         remaining_args = args
     
+    # Check if only -i (import) is provided without main file
+    import_ontologies = flags.get('i') or flags.get('import-ontology', [])
+    if import_ontologies and not (flags.get('f') or flags.get('file')):
+        print("❌ An input file must be specified with -f.")
+        print("💡 Usage: -f ontology.owl -i additional.owl")
+        return True
+    
+    # If there's an import but we have a file, proceed. If no file and no import, continue with auto-detection
     # File processing
     input_file = flags.get('f') or flags.get('file')
     
@@ -602,8 +655,16 @@ def handle_cli_style_command(command_line):
                 remaining_args.remove(arg)
                 break
     
-    # Auto-select file if still not found
-    if not input_file:
+    # Check if this is a diagram generation command that requires a file
+    needs_file = (
+        flags.get('c') or flags.get('class-diagram') or 
+        flags.get('e') or flags.get('class-entity') or
+        actual_command in ['class', 'c', 'object', 'o'] or
+        import_ontologies  # If import is specified, file is needed
+    )
+    
+    # Auto-select file only if a diagram command was requested
+    if not input_file and needs_file:
         files = find_ontology_file()
         if len(files) == 1:
             input_file = files[0]
@@ -622,7 +683,15 @@ def handle_cli_style_command(command_line):
             print("❌ No ontology files found")
             return True
     
+    # If no file is needed (e.g., only --nowl-profile), return early
+    if not input_file and not needs_file:
+        return True
+    
     try:
+        # Only process diagrams if we have an input file
+        if not input_file:
+            return True
+        
         # Class diagram handling
         if flags.get('c') or flags.get('class-diagram') or actual_command in ['class', 'c']:
             class_entities = flags.get('e') or flags.get('class-entity')
@@ -657,7 +726,7 @@ def handle_cli_style_command(command_line):
         else:
             layout = flags.get('l') or flags.get('layout')
             inline_class = flags.get('inline-class', False)
-            import_ontologies = flags.get('i') or flags.get('import-ontology', [])
+            # import_ontologies already extracted in validation above
             if isinstance(import_ontologies, str):
                 import_ontologies = [import_ontologies]
             
@@ -760,7 +829,7 @@ def interactive_mode():
                         print(f"   Enhanced input: enabled")
                 else:
                     print(f"   Enhanced input: disabled")
-                    if sys.platform == "win32":
+                    if os.name == "nt":
                         print(f"   To enable: pip install pyreadline3")
                 
             elif command == 'config':
@@ -770,7 +839,7 @@ def interactive_mode():
                 show_history()
                 
             elif command in ['clear']:
-                os.system('cls' if os.name == 'nt' else 'clear')
+                clear_screen()
                 print_welcome()
                 
             elif command == 'cd':
@@ -927,6 +996,20 @@ IRI = IRIParamType()
     }
 )
 @click.option(
+    "--version",
+    is_flag=True,
+    is_eager=True,
+    expose_value=True,
+    help="Show version information and exit."
+)
+@click.option(
+    "--help",
+    is_flag=True,
+    is_eager=True,
+    expose_value=True,
+    help="Show this help message and exit."
+)
+@click.option(
     "-f", "--file",
     help="(optional) Input ontology file. Supported formats: .rdf, .owl.\n"
     "If not provided, the tool will search for an ontology file in the current directory.",
@@ -1001,17 +1084,10 @@ IRI = IRIParamType()
     help="(optional) Path to NOWL include file. Use 'none' to disable include statement.",
 )
 @click.option(
-    "--version",
-    is_flag=True,
-    help="Show version information and exit."
-)
-@click.option(
     "--interactive", "-int",
     is_flag=True,
     help="Launch interactive mode."
 )
-@click.option("--help", is_flag=True, help="Show this help message and exit.")
-
 def main(
     file, import_ontology, class_diagram, class_entity, include_class,
     exclude_relation, axiom_type, layout, inline_class, view, 
@@ -1020,27 +1096,41 @@ def main(
     """NOWL Generator - Convert RDF/OWL ontologies to PlantUML diagrams"""
     
     if version:
-        from generator import __version__, __author__
+        try:
+            from generator import __version__, __author__
+        except ImportError:
+            # Fallback when running as standalone executable
+            __version__ = "0.2.20251121"
+            __author__ = "NIST"
         click.echo(f"🚀 NOWL Generator v{__version__}")
         if __author__:
             click.echo(f"👨‍💻 Author: {__author__}")
-        return
+        raise SystemExit(0)
         
     if help:
         click.echo(click.get_current_context().get_help())
-        return
+        raise SystemExit(0)
 
     # Set global include path if specified
     if nowl_profile is not None:
         global SESSION_CONFIG
-        if nowl_profile.lower() == 'none':
+        if isinstance(nowl_profile, str) and nowl_profile.lower() == 'none':
             SESSION_CONFIG['nowl_profile_path'] = None
         else:
-            SESSION_CONFIG['nowl_profile_path'] = nowl_profile
+            try:
+                SESSION_CONFIG['nowl_profile_path'] = None if nowl_profile is None else os.path.normpath(os.path.expanduser(str(nowl_profile)))
+            except Exception:
+                SESSION_CONFIG['nowl_profile_path'] = nowl_profile
 
     # If no arguments provided or interactive flag, launch interactive mode
-    if interactive or (not file and not class_entity and not include_class):
+    if interactive or (not file and not class_entity and not include_class and not import_ontology):
         interactive_mode()
+        return
+    
+    # Check if only -i (import) is provided without main file
+    if import_ontology and not file and not class_entity and not include_class:
+        click.echo("❌ An input file must be specified with -f.")
+        click.echo("💡 Usage: nowlgen -f ontology.owl -i additional.owl")
         return
 
     # Find input file if not provided

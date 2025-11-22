@@ -112,7 +112,9 @@ class AxiomToPumlConverter:
 
         self.class_entities, self.types = self._process_class_entities_types(class_entities, types, self.ontology)
         self.puml_output = []
-        self.puml_output.append(f"@startuml\n!include {nowl_profile_path}")
+        # Normalize include path to forward slashes for PlantUML cross-platform compatibility
+        include_path = nowl_profile_path.replace("\\", "/") if nowl_profile_path else ""
+        self.puml_output.append(f"@startuml\n!include {include_path}")
         self.puml_output.append('title '+'_'.join(i.name for i in self.class_entities if hasattr(self.class_entities[0], 'name')))
         self.class_map = {}
         self.restriction_map = {}  # New map to track restrictions and avoid duplicates
@@ -856,7 +858,19 @@ class AxiomToPumlConverter:
             layout_str = "" if self.layout_type is None else f"_{self.layout_type}"
             file_name = f"{base_name}_{types_str}{layout_str}_axiom.puml"
             file_name = "".join(c for c in file_name if c.isalnum() or c in "._-")
-            file_path = os.path.join(os.getcwd(), file_name)
+            
+            # Determine output directory based on ontology input
+            if isinstance(self.ontology, str) and (self.ontology.startswith("http://") or self.ontology.startswith("https://")):
+                # For remote ontologies, save to current working directory
+                output_dir = os.getcwd()
+            elif isinstance(self.ontology, str):
+                # For local ontology files, save in the same directory as the ontology
+                output_dir = os.path.dirname(os.path.abspath(self.ontology))
+            else:
+                # For ontology objects, save to current working directory
+                output_dir = os.getcwd()
+            
+            file_path = os.path.join(output_dir, file_name)
             
             with open(file_path, "w") as f:
                 f.write("\n".join(self.puml_output))

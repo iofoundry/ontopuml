@@ -15,11 +15,11 @@ matplotlib==3.10.1
 
 # Additional dependencies for robust ontology handling
 # SSL and HTTP handling
-# urllib3>=1.26.0
-# certifi>=2020.6.20
+urllib3>=1.26.0
+certifi>=2020.6.20
 
 # Optional: For enhanced performance with large ontologies
-numpy>=1.21.0  # Uncomment if needed for numerical operations
+# numpy>=1.21.0  # Uncomment if needed for numerical operations
 
 # Development dependencies (uncomment for development)
 # pytest>=6.0.0
@@ -29,9 +29,3 @@ numpy>=1.21.0  # Uncomment if needed for numerical operations
 
 # Build dependencies (uncomment for creating executables)
 pyinstaller>=4.10
-
-# Optional: Windows-only enhanced interactive features
-# Install on Windows to enable history & completion support in the interactive CLI
-# Example: pip install pyreadline3
-# You can add the package to your environment with a platform marker:
-pyreadline3; platform_system == "Windows"
